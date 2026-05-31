@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plataformas de desarrollo asistido por IA</title>
+  <style>
+    :root {
+      --ink: #14222b;
+      --muted: #5b6872;
+      --paper: #f6f7f3;
+      --panel: #ffffff;
+      --line: #d9ded5;
+      --teal: #007c89;
+      --green: #6e8e3c;
+      --blue: #315f9f;
+      --red: #b43b4a;
+      --amber: #c47a1d;
+      --violet: #6752a3;
+      --shadow: 0 18px 52px rgba(20, 34, 43, .13);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(0,124,137,.08) 0 1px, transparent 1px 100%),
+        linear-gradient(0deg, rgba(49,95,159,.07) 0 1px, transparent 1px 100%),
+        var(--paper);
+      background-size: 46px 46px;
+    }
+
+    a {
+      color: var(--teal);
+      font-weight: 760;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(0,124,137,.35);
+    }
+
+    a:hover { border-bottom-color: currentColor; }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 20px;
+      padding: clamp(28px, 4.8vw, 62px);
+      opacity: 0;
+      transform: translateX(34px) scale(.985);
+      transition: opacity .22s ease, transform .22s ease;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 24px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--teal);
+      font-size: clamp(13px, 1.2vw, 16px);
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 1120px;
+      margin-bottom: 18px;
+      font-size: clamp(42px, 7vw, 88px);
+      line-height: .98;
+      font-weight: 880;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      max-width: 1120px;
+      margin-bottom: 0;
+      font-size: clamp(34px, 4.8vw, 68px);
+      line-height: 1.02;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: clamp(21px, 2.1vw, 31px);
+      line-height: 1.15;
+    }
+
+    p, li {
+      font-size: clamp(19px, 2vw, 30px);
+      line-height: 1.28;
+    }
+
+    ul, ol {
+      margin: 0;
+      padding-left: 1.15em;
+    }
+
+    li + li { margin-top: 10px; }
+
+    code {
+      padding: .08em .25em;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: rgba(255,255,255,.75);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .86em;
+    }
+
+    .cover {
+      color: white;
+      background:
+        linear-gradient(135deg, rgba(17,30,39,.92), rgba(0,124,137,.62)),
+        linear-gradient(90deg, rgba(255,255,255,.11) 0 1px, transparent 1px 100%),
+        linear-gradient(0deg, rgba(255,255,255,.10) 0 1px, transparent 1px 100%),
+        #10212c;
+      background-size: auto, 52px 52px, 52px 52px, auto;
+    }
+
+    .cover .slide-header { border-color: rgba(255,255,255,.24); }
+    .cover .kicker, .cover .lead, .cover .footer, .cover a { color: rgba(255,255,255,.82); }
+
+    .lead {
+      max-width: 1000px;
+      color: var(--muted);
+      font-size: clamp(24px, 3vw, 42px);
+      line-height: 1.22;
+    }
+
+    .content {
+      align-self: center;
+      width: min(1180px, 100%);
+      min-height: 0;
+      margin: 0 auto;
+    }
+
+    .wide { width: min(1380px, 100%); }
+
+    .grid { display: grid; gap: 18px; }
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      min-height: 100%;
+      padding: clamp(18px, 2.2vw, 30px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.88);
+      box-shadow: var(--shadow);
+    }
+
+    .card.compact {
+      padding: 18px;
+      box-shadow: none;
+    }
+
+    .card p, .card li { font-size: clamp(17px, 1.6vw, 24px); }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      margin-bottom: 12px;
+      padding: 4px 9px;
+      color: white;
+      background: var(--teal);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .tag.green { background: var(--green); }
+    .tag.blue { background: var(--blue); }
+    .tag.red { background: var(--red); }
+    .tag.amber { background: var(--amber); }
+    .tag.violet { background: var(--violet); }
+
+    .big-number {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--teal);
+      font-size: clamp(44px, 5vw, 72px);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .statement {
+      max-width: 1140px;
+      padding-left: clamp(18px, 2vw, 28px);
+      border-left: 9px solid var(--teal);
+      font-size: clamp(28px, 4vw, 58px);
+      line-height: 1.12;
+      font-weight: 800;
+    }
+
+    .callout {
+      padding: 24px 28px;
+      border-left: 8px solid var(--amber);
+      border-radius: var(--radius);
+      background: #fff9ed;
+      box-shadow: var(--shadow);
+    }
+
+    .callout.warning {
+      border-color: var(--red);
+      background: #fff4f4;
+    }
+
+    .callout.good {
+      border-color: var(--green);
+      background: #f4faee;
+    }
+
+    .callout p, .callout li { font-size: clamp(19px, 1.9vw, 28px); }
+
+    table {
+      width: 100%;
+      overflow: hidden;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      padding: clamp(12px, 1.35vw, 19px);
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: clamp(15px, 1.35vw, 21px);
+      line-height: 1.24;
+    }
+
+    th {
+      color: white;
+      background: #17313f;
+      font-size: clamp(13px, 1.15vw, 18px);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .step {
+      position: relative;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -13px;
+      width: 13px;
+      height: 2px;
+      background: var(--teal);
+    }
+
+    .step p { font-size: clamp(16px, 1.45vw, 22px); }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .node {
+      padding: 18px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: 0 10px 28px rgba(21,33,42,.09);
+    }
+
+    .node strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: clamp(18px, 1.6vw, 24px);
+    }
+
+    .node span {
+      color: var(--muted);
+      font-size: clamp(14px, 1.15vw, 18px);
+      line-height: 1.25;
+    }
+
+    .risk { border-color: rgba(180,59,74,.45); background: #fff6f6; }
+    .ok { border-color: rgba(110,142,60,.45); background: #f8fcf4; }
+    .warn { border-color: rgba(196,122,29,.45); background: #fffaf1; }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid rgba(21,33,42,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.84);
+      box-shadow: 0 10px 30px rgba(21,33,42,.18);
+      transform: translateX(-50%);
+      backdrop-filter: blur(12px);
+    }
+
+    button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: white;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--teal); color: var(--teal); }
+
+    .counter {
+      min-width: 74px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      width: 100%;
+      height: 5px;
+      background: rgba(21,33,42,.08);
+    }
+
+    .bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--green), var(--amber));
+      transition: width .2s ease;
+    }
+
+    .mini {
+      color: var(--muted);
+      font-size: clamp(14px, 1.2vw, 18px);
+      line-height: 1.28;
+    }
+
+    @media (max-width: 980px) {
+      body { overflow: auto; }
+      .deck { min-height: 100vh; height: auto; }
+      .slide {
+        position: relative;
+        display: none;
+        min-height: 100vh;
+        padding: 26px 18px 90px;
+      }
+      .slide.active { display: grid; }
+      .slide-header, .footer { flex-direction: column; }
+      .cols-2, .cols-3, .cols-4, .flow, .matrix { grid-template-columns: 1fr; }
+      .step:not(:last-child)::after { display: none; }
+      th, td { font-size: 15px; }
+    }
+
+    @media print {
+      body { overflow: visible; background: white; }
+      .controls, .progress { display: none; }
+      .deck { height: auto; }
+      .slide {
+        position: relative;
+        min-height: 100vh;
+        page-break-after: always;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <main class="deck" aria-live="polite">
+    <section class="slide cover active">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Tutorial</p>
+          <h1>Plataformas de desarrollo asistido por IA</h1>
+          <p class="lead">Sesión para entender herramientas tipo Firebase Studio, Google AI Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44 con criterio técnico hospitalario.</p>
+        </div>
+      </header>
+      <div class="content">
+        <p class="lead">Idea central: llegar antes a una primera versión discutible sin confundir demo, piloto y producción.</p>
+      </div>
+      <footer class="footer">
+        <span>Fuente: <a href="plaformas-desarrollo-basado-ia.adoc">plaformas-desarrollo-basado-ia.adoc</a></span>
+        <span>Usa ← → o Espacio</span>
+      </footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">01. Objetivo docente</p>
+          <h2>No se trata de hacer apps rápido, sino de no perder el control</h2>
+        </div>
+      </header>
+      <div class="content">
+        <p class="statement">La competencia principal es usar estas plataformas sin perder criterio técnico, trazabilidad ni responsabilidad sobre el ciclo de vida del software.</p>
+      </div>
+      <footer class="footer"><span>Velocidad con gobierno</span><span>2</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Definición</p>
+          <h2>Una nueva capa entre la idea y el software</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card"><span class="tag blue">Lenguaje natural</span><h3>Prompt inicial</h3><p>El usuario describe intención, flujo, datos y restricciones.</p></article>
+        <article class="card"><span class="tag green">Proyecto ejecutable</span><h3>Primera versión</h3><p>La plataforma genera pantallas, rutas, componentes, datos de ejemplo y vista previa.</p></article>
+        <article class="card"><span class="tag amber">Iteración</span><h3>Conversación</h3><p>Se corrige, amplía, revisa y prueba la app con ayuda del agente de IA.</p></article>
+      </div>
+      <footer class="footer"><span>Prompt-to-app es un flujo, no toda la categoría</span><span>3</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Qué descargan</p>
+          <h2>Aceleran el arranque, no eliminan la ingeniería</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <h3>Ayudan a</h3>
+          <ul>
+            <li>Pasar de idea a prototipo en minutos u horas.</li>
+            <li>Crear pantallas, formularios, rutas y datos ficticios.</li>
+            <li>Preparar demos para discusión con usuarios.</li>
+            <li>Generar primera documentación y estructura técnica.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>No sustituyen</h3>
+          <ul>
+            <li>Arquitectura, seguridad y gobierno del dato.</li>
+            <li>Revisión de código y dependencias.</li>
+            <li>Pruebas, observabilidad y mantenimiento.</li>
+            <li>Responsables claros de ciclo de vida.</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>La demo provoca análisis, no lo reemplaza</span><span>4</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Piezas habituales</p>
+          <h2>Lo potente es la combinación</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-4">
+        <article class="card compact"><span class="tag blue">Workspace</span><h3>Navegador</h3><p>Editar, ejecutar y revisar sin preparar local.</p></article>
+        <article class="card compact"><span class="tag green">Agente</span><h3>IA</h3><p>Interpreta, modifica, explica y corrige.</p></article>
+        <article class="card compact"><span class="tag amber">Preview</span><h3>Instantánea</h3><p>Hace visible el requisito.</p></article>
+        <article class="card compact"><span class="tag violet">Código</span><h3>Editable</h3><p>Archivos, dependencias, rutas y componentes.</p></article>
+        <article class="card compact"><span class="tag blue">Backend</span><h3>Gestionado</h3><p>Auth, base de datos, funciones o APIs.</p></article>
+        <article class="card compact"><span class="tag green">Despliegue</span><h3>URL demo</h3><p>Compartir y validar temprano.</p></article>
+        <article class="card compact"><span class="tag amber">Git</span><h3>Salida</h3><p>Versionar, revisar y continuar fuera.</p></article>
+        <article class="card compact"><span class="tag red">Diagnóstico</span><h3>Errores</h3><p>Explicación y propuestas de arreglo.</p></article>
+      </div>
+      <footer class="footer"><span>Evaluar el flujo completo, no solo la pantalla bonita</span><span>5</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Diferencias</p>
+          <h2>No son exactamente no-code, low-code ni un IDE con IA</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead><tr><th>Categoría</th><th>Qué suele hacer</th><th>Diferencia práctica</th></tr></thead>
+          <tbody>
+            <tr><td>Editor con IA</td><td>Ayuda a escribir código en un proyecto existente.</td><td>Presupone desarrollador y repositorio.</td></tr>
+            <tr><td>No-code / low-code</td><td>Configura apps mediante interfaces visuales y reglas.</td><td>Puede ocultar más el código y la arquitectura.</td></tr>
+            <tr><td>Cloud IDE</td><td>Proporciona entorno remoto de programación.</td><td>No siempre genera una app desde lenguaje natural.</td></tr>
+            <tr><td>Plataforma asistida por IA</td><td>Une intención, código, ejecución, preview, iteración y despliegue.</td><td>Comprime ideación, prototipo y desarrollo inicial.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>La frontera es borrosa, el criterio importa</span><span>6</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Promesa razonable</p>
+          <h2>Una primera versión discutible</h2>
+        </div>
+      </header>
+      <div class="content">
+        <p class="statement">La promesa útil no es “software serio sin ingeniería”. Es llegar antes a algo que se puede ver, probar, corregir, enseñar y criticar.</p>
+      </div>
+      <footer class="footer"><span>Conversación mejor, decisiones antes</span><span>7</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Línea roja</p>
+          <h2>Una demo convincente no equivale a producción</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <div class="callout warning">
+          <p><strong>El riesgo delicado no es que hagan demos malas, sino demos suficientemente buenas para crear falsa seguridad.</strong></p>
+        </div>
+        <article class="card">
+          <ul>
+            <li>Validaciones solo en cliente.</li>
+            <li>Permisos simulados.</li>
+            <li>Datos persistidos donde no toca.</li>
+            <li>Dependencias añadidas sin justificar.</li>
+            <li>Costes futuros poco visibles.</li>
+            <li>Despliegue público demasiado fácil.</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>Demo, piloto y producción son tres estados distintos</span><span>8</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Niveles de uso</p>
+          <h2>Cuanto mayor el impacto, más gobierno</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead><tr><th>Nivel</th><th>Puede ser razonable para</th><th>Condiciones mínimas</th></tr></thead>
+          <tbody>
+            <tr><td>Exploración</td><td>Aprender, probar prompts, generar interfaz de ejemplo.</td><td>Datos ficticios y entorno aislado.</td></tr>
+            <tr><td>Demo interna</td><td>Validar navegación o idea con un equipo.</td><td>Aviso claro: no es producción.</td></tr>
+            <tr><td>Piloto controlado</td><td>Probar flujo con usuarios seleccionados.</td><td>Revisión técnica, permisos, trazabilidad mínima.</td></tr>
+            <tr><td>Producción</td><td>Uso estable por la organización.</td><td>Gobierno completo: seguridad, arquitectura, pruebas, soporte, costes y cumplimiento.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>Evitar que una demo se convierta en sistema de facto</span><span>9</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">02. Panorama</p>
+          <h2>Herramientas de referencia para el tutorial</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-4">
+        <article class="card compact"><span class="tag blue">Google</span><h3>Firebase Studio</h3><p>Prototipo, workspace cloud y servicios Firebase.</p></article>
+        <article class="card compact"><span class="tag blue">Google</span><h3>Google AI Studio</h3><p>Explorar Gemini, Build mode y prototipos AI-forward.</p></article>
+        <article class="card compact"><span class="tag green">Code</span><h3>Replit</h3><p>Entorno completo en navegador con agente y despliegue.</p></article>
+        <article class="card compact"><span class="tag green">Code</span><h3>Bolt.new</h3><p>Full-stack web rápido en ecosistema JS/TS.</p></article>
+        <article class="card compact"><span class="tag amber">Producto</span><h3>Lovable</h3><p>MVPs visuales con backend frecuente en Supabase.</p></article>
+        <article class="card compact"><span class="tag violet">Frontend</span><h3>v0</h3><p>Interfaces React/Next.js y componentes modernos.</p></article>
+        <article class="card compact"><span class="tag blue">GitHub</span><h3>GitHub Spark</h3><p>Apps desde lenguaje natural en flujo GitHub/Copilot.</p></article>
+        <article class="card compact"><span class="tag amber">Builder</span><h3>Base44</h3><p>Aplicaciones completas con experiencia visual y conversacional.</p></article>
+      </div>
+      <footer class="footer"><span>No hay una mejor en abstracto</span><span>10</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Lectura por familias</p>
+          <h2>Elegir por el cuello de botella</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card"><span class="tag green">Entorno ejecutable</span><h3>Replit, Bolt.new, Firebase Studio</h3><p>Cuando interesa editar, ejecutar, depurar y desplegar desde navegador.</p></article>
+        <article class="card"><span class="tag violet">Interfaz y frontend</span><h3>v0</h3><p>Cuando el cuello de botella es convertir idea de pantalla en UI usable.</p></article>
+        <article class="card"><span class="tag amber">Builder conversacional</span><h3>Lovable, Base44</h3><p>Cuando se busca bajar fricción para producto, negocio o perfiles menos técnicos.</p></article>
+        <article class="card"><span class="tag blue">Ecosistema corporativo</span><h3>GitHub, Google, Vercel</h3><p>Cuando repositorios, despliegue, políticas y continuidad pesan más que la demo inicial.</p></article>
+      </div>
+      <footer class="footer"><span>La familia ayuda más que el ranking</span><span>11</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Comparativa rápida</p>
+          <h2>Encaje inicial por perfil</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead><tr><th>Perfil</th><th>Probar primero</th><th>Motivo</th></tr></thead>
+          <tbody>
+            <tr><td>Docencia</td><td>Replit, Bolt.new, v0, Firebase Studio</td><td>Permiten ver prompt, código, ejecución, errores y despliegue.</td></tr>
+            <tr><td>No técnico / negocio</td><td>Lovable, Base44, Replit</td><td>Reducen fricción y convierten ideas en app visible.</td></tr>
+            <tr><td>Frontend</td><td>v0, Bolt.new, Lovable</td><td>Aceleran pantallas, formularios, dashboards y componentes.</td></tr>
+            <tr><td>Full-stack pequeño</td><td>Replit, Bolt.new, Firebase Studio</td><td>Workspace, dependencias, preview y despliegue integrados.</td></tr>
+            <tr><td>Datos sensibles</td><td>Ninguna sin revisión previa</td><td>Primero privacidad, seguridad, contratos, permisos y mantenimiento.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>En sanidad, el dato manda</span><span>12</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Firebase Studio</p>
+          <h2>Buen laboratorio para ver idea, código y Firebase en una sesión</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <h3>Aporta</h3>
+          <ul>
+            <li>App Prototyping agent.</li>
+            <li>Prototyper view y Code view.</li>
+            <li>Preview, workspace cloud y Gemini.</li>
+            <li>Firebase Auth, Firestore, App Hosting y GitHub.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Cuidado</h3>
+          <ul>
+            <li>Producto en transición según el tutorial.</li>
+            <li>Dependencia Google/Firebase.</li>
+            <li>Facturación si se activan servicios.</li>
+            <li>Reglas de seguridad y datos deben revisarse.</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>Útil para laboratorio, no apuesta nueva sin plan de transición</span><span>13</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Google AI Studio</p>
+          <h2>Explorar Gemini, prototipos y experiencias AI-forward</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <h3>Buen uso</h3>
+          <ul>
+            <li>Probar prompts, modelos y capacidades multimodales.</li>
+            <li>Explorar Build mode y prototipos con IA dentro de la aplicación.</li>
+            <li>Comparar comportamiento de Gemini antes de integrar.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Límite docente</h3>
+          <p>No confundir exploración de modelo con gobierno de aplicación. Si el prototipo toca datos, identidad, despliegue o coste, vuelve a aplicar la checklist técnica.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Muy útil para experimentar, no para saltar controles</span><span>14</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Otras plataformas</p>
+          <h2>Fortalezas y advertencias en una línea</h2>
+        </div>
+      </header>
+      <div class="content wide matrix">
+        <div class="node ok"><strong>Replit</strong><span>Muy bueno para aprender, ejecutar y desplegar. Vigilar coste, agente y continuidad fuera del workspace.</span></div>
+        <div class="node ok"><strong>Bolt.new</strong><span>Rápido para apps web JS/TS. Revisar consumo, dependencias y cambios amplios.</span></div>
+        <div class="node ok"><strong>Lovable</strong><span>Fuerte en MVP visual y producto. Revisar backend, permisos, seguridad y exportación.</span></div>
+        <div class="node warn"><strong>v0</strong><span>Excelente para UI React/Next.js. No dejar que una interfaz convincente oculte backend y permisos.</span></div>
+        <div class="node warn"><strong>GitHub Spark</strong><span>Interesa si el equipo ya vive en GitHub/Copilot. Evaluar disponibilidad y políticas Enterprise.</span></div>
+        <div class="node warn"><strong>Base44</strong><span>Muy baja fricción para usuarios no técnicos. Revisar control profundo y dependencia de plataforma.</span></div>
+      </div>
+      <footer class="footer"><span>Cada herramienta compra velocidad con un tipo distinto de dependencia</span><span>15</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">03. Criterios</p>
+          <h2>Antes de elegir plataforma, clasifica el caso de uso</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card compact"><span class="tag blue">Caso</span><h3>Qué se quiere crear</h3><p>UI, demo, MVP, app interna, backend o integración.</p></article>
+        <article class="card compact"><span class="tag red">Riesgo</span><h3>Qué puede salir mal</h3><p>Datos, impacto, criticidad, exposición y dependencia.</p></article>
+        <article class="card compact"><span class="tag green">Usuario</span><h3>Quién la usará</h3><p>Docencia, perfil funcional, desarrollador o equipo IT.</p></article>
+        <article class="card compact"><span class="tag amber">Código</span><h3>Control técnico</h3><p>Ver, editar, exportar, versionar y revisar.</p></article>
+        <article class="card compact"><span class="tag violet">Datos</span><h3>Privacidad</h3><p>Dónde viven prompts, código, conversaciones y datos.</p></article>
+        <article class="card compact"><span class="tag blue">Salida</span><h3>Continuidad</h3><p>Qué ocurre si crece, cambia precio o desaparece.</p></article>
+      </div>
+      <footer class="footer"><span>La pregunta clave es encaje, no moda</span><span>16</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Checklist hospitalaria</p>
+          <h2>Preguntas que frenan accidentes</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <h3>Datos y seguridad</h3>
+          <ul>
+            <li>¿Puede aparecer información personal, clínica, laboral o sensible?</li>
+            <li>¿Dónde se alojan datos, prompts y conversaciones?</li>
+            <li>¿Hay contrato, evaluación jurídica o acuerdo suficiente?</li>
+            <li>¿Se audita quién accede y qué cambia?</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Operación y continuidad</h3>
+          <ul>
+            <li>¿Quién revisa, prueba, despliega y mantiene?</li>
+            <li>¿Se integra con identidad corporativa o crea cuentas paralelas?</li>
+            <li>¿Cómo se apaga una demo publicada?</li>
+            <li>¿Qué pasa si el proyecto crece o la plataforma cambia?</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>La señal roja: “ya que funciona, que lo use el equipo”</span><span>17</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Matriz rápida</p>
+          <h2>Resultado de evaluación</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead><tr><th>Resultado</th><th>Qué significa</th><th>Acción recomendada</th></tr></thead>
+          <tbody>
+            <tr><td>Apta para exploración</td><td>Riesgo bajo, datos ficticios, valor de aprendizaje.</td><td>Usar con límites y documentar supuestos.</td></tr>
+            <tr><td>Apta para demo</td><td>Prototipo visible para discusión interna.</td><td>Marcar claramente que no es producción.</td></tr>
+            <tr><td>Apta para piloto</td><td>Hay revisión técnica y entorno separado.</td><td>Definir permisos, trazabilidad, responsables y criterios de salida.</td></tr>
+            <tr><td>No apta todavía</td><td>Datos sensibles, dependencia alta o falta de control.</td><td>Resolver privacidad, seguridad, contratos, código y mantenimiento antes.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>Decidir “no todavía” también es buen criterio técnico</span><span>18</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Prompt de revisión</p>
+          <h2>Construir y revisar son dos prompts distintos</h2>
+        </div>
+      </header>
+      <div class="content">
+        <div class="callout">
+          <p><code>Revisa esta aplicación como responsable de seguridad IT de un hospital. Enumera riesgos, supuestos incorrectos, datos sensibles que podrían aparecer, permisos que faltan, dependencias externas, costes ocultos y cambios necesarios antes de pensar en un piloto.</code></p>
+        </div>
+        <p class="lead">Una buena práctica del curso: pedir primero la app y después pedir a la IA que ataque sus propios supuestos.</p>
+      </div>
+      <footer class="footer"><span>El segundo prompt evita enamorarse de la demo</span><span>19</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">04. Taller práctico</p>
+          <h2>De plataforma asistida a desarrollo local</h2>
+        </div>
+      </header>
+      <div class="content wide flow">
+        <article class="step"><span class="big-number">1</span><h3>Crear</h3><p>Prototipo desde prompt con datos ficticios.</p></article>
+        <article class="step"><span class="big-number">2</span><h3>Revisar</h3><p>Qué archivos, dependencias, datos y supuestos generó.</p></article>
+        <article class="step"><span class="big-number">3</span><h3>Exportar</h3><p>Llevarlo a GitHub para trazabilidad.</p></article>
+        <article class="step"><span class="big-number">4</span><h3>Local</h3><p>Tomar control en entorno propio.</p></article>
+        <article class="step"><span class="big-number">5</span><h3>Continuar</h3><p>Usar asistente de programación con revisión y commits.</p></article>
+      </div>
+      <footer class="footer"><span>El taller enseña salida, no solo entrada</span><span>20</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Aplicación de taller</p>
+          <h2>Incidencias no clínicas de mantenimiento</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <h3>Funcionalidades</h3>
+          <ul>
+            <li>Crear incidencia con título, descripción, ubicación, prioridad y estado.</li>
+            <li>Listado filtrable por estado y prioridad.</li>
+            <li>Cambiar estado entre abierta, en curso y cerrada.</li>
+            <li>Panel resumen con datos ficticios.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Preguntas que debe provocar</h3>
+          <ul>
+            <li>¿Quién puede crear y cerrar?</li>
+            <li>¿Hay datos personales o ubicaciones sensibles?</li>
+            <li>¿Hace falta trazabilidad de cambios?</li>
+            <li>¿Quién mantiene si pasa de demo a uso real?</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>Caso de bajo riesgo, pero no sin decisiones</span><span>21</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Entregables</p>
+          <h2>Qué debe salir del taller</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card compact"><span class="tag blue">Demo</span><h3>Prototipo visible</h3><p>URL o preview con datos ficticios.</p></article>
+        <article class="card compact"><span class="tag green">Código</span><h3>Repositorio</h3><p>Proyecto exportado o sincronizado.</p></article>
+        <article class="card compact"><span class="tag amber">Informe</span><h3>Revisión</h3><p>Dependencias, datos, permisos y riesgos.</p></article>
+        <article class="card compact"><span class="tag violet">Plan</span><h3>Siguiente paso</h3><p>Qué haría falta para piloto controlado.</p></article>
+        <article class="card compact"><span class="tag red">Límites</span><h3>No producción</h3><p>Supuestos y razones para no operar todavía.</p></article>
+        <article class="card compact"><span class="tag blue">Comparativa</span><h3>Antes/después</h3><p>Qué cambió al tomar control local.</p></article>
+      </div>
+      <footer class="footer"><span>La documentación de límites es parte del aprendizaje</span><span>22</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Criterio final</p>
+          <h2>La pregunta no es si genera código, sino si podemos gobernarlo</h2>
+        </div>
+      </header>
+      <div class="content">
+        <p class="statement">Úsalas para aprender, prototipar y conversar mejor. Detente cuando aparezcan datos reales, integración corporativa, permisos, costes, continuidad o mantenimiento sin dueño claro.</p>
+      </div>
+      <footer class="footer"><span>Primero control, luego escala</span><span>23</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Cierre</p>
+          <h2>Tres ideas para IT hospitalario</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card"><span class="big-number">1</span><h3>Demo no es producción</h3><p>La velocidad no rebaja requisitos de seguridad, pruebas y soporte.</p></article>
+        <article class="card"><span class="big-number">2</span><h3>El prototipo revela decisiones</h3><p>Campos, permisos, datos y flujos aparecen antes cuando se ven en pantalla.</p></article>
+        <article class="card"><span class="big-number">3</span><h3>La salida importa</h3><p>Git, código revisable y entorno local son la frontera hacia software mantenible.</p></article>
+      </div>
+      <footer class="footer"><span>Fin de la sesión</span><span>24</span></footer>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Controles de presentación">
+    <button id="prev" aria-label="Diapositiva anterior" title="Anterior">‹</button>
+    <span class="counter" id="counter"></span>
+    <button id="next" aria-label="Diapositiva siguiente" title="Siguiente">›</button>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const bar = document.getElementById("bar");
+    let index = 0;
+
+    function show(nextIndex) {
+      index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      slides.forEach((slide, slideIndex) => {
+        slide.classList.toggle("active", slideIndex === index);
+      });
+      counter.textContent = `${index + 1} / ${slides.length}`;
+      bar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      history.replaceState(null, "", `#${index + 1}`);
+    }
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
+
+    document.addEventListener("keydown", (event) => {
+      const forward = ["ArrowRight", "PageDown", " ", "Enter"];
+      const backward = ["ArrowLeft", "PageUp", "Backspace"];
+      if (forward.includes(event.key)) {
+        event.preventDefault();
+        show(index + 1);
+      }
+      if (backward.includes(event.key)) {
+        event.preventDefault();
+        show(index - 1);
+      }
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(slides.length - 1);
+    });
+
+    const hashIndex = Number(location.hash.replace("#", "")) - 1;
+    show(Number.isFinite(hashIndex) ? hashIndex : 0);
+  </script>
+</body>
+</html>

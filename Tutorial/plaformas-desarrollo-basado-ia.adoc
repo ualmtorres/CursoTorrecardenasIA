@@ -1,0 +1,2929 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+
+////
+Nombre y título del trabajo
+////
+
+=  Plataformas de desarrollo asistido por IA (junio 2026)
+Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería
+
+// NO CAMBIAR!! (Entrar en modo no numerado de apartados)
+:numbered!: 
+
+[abstract]
+== Resumen
+
+Las plataformas de desarrollo asistido por IA representan una nueva categoría de herramientas que combinan generación de código, ejecución en navegador, vista previa instantánea e iteración conversacional. Permiten pasar de una descripción en lenguaje natural a un prototipo funcional en minutos, lo que puede acelerar la exploración de ideas, la formación y el prototipado rápido en departamentos de informática hospitalaria. Sin embargo, su uso responsable exige entender sus límites: una demo convincente no equivale a una aplicación preparada para producción. Este tutorial ofrece una visión crítica y práctica de estas plataformas, comparando opciones como Firebase Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44, y proporcionando criterios para evaluar su idoneidad según el caso de uso.
+
+////
+COLOCA A CONTINUACION LOS OBJETIVOS
+////
+.Objetivos
+Este tutorial tiene como objetivo ofrecer una visión práctica y crítica de las plataformas de desarrollo asistido por IA. No se trata sólo de aprender a generar una aplicación desde un prompt, sino de entender cuándo estas herramientas aportan valor, qué riesgos introducen y cómo mantener el control técnico del resultado.
+
+Al finalizar el tutorial deberías ser capaz de:
+
+* explicar qué son las plataformas de desarrollo asistido por IA y cómo se diferencian de editores con IA, herramientas _no-code_, _low-code_ y entornos cloud tradicionales;
+* identificar las piezas habituales de estas plataformas: prompt, agente de IA, workspace, vista previa, generación de código, backend, despliegue y exportación;
+* comparar herramientas como Firebase Studio, Google AI Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44;
+* reconocer qué plataforma encaja mejor según el caso: formación, prototipado, MVP, frontend, backend sencillo, app interna o exploración con Gemini;
+* evaluar una herramienta antes de usarla mediante criterios de datos, privacidad, seguridad, control de código, costes, despliegue, continuidad y encaje organizativo;
+* distinguir entre demo, piloto controlado y aplicación preparada para producción;
+* aplicar buenas prácticas de uso en un entorno hospitalario, evitando datos reales, credenciales, sistemas internos y despliegues no gobernados;
+* crear un prototipo sencillo, probarlo en preview, llevarlo a GitHub y continuar el desarrollo en local con ayuda de un asistente de programación;
+* documentar los límites del prototipo y las decisiones necesarias antes de pensar en persistencia, autenticación o uso real.
+
+[IMPORTANT]
+====
+La competencia principal que se busca desarrollar no es "hacer apps rápido", sino **usar estas plataformas sin perder criterio técnico, trazabilidad ni responsabilidad sobre el ciclo de vida del software**.
+====
+
+// NO CAMBIAR!! (Entrar en modo numerado de apartados)
+:numbered: 
+
+== Introducción
+
+En los últimos años han aparecido herramientas capaces de transformar una descripción escrita en lenguaje natural en una primera aplicación funcional. El usuario explica lo que quiere construir, la plataforma genera una estructura inicial de proyecto, muestra una vista previa ejecutable y permite seguir modificando la aplicación mediante conversación: "añade un filtro por servicio", "crea un panel de indicadores", "cambia este formulario", "conecta esta pantalla con una base de datos". Son lo que se conoce como plataformas de desarrollo asistido por IA.
+
+Firebase Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark o Base44 forman parte de esta nueva familia de herramientas. No son exactamente editores de código tradicionales, aunque generan y modifican código. Tampoco son plataformas _no-code_ puras, porque en muchos casos permiten inspeccionar, exportar o versionar el proyecto. Y no son simples chatbots que responden con fragmentos sueltos de programación, porque integran entorno de ejecución, vista previa, dependencias, despliegue y, a veces, servicios de backend.
+
+La idea central es sencilla: estas plataformas intentan reducir la distancia entre una intención y un software que se puede ver, probar y discutir. Donde antes había que preparar repositorio, instalar dependencias, elegir framework, crear pantallas iniciales y configurar un entorno de ejecución, ahora es posible comenzar con una petición como esta:
+
+[source,text]
+----
+Necesito una aplicación web para registrar solicitudes internas,
+ver su estado, filtrarlas por servicio y mostrar un pequeño panel
+de seguimiento con indicadores básicos.
+----
+
+La plataforma puede responder creando una primera versión con formularios, rutas, componentes visuales, datos de ejemplo, estilos básicos y una vista previa navegable. Esa primera versión rara vez será definitiva, pero tiene un valor importante: convierte una idea abstracta en un objeto discutible. El equipo ya no debate sólo sobre una frase en un documento, sino sobre algo que puede abrirse, probarse, romperse, corregirse y enseñar a otras personas.
+
+En un departamento de informática hospitalaria, este cambio es especialmente relevante. Muchas necesidades internas no empiezan como grandes proyectos estratégicos, sino como problemas cotidianos: registrar incidencias no clínicas, ordenar solicitudes de soporte, crear una pequeña herramienta de seguimiento, preparar una demo para validar un flujo, explorar una integración sencilla o explicar a usuarios clínicos cómo podría funcionar una mejora. En esos escenarios, una plataforma de desarrollo asistido por IA puede acelerar mucho la fase de exploración.
+
+Ahora bien, esa aceleración tiene una contrapartida. Una demo convincente puede crear una falsa sensación de seguridad. Que una aplicación "funcione" en una vista previa no significa que esté preparada para producción, ni que cumpla requisitos de privacidad, ciberseguridad, trazabilidad, mantenimiento, accesibilidad, integración corporativa o gobierno del dato. En sanidad, esta diferencia no es un matiz técnico: es una condición de uso responsable.
+
+[IMPORTANT]
+====
+En este tutorial trataremos estas plataformas como aceleradores de aprendizaje, prototipado y desarrollo inicial. No deben entenderse como una vía para saltarse revisión técnica, análisis de seguridad, control de datos, validación funcional ni gobierno del ciclo de vida de una aplicación.
+====
+
+Por tanto, el objetivo no es decidir cuál es "la mejor" herramienta de forma abstracta. La pregunta útil será otra: qué permite construir cada plataforma, para qué perfil encaja, qué control ofrece sobre el código, cómo gestiona datos y despliegues, qué riesgos introduce y en qué punto deja de ser suficiente para un entorno profesional regulado.
+
+=== Objetivos de aprendizaje
+
+Al finalizar este apartado deberías ser capaz de:
+
+* explicar qué es una plataforma de desarrollo asistido por IA y qué problema intenta resolver;
+* distinguirla de un editor con IA, una herramienta _no-code_, una plataforma _low-code_ y un entorno cloud tradicional;
+* identificar los elementos habituales de este tipo de plataformas: asistente de IA, generación de código, workspace en navegador, vista previa, integración con backend y opciones de despliegue;
+* reconocer en qué situaciones puede aportar valor: prototipado rápido, formación, demos internas, MVPs, exploración funcional y herramientas internas de bajo riesgo;
+* detectar sus límites antes de usarlas en un proyecto real, especialmente en privacidad, seguridad, mantenimiento, dependencia del proveedor y control de costes;
+* diferenciar entre una demo útil para aprender o validar una idea y una aplicación preparada para operar en un entorno hospitalario;
+* formular criterios iniciales para evaluar herramientas como Firebase Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark o Base44.
+
+[NOTE]
+====
+El foco de este primer apartado no está todavía en aprender una herramienta concreta. Antes de comparar plataformas conviene entender la categoría: qué prometen, qué desplazan del proceso tradicional de desarrollo, qué decisiones siguen dependiendo de personas expertas y por qué su uso exige cautela en organizaciones sanitarias.
+====
+
+=== Plataformas de desarrollo asistido por IA
+
+El término "plataformas de desarrollo asistido por IA" es una etiqueta funcional que hemos elegido para describir un fenómeno que aún no tiene una denominación universalmente aceptada. Se trata de herramientas que combinan generación de código, ejecución en navegador, vista previa instantánea e iteración conversacional para permitir que una descripción en lenguaje natural se convierta en un prototipo funcional. Estas plataformas no se limitan a generar fragmentos de código, ni a ofrecer un entorno de desarrollo tradicional, ni a ocultar completamente la programación detrás de una interfaz visual. En cambio, combinan varias piezas para crear una experiencia donde la primera interacción puede ser una conversación que produce un proyecto ejecutable.Algunas se parecen a un entorno de desarrollo en la nube, otras a un generador de interfaces, otras a una plataforma de prototipado rápido y otras a una solución _no-code_ con capacidad de generar código. Lo que tienen en común no es una arquitectura interna idéntica, sino una forma nueva de trabajar: describir una intención, recibir una primera versión ejecutable e iterar sobre ella con ayuda de IA.
+
+Por ejemplo:
+
+* **Firebase Studio** está muy conectado con el ecosistema Firebase y Google Cloud. Tiene sentido cuando el prototipo puede beneficiarse de autenticación, hosting, bases de datos o servicios gestionados de Google.
+* **Replit** se aproxima más a un entorno completo de desarrollo en navegador, con edición de código, ejecución, colaboración y despliegue dentro del mismo espacio.
+* **Bolt.new** y **Lovable** están muy orientadas a pasar rápido de una idea a una aplicación web visible, especialmente en escenarios de prototipado y MVP.
+* **v0** destaca por la generación de interfaces modernas, componentes React y aplicaciones basadas en Next.js.
+* **GitHub Spark** encaja en un flujo más conectado con GitHub, Copilot y repositorios de código.
+* **Base44** se acerca más a una experiencia de creación de aplicaciones completas desde una capa visual y conversacional, con menos fricción para perfiles no técnicos.
+
+En otros contextos encontrarás nombres diferentes para hablar de esta misma zona del ecosistema:
+
+* plataformas _prompt-to-app_;
+* entornos de desarrollo generativo;
+* plataformas de prototipado con IA;
+* herramientas de _vibe coding_;
+* _AI app builders_;
+* _AI-native development platforms_.
+
+Cada término ilumina una parte del fenómeno. _Prompt-to-app_ subraya el paso de una descripción a una aplicación. _AI app builder_ pone el foco en la construcción asistida. _Vibe coding_ describe una forma más informal de iterar por conversación, probando y corrigiendo sobre la marcha. Sin embargo, para un curso orientado a IT hospitalario conviene usar una expresión más sobria y funcional: **plataformas de desarrollo asistido por IA**.
+
+[NOTE]
+====
+No existe todavía una terminología universalmente aceptada. La categoría está evolucionando muy rápido y cada proveedor intenta nombrarla desde su propio producto. Por eso es más útil entender las capacidades reales que memorizar una etiqueta comercial.
+====
+
+En este documento usaremos **plataformas de desarrollo asistido por IA** como término principal. Reservaremos _prompt-to-app_ para un flujo más concreto: describir una aplicación en lenguaje natural y obtener una primera versión ejecutable. Ese flujo es importante, pero no agota la categoría. Una plataforma de este tipo también puede ayudar a revisar código, modificar pantallas, explicar errores, generar pruebas, conectar servicios o preparar un despliegue inicial.
+
+=== La nueva capa entre la idea y el software
+
+Estas plataformas intentan ocupar un espacio que tradicionalmente quedaba repartido entre varias fases: análisis funcional, diseño de interfaz, arranque técnico del proyecto, programación inicial, pruebas manuales y publicación de una demo. No eliminan esas fases, pero sí las comprimen en un entorno más conversacional y visible.
+
+En un desarrollo tradicional, una idea suele recorrer un camino parecido a este:
+
+1. descripción de la necesidad;
+2. análisis funcional;
+3. diseño de interfaz;
+4. diseño técnico;
+5. creación del repositorio;
+6. configuración del entorno;
+7. desarrollo;
+8. pruebas;
+9. despliegue;
+10. revisión con usuarios.
+
+Cada paso tiene valor. El problema es que, en fases tempranas, ese recorrido puede ser demasiado lento para preguntas que aún son exploratorias: "¿este flujo tiene sentido?", "¿faltan datos?", "¿la pantalla ayuda realmente al usuario?", "¿merece la pena invertir en esta herramienta?", "¿quién tendría que mantenerla?".
+
+Las plataformas de desarrollo asistido por IA cambian la dinámica porque permiten obtener antes una primera versión observable. Una persona puede escribir:
+
+[source,text]
+----
+Crea una aplicación para registrar solicitudes internas.
+Debe permitir crear una solicitud, asignarla a un servicio,
+consultar su estado, filtrar por prioridad y mostrar un pequeño
+panel con solicitudes abiertas, en curso y cerradas.
+----
+
+Y la plataforma puede generar una primera estructura con:
+
+* pantallas iniciales;
+* componentes de interfaz;
+* rutas de navegación;
+* formularios y validaciones básicas;
+* modelos de datos preliminares;
+* lógica de estado;
+* estilos;
+* datos de ejemplo;
+* vista previa navegable;
+* opción de despliegue o publicación.
+
+La clave no es que la primera respuesta sea perfecta. Casi nunca lo será. La clave es que aparece un objeto discutible: algo que se puede ver, probar, corregir, enseñar y criticar.
+
+Ese cambio tiene mucho valor en organizaciones complejas. Muchas conversaciones de producto se atascan porque distintas personas imaginan cosas distintas cuando leen el mismo requisito. Una demo imperfecta puede alinear mejor al equipo que diez páginas de descripción abstracta. También puede descubrir antes problemas que en un documento no se ven: campos que faltan, permisos mal planteados, pasos innecesarios, nombres confusos, dependencia de datos que no existen o integraciones que se daban por supuestas.
+
+.De requisito abstracto a prototipo discutible
+****
+Imagina una petición inicial como "necesitamos una herramienta para gestionar solicitudes internas del área de informática". La frase parece clara, pero puede significar muchas cosas: tickets de soporte, peticiones de acceso, tareas de mantenimiento, solicitudes de equipamiento, incidencias no clínicas o seguimiento de proyectos.
+
+Si una plataforma genera una primera demo, el equipo puede reaccionar sobre algo concreto: "esto no es una solicitud, es una incidencia", "falta el campo de centro", "la prioridad no la debe elegir el solicitante", "esto requiere validación del responsable", "no podemos mostrar nombres de pacientes", "la información debe conservarse sólo durante un periodo determinado".
+
+El prototipo no sustituye al análisis. Lo provoca antes.
+****
+
+Para IT hospitalario, esta capa puede ser útil como espacio de exploración controlada. Permite hacer visible una idea, discutirla con usuarios, probar variantes de flujo y detectar riesgos iniciales sin comprometer todavía sistemas reales ni datos sensibles. Pero precisamente por eso debe mantenerse una frontera clara: el prototipo es una herramienta de aprendizaje, no una autorización automática para producción.
+
+=== Qué piezas suelen combinar
+
+Aunque cada producto lo implementa a su manera, estas plataformas suelen reunir varias capacidades que antes estaban repartidas entre herramientas distintas. La experiencia resulta potente porque no se limita a generar texto o código aislado: combina conversación, proyecto ejecutable, vista previa y, en algunos casos, publicación.
+
+[cols="2,4,4",options="header"]
+|===
+| Pieza | Qué aporta | Por qué importa
+
+| Workspace en navegador
+| Un entorno donde editar, ejecutar y revisar la aplicación sin preparar una máquina local compleja.
+| Reduce fricción de entrada y facilita formación, demostraciones, trabajo colaborativo y pruebas rápidas desde equipos distintos.
+
+| Asistente o agente de IA
+| Interpreta instrucciones, modifica archivos, propone cambios, explica errores y puede actuar sobre varias partes del proyecto.
+| Permite iterar por conversación, no sólo mediante escritura manual de código.
+
+| Generación de código
+| Crea componentes, rutas, servicios, modelos, estilos, scripts o pruebas iniciales.
+| Acelera el arranque y evita empezar desde una pantalla en blanco, aunque el resultado debe revisarse.
+
+| Vista previa instantánea
+| Muestra la aplicación mientras se construye y permite comprobar cambios de forma inmediata.
+| Convierte requisitos en algo verificable por usuarios, analistas y equipo técnico.
+
+| Integraciones de backend
+| Conecta autenticación, base de datos, almacenamiento, funciones, APIs o servicios gestionados.
+| Permite que el prototipo deje de ser una maqueta visual y empiece a comportarse como una aplicación funcional.
+
+| Despliegue o publicación
+| Permite compartir una URL, desplegar una versión inicial o publicar una demo desde el propio entorno.
+| Facilita validación temprana, sesiones de revisión y pruebas con usuarios, siempre que se controle qué datos se usan.
+
+| Control de código
+| Exporta, sincroniza o versiona el proyecto en Git o repositorios equivalentes.
+| Es fundamental si el prototipo debe evolucionar hacia software mantenible y revisable por un equipo profesional.
+
+| Gestión visual
+| Algunas plataformas permiten editar interfaz, datos o flujos mediante controles visuales.
+| Acerca el proceso a perfiles de producto, diseño, gestión o negocio, sin expulsar necesariamente al equipo técnico.
+
+| Gestión de dependencias
+| Instala paquetes, configura frameworks y ajusta scripts de ejecución.
+| Evita parte del trabajo inicial de configuración, aunque puede ocultar decisiones técnicas que conviene revisar.
+
+| Ayuda al diagnóstico
+| Lee errores de compilación o ejecución y propone correcciones.
+| Reduce bloqueos en fases tempranas y ayuda a perfiles menos expertos a entender qué está fallando.
+|===
+
+La combinación exacta cambia según la plataforma. Por eso no conviene evaluarlas sólo por el modelo de IA que anuncian o por la calidad de una demo aislada. Lo importante es el flujo completo: cómo se crea el proyecto, qué control conserva el equipo, cómo se revisa el código, qué ocurre con los datos, cómo se despliega, cuánto cuesta escalar y qué salida existe si la herramienta deja de encajar.
+
+[TIP]
+====
+Una buena forma de evaluar estas plataformas es seguir el ciclo completo de una miniaplicación: crearla desde una descripción, modificarla tres o cuatro veces, revisar el código generado, probar errores, exportarla o versionarla, desplegar una demo y analizar qué riesgos aparecerían si alguien quisiera llevarla más lejos.
+====
+
+=== En qué se diferencian de herramientas cercanas
+
+Las plataformas de desarrollo asistido por IA se solapan con varias categorías ya conocidas. Esto puede generar confusión, porque algunas funciones parecen familiares: escribir código con ayuda de un asistente, arrastrar componentes visuales, desplegar en la nube o crear una maqueta de interfaz. La diferencia está en cómo se combinan esas piezas y en el tipo de flujo de trabajo que proponen.
+
+Un editor con IA, como un IDE con autocompletado inteligente, ayuda mucho a una persona desarrolladora, pero normalmente parte de un proyecto técnico ya existente. Una plataforma _no-code_ permite crear aplicaciones sin escribir código, pero tiende a ocultar la implementación interna. Un entorno cloud de desarrollo ofrece una máquina remota o un workspace en navegador, pero no necesariamente convierte una descripción en una aplicación inicial.
+
+Las plataformas que analizamos aquí intentan unir varias capas: intención en lenguaje natural, generación de código, ejecución, vista previa, iteración conversacional y, en algunos casos, despliegue.
+
+[cols="2,4,4",options="header"]
+|===
+| Categoría | Qué suele hacer | Diferencia principal
+
+| Editor con IA
+| Ayuda a escribir, completar, explicar o refactorizar código dentro de un entorno de desarrollo.
+| Normalmente presupone que ya existe un proyecto técnico y una persona desarrolladora al mando del código.
+
+| Herramienta _no-code_
+| Permite crear aplicaciones mediante interfaces visuales, reglas, conectores y configuración.
+| Suele ocultar más el código y priorizar la configuración visual sobre la generación programática editable.
+
+| Herramienta _low-code_
+| Combina configuración visual con extensiones mediante código.
+| Está más orientada a plataformas empresariales, procesos internos estructurados y equipos con gobierno de plataforma.
+
+| Prototipado visual
+| Diseña pantallas, flujos y experiencias de usuario.
+| A menudo no genera una aplicación funcional con backend, lógica real, persistencia y despliegue operativo.
+
+| Entorno cloud de desarrollo
+| Proporciona una máquina, contenedor o workspace remoto para programar desde el navegador.
+| No necesariamente incluye generación de aplicación por lenguaje natural ni agente capaz de modificar el proyecto.
+
+| Generador de código puntual
+| Produce fragmentos de código, funciones, componentes o ejemplos a partir de un prompt.
+| La integración, ejecución, pruebas y mantenimiento quedan fuera del propio generador.
+
+| Plataforma de desarrollo asistido por IA
+| Combina intención en lenguaje natural, generación de proyecto, edición, ejecución, vista previa, iteración y a veces despliegue.
+| Intenta unir ideación, prototipo y desarrollo inicial en un flujo continuo.
+|===
+
+La frontera no siempre es limpia. Replit puede actuar como entorno cloud de desarrollo y como plataforma asistida por IA. v0 puede utilizarse como generador de interfaces y también como punto de entrada a una aplicación Next.js. Firebase Studio puede ser, al mismo tiempo, workspace, prototipador y puerta de entrada a servicios Firebase y Google Cloud.
+
+Por eso conviene evitar debates demasiado rígidos sobre etiquetas. La pregunta práctica no es "¿esto es no-code o código?", sino:
+
+* ¿puedo ver y revisar el código que produce?
+* ¿puedo exportarlo o llevarlo a un repositorio?
+* ¿puedo controlar dónde viven los datos?
+* ¿puedo entender cómo se despliega?
+* ¿puedo mantenerlo fuera de la plataforma si el proyecto crece?
+* ¿puedo aplicar controles de seguridad, revisión y trazabilidad?
+
+[IMPORTANT]
+====
+En entornos profesionales, y más aún en sanidad, el grado de control importa tanto como la velocidad. Una herramienta que genera una demo muy rápido puede ser útil para aprender o validar una idea, pero insuficiente si no permite revisar arquitectura, permisos, dependencias, datos, logs y despliegue.
+====
+
+=== Por qué aparecen ahora
+
+Estas plataformas no aparecen por una única causa. Son el resultado de varias presiones tecnológicas, económicas y culturales que se han juntado en poco tiempo.
+
+La primera es la presión por construir más rápido. Las organizaciones tienen más necesidades digitales que capacidad disponible para atenderlas. En un hospital, el departamento de IT debe mantener sistemas críticos, resolver incidencias, gestionar integraciones, acompañar proyectos corporativos, responder a auditorías y además atender peticiones internas de mejora. En ese contexto, no todas las ideas pueden iniciar un ciclo formal de desarrollo desde el primer día. Muchas necesitan primero una validación rápida: comprobar si el flujo tiene sentido, si los usuarios lo entienden o si el beneficio justifica una inversión mayor.
+
+La segunda es la escasez de capacidad técnica. Casi todas las organizaciones acumulan una cola de pequeñas aplicaciones, automatizaciones, cuadros de mando, formularios internos e integraciones sencillas que nunca llegan a priorizarse. Las plataformas de desarrollo asistido por IA prometen ampliar quién puede participar en las primeras fases de creación. No convierten automáticamente a cualquier persona en ingeniera de software, pero sí pueden ayudar a perfiles funcionales, analistas, o técnicos de sistemas a expresar mejor una necesidad y convertirla en un prototipo revisable.
+
+La tercera es la madurez de los modelos generativos. Los modelos actuales pueden producir código razonable, explicar errores, transformar requisitos en componentes, generar documentación inicial, proponer datos de ejemplo y sugerir pruebas básicas. Siguen cometiendo errores y pueden inventar soluciones poco adecuadas, pero han alcanzado un nivel suficiente para cambiar la economía del primer borrador. El coste de obtener una versión inicial baja mucho.
+
+La cuarta es la normalización del cloud y de los servicios gestionados. Muchas aplicaciones modernas ya no se construyen desde cero en todos sus niveles. Usan autenticación gestionada, almacenamiento, bases de datos como servicio, hosting, funciones serverless, APIs externas y observabilidad cloud. Si esas piezas ya existen como servicios reutilizables, una plataforma asistida por IA puede conectarlas con mayor rapidez que en un desarrollo completamente manual.
+
+La quinta es cultural. El llamado _vibe coding_ ha popularizado una forma de trabajo más conversacional: describir, probar, corregir, volver a pedir, ajustar y repetir. Esta forma de trabajar puede ser muy útil para explorar, aprender y descubrir posibilidades. El riesgo aparece cuando se confunde esa fluidez con ingeniería completa. Conversar con una IA puede acelerar la creación de un prototipo, pero no elimina la necesidad de diseño técnico, revisión, pruebas, seguridad y mantenimiento.
+
+.Una convergencia, no una moda aislada
+****
+Estas plataformas son posibles porque coinciden varios elementos: modelos generativos capaces de producir código, navegadores suficientemente potentes para alojar entornos de desarrollo, infraestructuras cloud listas para desplegar servicios, frameworks web muy productivos y una demanda organizativa enorme de software pequeño o mediano.
+
+La novedad no está en cada pieza por separado. La novedad está en empaquetarlas en una experiencia donde la primera interacción puede ser una conversación.
+****
+
+=== Qué trabajo descargan
+
+Estas plataformas son especialmente útiles en el arranque de un proyecto, cuando todavía hay muchas decisiones abiertas y conviene aprender rápido. Descargan parte del trabajo inicial que suele consumir tiempo antes de que el equipo pueda discutir lo importante: si la aplicación resuelve el problema correcto.
+
+Pueden ayudar a:
+
+* pasar de idea a prototipo en minutos u horas;
+* crear MVPs funcionales;
+* generar interfaces iniciales;
+* probar variantes de navegación o flujo;
+* construir herramientas internas de bajo riesgo;
+* preparar demos para comités o reuniones con usuarios;
+* ayudar a perfiles no técnicos a expresar requisitos;
+* generar una primera estructura de proyecto;
+* producir datos de ejemplo para validar pantallas;
+* crear documentación inicial;
+* explorar integraciones sencillas;
+* acelerar pruebas de concepto;
+* explicar errores o partes del código a personas en formación;
+* crear material demostrativo para comparar enfoques.
+
+En formación tienen un valor especial. Permiten que el alumnado vea cómo una decisión funcional se traduce en pantallas, datos, validaciones, rutas, errores y despliegue. También ayudan a discutir una diferencia que es central en este curso: una demo convincente no equivale a una solución técnicamente defendible.
+
+Para equipos IT, pueden descargar tareas de baja diferenciación: crear formularios iniciales, preparar un layout, generar una estructura de rutas, añadir filtros sencillos, producir datos ficticios o escribir una primera documentación. Esto libera tiempo para discutir las decisiones que sí requieren criterio profesional: modelo de permisos, datos sensibles, integraciones reales, arquitectura, ciclo de vida, monitorización y soporte.
+
+[NOTE]
+====
+El valor no está sólo en ahorrar tiempo de programación. También está en mejorar la conversación entre perfiles técnicos y no técnicos. Una pantalla imperfecta suele generar comentarios más concretos que un documento abstracto.
+====
+
+También conviene ser precisos sobre lo que no descargan. No eliminan la responsabilidad sobre el resultado. No sustituyen la revisión de código. No deciden por sí solas qué datos pueden tratarse. No garantizan cumplimiento normativo. No aseguran que el sistema sea mantenible. La plataforma puede acelerar el primer borrador, pero el equipo sigue siendo responsable de convertirlo, o no, en una solución real.
+
+=== Un ejemplo sencillo
+
+Imagina que un hospital quiere explorar una herramienta interna para registrar incidencias no clínicas de mantenimiento: una puerta que no cierra, una luminaria averiada, un problema de climatización en una sala administrativa o una incidencia en mobiliario. No hablamos de un sistema clínico, ni de una aplicación conectada a historia clínica, sino de una posible herramienta interna para ordenar solicitudes de baja criticidad.
+
+Una petición inicial podría ser:
+
+[source,text]
+----
+Crea una aplicación web para registrar incidencias de mantenimiento.
+Debe permitir crear una incidencia, asignarle prioridad, seleccionar ubicación,
+ver un listado filtrable y cambiar el estado entre abierta, en curso y cerrada.
+Incluye datos de ejemplo y una pantalla sencilla de resumen.
+----
+
+Una plataforma de desarrollo asistido por IA podría generar una primera aplicación con:
+
+* formulario de alta de incidencia;
+* campos para descripción, prioridad, ubicación y fecha;
+* listado de incidencias;
+* filtro por estado;
+* selector de prioridad;
+* cambio de estado;
+* datos ficticios;
+* estilos básicos;
+* vista previa navegable;
+* pequeño panel con número de incidencias abiertas, en curso y cerradas.
+
+Esa primera versión no resuelve todavía el problema organizativo, pero permite hacer preguntas mejores:
+
+* ¿Qué ubicaciones deben aparecer y quién las mantiene?
+* ¿Quién puede crear una incidencia?
+* ¿Quién puede cambiar el estado?
+* ¿Hace falta adjuntar fotografías?
+* ¿Debe integrarse con el directorio corporativo?
+* ¿Debe notificarse al servicio de mantenimiento por correo, ticket o integración?
+* ¿Qué datos personales aparecen en la solicitud?
+* ¿Cuánto tiempo debe conservarse la información?
+* ¿Hace falta trazabilidad de cambios?
+* ¿Quién mantiene la herramienta si pasa de demo a uso real?
+
+La plataforma acelera la conversación, pero no elimina las decisiones. De hecho, al hacer visible el prototipo, hace que aparezcan antes. También ayuda a separar tres niveles que a menudo se mezclan:
+
+* **Demo:** sirve para enseñar una idea y provocar conversación.
+* **Piloto controlado:** sirve para probar con usuarios, datos ficticios o contexto limitado.
+* **Aplicación en producción:** exige revisión técnica, seguridad, soporte, mantenimiento, responsables y gobierno.
+
+[WARNING]
+====
+Incluso en ejemplos aparentemente sencillos, como mantenimiento no clínico, pueden aparecer datos personales, ubicaciones sensibles, información operativa o dependencias con sistemas corporativos. Para practicar, deben usarse datos ficticios y entornos aislados.
+====
+
+=== La parte de la promesa que conviene no creerse
+
+El riesgo principal de estas herramientas no es que hagan demos malas. Eso sería fácil de detectar. El riesgo más delicado es que hagan demos suficientemente buenas como para que alguien las confunda con sistemas listos para producción.
+
+Una aplicación generada en pocos minutos puede tener una interfaz convincente, formularios que parecen completos, datos de ejemplo, filtros, gráficos y una URL pública. Puede dar la sensación de que el trabajo difícil ya está hecho. Sin embargo, muchas de las decisiones que convierten una demo en software profesional no se ven en la primera pantalla.
+
+Estas plataformas no resuelven por sí solas:
+
+* arquitectura de aplicación;
+* seguridad y cumplimiento normativo;
+* gobierno del dato;
+* control de accesos y permisos;
+* privacidad desde el diseño;
+* gestión de secretos, claves y credenciales;
+* mantenimiento a largo plazo;
+* pruebas funcionales, de integración y regresión;
+* escalabilidad real;
+* observabilidad, logs y trazabilidad;
+* integración compleja con sistemas heredados;
+* responsabilidad legal sobre el código generado;
+* accesibilidad;
+* continuidad del servicio;
+* control de costes cloud;
+* gestión del ciclo de vida del producto.
+
+En un entorno hospitalario, estos puntos no son adornos de ingeniería. Forman parte de la responsabilidad operativa. Una herramienta interna mal gobernada puede exponer información, crear duplicidades, generar procesos paralelos difíciles de auditar o convertirse en una dependencia que nadie mantiene.
+
+[WARNING]
+====
+Una demo que funciona no equivale a una aplicación preparada para producción. Antes de desplegar en un entorno real hacen falta revisión de código, pruebas, seguridad, control de datos, observabilidad, plan de mantenimiento y responsables claros.
+====
+
+También hay que tener cuidado con la forma en que estas plataformas presentan el éxito. Muchas están optimizadas para producir una primera experiencia satisfactoria: una pantalla bonita, una navegación fluida y una respuesta rápida. Eso es útil para aprender y explorar, pero puede ocultar problemas de fondo:
+
+* componentes generados sin una arquitectura clara;
+* dependencias añadidas sin justificar;
+* validaciones sólo en cliente;
+* permisos simulados pero no implementados;
+* datos persistidos en lugares no previstos;
+* errores sin tratamiento adecuado;
+* costes futuros difíciles de estimar;
+* fuerte dependencia de la plataforma usada para generar o desplegar.
+
+La promesa razonable no es "construir software serio sin ingeniería". La promesa razonable es "llegar antes a una primera versión que permita aprender, discutir y decidir".
+
+=== Dónde deben entrar con cautela
+
+Estas plataformas pueden ser muy útiles, pero no todos los contextos admiten el mismo nivel de experimentación. Cuanto mayor sea el impacto potencial de un fallo, más estrictos deben ser los límites.
+
+No deberían usarse sin gobierno técnico y revisión experta en:
+
+* sistemas clínicos, financieros o críticos;
+* aplicaciones con datos personales sensibles;
+* entornos regulados;
+* proyectos con requisitos fuertes de ciberseguridad;
+* sistemas core de negocio;
+* integraciones complejas con ERP, HIS, HCE, IAM corporativo, sistemas de laboratorio, imagen médica o mensajería clínica;
+* productos donde no se pueda aceptar una dependencia fuerte del proveedor;
+* contextos donde no esté claro quién revisa, prueba, despliega y mantiene el resultado;
+* aplicaciones que puedan modificar datos reales sin controles;
+* herramientas que generen decisiones automáticas sobre personas, recursos asistenciales o priorización de atención.
+
+En esos casos, la recomendación no tiene por qué ser prohibirlas. Puede ser usarlas con límites explícitos:
+
+* sólo con datos ficticios, sintéticos o correctamente anonimizados;
+* sólo para prototipose;
+* sólo en entornos aislados;
+* sin conexión a sistemas corporativos reales;
+* con revisión técnica obligatoria;
+* con versionado en Git;
+* con análisis de seguridad;
+* con revisión de dependencias;
+* con presupuesto y alertas de coste;
+* con documentación de supuestos y limitaciones;
+* con una persona responsable del ciclo de vida del prototipo.
+
+[cols="2,4,4",options="header"]
+|===
+| Nivel de uso | Puede ser razonable para | Condiciones mínimas
+
+| Exploración individual
+| Aprender una herramienta, probar un prompt, generar una interfaz de ejemplo.
+| Datos ficticios, entorno no corporativo o controlado, sin información sensible.
+
+| Demo interna
+| Enseñar una idea a un equipo, validar una navegación, comparar alternativas.
+| Datos ficticios, alcance limitado, aviso claro de que no es producción.
+
+| Piloto controlado
+| Probar un flujo con usuarios seleccionados y contexto acotado.
+| Revisión técnica, entorno separado, permisos definidos, trazabilidad mínima.
+
+| Producción
+| Aplicación usada de forma estable por la organización.
+| Gobierno completo: seguridad, arquitectura, pruebas, soporte, mantenimiento, costes, responsables y cumplimiento normativo.
+|===
+
+Esta tabla no pretende ser una norma formal, sino una guía de conversación. Ayuda a evitar que una demo pase a piloto, o de piloto a producción, por inercia y sin las decisiones necesarias.
+
+=== Criterio práctico para este tutorial
+
+En este tutorial trataremos estas plataformas como aceleradores de aprendizaje, prototipado y desarrollo inicial. Nos interesan porque permiten entender mejor cómo se está desplazando el proceso de creación de software y porque ofrecen una forma muy directa de experimentar con ideas.
+
+La idea central será:
+
+[quote]
+____
+Úsalas para llegar antes a una primera versión discutible, no para saltarte las decisiones técnicas que hacen que una aplicación sea segura, mantenible y gobernable.
+____
+
+Por tanto, al revisar cada plataforma nos haremos siempre las mismas preguntas:
+
+* ¿Qué permite construir rápidamente?
+* ¿Qué parte del ciclo de vida cubre?
+* ¿Qué tipo de usuario tiene en mente?
+* ¿Qué control ofrece sobre el código?
+* ¿Permite exportar, sincronizar o versionar el proyecto?
+* ¿Cómo se despliega?
+* ¿Dónde quedan los datos?
+* ¿Cómo se gestionan autenticación, permisos y secretos?
+* ¿Cómo se pagan sus límites reales?
+* ¿Qué dependencia crea respecto al proveedor?
+* ¿Qué riesgos introduce?
+* ¿Cuándo es una buena elección?
+* ¿Cuándo conviene evitarla?
+
+Este criterio nos permitirá comparar herramientas sin caer en dos extremos poco útiles. El primer extremo sería rechazarlas por parecer poco serias. El segundo sería aceptarlas sin análisis porque producen resultados rápidos. Entre ambos hay un espacio más interesante: usarlas con intención, límites y criterio técnico.
+
+[TIP]
+====
+Una buena práctica para el curso será formular siempre dos prompts: uno para construir y otro para revisar. Por ejemplo: primero pedir la aplicación, y después pedir a la IA que enumere riesgos, supuestos, datos sensibles, dependencias y decisiones que faltan antes de pensar en producción.
+====
+
+=== Ideas clave del apartado
+
+* Las plataformas de desarrollo asistido por IA combinan lenguaje natural, generación de código, vista previa, edición y, a menudo, despliegue.
+* No son exactamente herramientas _no-code_, _low-code_, editores con IA ni simples generadores de código.
+* Su valor principal está en acelerar exploración, prototipado, aprendizaje y primeras versiones.
+* Su mayor riesgo es convertir una demo atractiva en una falsa sensación de sistema terminado.
+* En entornos críticos o regulados deben usarse con gobierno, revisión, trazabilidad y límites claros.
+* En formación ayudan a entender cómo una idea se transforma en pantallas, datos, flujos, errores y decisiones técnicas.
+* Para IT hospitalario pueden ser útiles en demos, prototipos, automatizaciones de bajo riesgo y discusión temprana con usuarios.
+* La pregunta importante no es si la herramienta "programa bien", sino si encaja con el caso, el equipo, los datos, el riesgo y el ciclo de vida esperado.
+
+
+El aprendizaje importante de esta primera parte es doble. Por un lado, estas plataformas reducen de forma real la fricción para crear una primera versión de una aplicación. Por otro, esa misma facilidad obliga a ser más cuidadosos: cuanto más rápido aparece una demo, más necesario es distinguir entre explorar, pilotar y operar.
+
+En los siguientes apartados compararemos alternativas concretas. La evaluación no se centrará sólo en cuál genera una pantalla más bonita, sino en qué permite controlar, revisar, desplegar, mantener y gobernar.
+
+== Panorama actual de alternativas
+
+El ecosistema de plataformas de desarrollo asistido por IA cambia con mucha rapidez. Nuevas funciones aparecen cada pocas semanas, algunos productos modifican sus planes de precios, otros cambian su estrategia y las integraciones disponibles pueden variar sin demasiado aviso. Por eso este apartado debe leerse como una fotografía razonada de la situación en **junio de 2026**, no como una lista definitiva.
+
+La comparación que nos interesa en este curso no es una carrera de popularidad. Tampoco buscamos decidir qué herramienta "gana" en abstracto. El objetivo es construir un mapa práctico que nos permita elegir con criterio según el contexto: formación, prototipado, MVP, herramienta interna, frontend, backend gestionado, control de código, despliegue, privacidad y encaje con el ecosistema tecnológico de la organización.
+
+[IMPORTANT]
+====
+Antes de usar cualquiera de estas plataformas en un proyecto real conviene revisar su documentación oficial, condiciones de uso, política de privacidad, ubicación de datos, modelo de precios y opciones de exportación. En herramientas de IA, la información comercial y técnica cambia con frecuencia.
+====
+
+=== Criterios de selección
+
+Para este tutorial consideraremos principalmente herramientas que cumplan varios de estos criterios:
+
+* permiten describir una aplicación en lenguaje natural;
+* generan una primera versión ejecutable o navegable;
+* permiten iterar mediante conversación con IA;
+* ofrecen vista previa integrada;
+* permiten editar o revisar el código en algún grado;
+* integran backend, base de datos, autenticación o APIs, aunque sea de forma parcial;
+* ofrecen despliegue, publicación o compartición mediante URL;
+* permiten conectar con GitHub, Vercel, Firebase, Supabase, Netlify u otros servicios habituales;
+* tienen relevancia actual en prototipado, MVPs, formación o desarrollo inicial.
+
+No todas las plataformas cumplen todos los criterios con la misma profundidad. Algunas son más fuertes en interfaz. Otras destacan por el entorno de ejecución. Otras facilitan más el backend. Otras reducen la fricción para perfiles no técnicos. Esa diferencia es precisamente lo que hace útil compararlas.
+
+También conviene separar tres preguntas:
+
+* **Qué promete:** la narrativa comercial de la herramienta.
+* **Qué permite hacer en una demo:** el resultado que se obtiene en una sesión corta.
+* **Qué permite gobernar:** control de código, datos, seguridad, despliegue, costes y mantenimiento.
+
+En este curso daremos más peso a la tercera pregunta. Una plataforma puede ser excelente para generar una primera pantalla y aun así ser una mala elección para un sistema con datos sensibles o con vida útil larga.
+
+=== Mapa rápido de herramientas
+
+La siguiente tabla resume el posicionamiento de las herramientas que usaremos como referencia. No pretende sustituir la evaluación detallada, sino orientar la primera lectura.
+
+[cols="2,3,3,3",options="header"]
+|===
+| Herramienta | Mejor para | Perfil principal | Advertencia inicial
+
+| Firebase Studio
+| Prototipos y apps conectadas al ecosistema Firebase y Google Cloud.
+| Equipos que ya conocen Firebase, Google Cloud, Gemini, web, Flutter o desarrollo cloud.
+| La documentación oficial indica sunset de Firebase Studio el 22 de marzo de 2027; debe tratarse como herramienta en transición.
+
+| Replit
+| Desarrollo completo en navegador, prototipos funcionales, demos ejecutables y proyectos con despliegue integrado.
+| El coste y el comportamiento del agente dependen del modo de uso; requiere revisar cambios, consumo y despliegue.
+
+| Bolt.new
+| Crear apps web full-stack rápidamente desde prompts, especialmente en ecosistemas JavaScript/TypeScript.
+| Desarrolladores, perfiles de producto y equipos que quieren pasar rápido de idea a app en navegador.
+| Puede consumir créditos/tokens con rapidez y requiere control técnico del código generado.
+
+| Lovable
+| MVPs web visualmente cuidados, aplicaciones con Supabase y prototipos orientados a producto.
+| Founders, perfiles no técnicos, producto, diseño y equipos pequeños.
+| Muy útil para validar, pero conviene revisar límites de backend, permisos, seguridad y exportación real del proyecto.
+
+| v0
+| Interfaces, componentes React/Next.js, dashboards, formularios y prototipos visuales de alta fidelidad.
+| Equipos frontend, diseño-producto, desarrolladores React y organizaciones que usan Vercel.
+| Aunque ha ampliado capacidades full-stack, su punto fuerte sigue siendo la generación de UI y flujo frontend.
+
+| GitHub Spark
+| Apps creadas desde lenguaje natural dentro del ecosistema GitHub/Copilot.
+| Equipos que ya trabajan con GitHub, Copilot, repositorios y flujos de revisión.
+| Debe evaluarse según disponibilidad, integración con políticas de GitHub Enterprise y madurez del flujo en la organización.
+
+| Base44
+| Apps completas desde una experiencia conversacional y visual, con infraestructura gestionada.
+| Usuarios no técnicos, negocio, formación, prototipos internos y validación rápida de ideas.
+| Menor control profundo que un stack propio; hay que revisar dependencia de plataforma y opciones de mantenimiento.
+|===
+
+[NOTE]
+====
+La tabla anterior es deliberadamente sintética. En los apartados siguientes analizaremos cada herramienta con más calma: qué es, qué promete, casos de uso, flujo típico, costes, fortalezas, limitaciones y cuándo conviene evitarla.
+====
+
+=== Lectura por familias
+
+Aunque todas pertenecen a la misma zona del ecosistema, no todas resuelven el mismo problema. Una clasificación útil es agruparlas por la parte del ciclo de vida donde aportan más valor.
+
+==== Entornos de desarrollo asistido en navegador
+
+Aquí situamos principalmente **Replit**, **Bolt.new** y, con matices, **Firebase Studio**.
+
+Estas herramientas no sólo generan código: ofrecen un espacio donde ese código puede ejecutarse, probarse y modificarse. Su valor está en reducir la fricción técnica inicial. El usuario no necesita instalar Node.js, configurar un editor, crear manualmente un proyecto o preparar un servidor local. La plataforma proporciona un entorno preparado y la IA actúa dentro de él.
+
+Son especialmente útiles para:
+
+* formación;
+* prototipos funcionales;
+* pruebas de concepto;
+* talleres de ideación;
+* pequeñas herramientas internas;
+* exploración de frameworks y APIs;
+* demos con despliegue rápido.
+
+El riesgo principal es confundir comodidad de arranque con madurez de operación. Que la plataforma permita ejecutar y desplegar no significa que la arquitectura sea adecuada, que el coste esté controlado o que el proyecto sea fácil de mantener fuera del entorno original.
+
+==== Generadores de interfaz y frontend
+
+Aquí destaca **v0**, especialmente en contextos React, Next.js, Tailwind y componentes visuales modernos.
+
+Su valor aparece cuando el cuello de botella está en convertir una idea de interfaz en una pantalla usable: un panel de seguimiento, una ficha de paciente ficticia para formación, un formulario multipaso, una tabla filtrable, un dashboard o una página de administración. En lugar de empezar desde una página en blanco, el equipo puede generar una primera versión y refinarla.
+
+Son especialmente útiles para:
+
+* acelerar diseño de UI;
+* generar variantes visuales;
+* crear componentes reutilizables;
+* probar navegación;
+* preparar demos de experiencia de usuario;
+* entregar un punto de partida al equipo frontend.
+
+El riesgo principal es quedarse en la capa visual. Una interfaz convincente puede ocultar que faltan reglas de negocio, seguridad, persistencia, control de permisos, integración y pruebas.
+
+==== Builders conversacionales con backend gestionado
+
+Aquí encajan **Lovable** y **Base44**, y en parte también otras plataformas del mercado que combinan chat, edición visual, base de datos, autenticación, funciones e integraciones.
+
+Su promesa es acercar la creación de aplicaciones a perfiles menos técnicos. El usuario describe la app, la herramienta genera pantallas, datos, flujos y parte de la infraestructura. Lovable se apoya de forma destacada en Supabase para backend, autenticación, almacenamiento y funciones. Base44 propone una experiencia más integrada donde la plataforma gestiona muchas piezas por detrás.
+
+Son especialmente útiles para:
+
+* MVPs rápidos;
+* validación de ideas de negocio;
+* herramientas internas sencillas;
+* prototipos para conversación con usuarios;
+* formularios y paneles básicos;
+* aplicaciones con datos no sensibles o ficticios.
+
+El riesgo principal es el control. Cuanto más gestiona la plataforma por nosotros, más importante es entender qué se puede exportar, cómo se versiona, dónde viven los datos, cómo se gestionan permisos y qué ocurre si el proyecto crece.
+
+==== Plataformas integradas en ecosistemas corporativos
+
+Aquí situamos **GitHub Spark**, **Firebase Studio** y **v0** cuando se usan dentro de sus ecosistemas principales: GitHub/Copilot, Google/Firebase y Vercel/Next.js.
+
+La ventaja de estas herramientas es que no viven aisladas. Pueden conectarse con repositorios, despliegue, servicios cloud, modelos de IA, flujos de revisión o herramientas ya adoptadas por un equipo. En una organización, esa integración puede ser más importante que la espectacularidad de la demo inicial.
+
+Son especialmente útiles cuando:
+
+* el equipo ya usa el ecosistema;
+* existen políticas corporativas sobre cuentas, repositorios o despliegues;
+* se necesita trazabilidad;
+* se quiere pasar del prototipo a un flujo de desarrollo más profesional;
+* hay equipos técnicos que pueden revisar y continuar el trabajo.
+
+El riesgo principal es el _lock-in_. Una integración cómoda puede crear dependencia de proveedor, servicios, formatos o despliegues específicos.
+
+=== Matriz comparativa inicial
+
+La siguiente matriz resume el encaje relativo de las herramientas. Las valoraciones son orientativas y deben interpretarse como punto de partida para discusión, no como medición exacta.
+
+[cols="2,2,2,2,2,2,2,2",options="header"]
+|===
+| Criterio | Firebase Studio | Replit | Bolt.new | Lovable | v0 | GitHub Spark | Base44
+
+| Facilidad inicial
+| Alta
+| Alta
+| Alta
+| Alta
+| Alta
+| Alta
+| Muy alta
+
+| Orientación principal
+| Firebase, prototipado, workspace cloud
+| Entorno completo en navegador
+| Full-stack web rápido
+| MVP visual con backend
+| UI y frontend moderno
+| GitHub/Copilot
+| App builder no-code/AI
+
+| Mejor punto de partida
+| Apps Firebase-first y formación cloud
+| Proyectos ejecutables y aprendizaje
+| Apps web JavaScript/TypeScript
+| MVPs de producto
+| Interfaces React/Next.js
+| Equipos GitHub
+| Usuarios no técnicos
+
+| Control de código
+| Medio/alto
+| Alto
+| Medio/alto
+| Medio/alto con GitHub
+| Alto en frontend
+| Alto si se integra con repositorios
+| Medio
+
+| Backend integrado
+| Firebase
+| Sí, según proyecto
+| Variable, con integraciones
+| Supabase
+| Posible, pero no siempre su foco principal
+| Sí, según Spark app
+| Gestionado por plataforma
+
+| Despliegue
+| Firebase App Hosting / Firebase
+| Replit Deployments
+| Desde el entorno, con integraciones
+| Publicación desde Lovable y servicios conectados
+| Vercel
+| GitHub Spark
+| Hosting gestionado
+
+| Mejor para formación
+| Alta, aunque en transición
+| Muy alta
+| Alta
+| Alta
+| Alta para frontend
+| Media/alta si el grupo usa GitHub
+| Alta para perfiles no técnicos
+
+| Riesgo principal
+| Sunset y transición de producto
+| Coste, calidad variable del agente, dependencia del workspace
+| Consumo, revisión de código, dependencia del flujo
+| Seguridad, backend, permisos, mantenimiento
+| Backend complejo y dependencia Vercel/Next
+| Disponibilidad, madurez y políticas GitHub
+| Control profundo y dependencia de plataforma
+|===
+
+[CAUTION]
+====
+Las etiquetas "alto", "medio" o "bajo" no son propiedades absolutas. Dependen del plan contratado, configuración, tipo de proyecto, integraciones activadas y experiencia del equipo.
+====
+
+=== Comparativa por perfil de usuario
+
+Otra forma de elegir herramienta es partir de quién la va a usar. No necesita lo mismo una persona que prepara una demo, un desarrollador frontend, un fundador no técnico o un departamento IT con requisitos de gobierno.
+
+[cols="2,3,4",options="header"]
+|===
+| Perfil | Herramientas que merece probar primero | Motivo
+
+| Docencia y formación
+| Replit, Bolt.new, v0, Firebase Studio
+| Permiten mostrar rápido la relación entre prompt, código, ejecución, errores y despliegue. Firebase Studio debe tratarse como caso de transición por su sunset anunciado.
+
+| Perfil no técnico o negocio
+| Lovable, Base44, Replit
+| Reducen la fricción inicial y permiten expresar una idea como app visible sin empezar por configuración técnica.
+
+| Equipo frontend
+| v0, Bolt.new, Lovable
+| Aceleran pantallas, componentes, dashboards, formularios y prototipos visuales.
+
+| Equipo full-stack pequeño
+| Replit, Bolt.new, Firebase Studio
+| Ofrecen entorno ejecutable, edición de código, dependencias, vista previa y despliegue.
+
+| Equipo ya basado en GitHub
+| GitHub Spark, Replit, v0
+| Encajan mejor si el repositorio, la revisión y la continuidad del código son parte central del flujo.
+
+| Equipo ya basado en Google Cloud/Firebase
+| Firebase Studio, Google AI Studio, Firebase
+| La integración con servicios Firebase puede acelerar prototipos, aunque hay que planificar la migración por el sunset de Firebase Studio.
+
+| Prototipo interno de bajo riesgo
+| Replit, Bolt.new, Lovable, Base44
+| Permiten pasar rápido de idea a demo y discutir el flujo antes de invertir en desarrollo formal.
+
+| Aplicación con datos sensibles
+| Ninguna sin revisión previa
+| Antes de elegir plataforma hay que resolver privacidad, seguridad, ubicación de datos, contratos, permisos, auditoría y mantenimiento.
+|===
+
+=== Comparativa por tipo de proyecto
+
+[cols="3,3,4",options="header"]
+|===
+| Tipo de proyecto | Herramientas candidatas | Comentario
+
+| Dashboard o panel interno con datos ficticios
+| v0, Replit, Bolt.new, Lovable
+| Buen caso para practicar generación de interfaz, filtros, gráficos y navegación.
+
+| Formulario interno sencillo
+| Lovable, Base44, Replit, Bolt.new
+| Útil para validar campos y flujo, pero cuidado con datos personales y permisos.
+
+| MVP web para validar una idea
+| Lovable, Bolt.new, Replit, Base44
+| Priorizar rapidez, feedback de usuarios y posibilidad de abandonar o rehacer.
+
+| Componente frontend para una app existente
+| v0, Bolt.new
+| Conviene llevar el resultado al repositorio real y revisarlo como cualquier código.
+
+| App conectada a Firebase
+| Firebase Studio, Firebase, Google AI Studio
+| Buen encaje si el equipo acepta el ecosistema y planifica la transición de Firebase Studio.
+
+| App conectada a Supabase
+| Lovable, Bolt.new, Replit
+| Supabase es una opción frecuente para autenticación, base de datos y almacenamiento en prototipos.
+
+| Proyecto sobre IA y desarrollo
+| Replit, Bolt.new, v0, Lovable
+| Permiten comparar estilos de generación y discutir límites de forma muy visible.
+
+| Integración con sistemas hospitalarios reales
+| Ninguna como atajo directo
+| Debe tratarse como proyecto técnico formal con arquitectura, seguridad, pruebas, contratos y gobierno.
+|===
+
+=== Criterios de evaluación antes de elegir
+
+Antes de invertir tiempo en una herramienta conviene responder, al menos, estas preguntas:
+
+* ¿Qué tipo de aplicación necesito construir: UI, demo, MVP, herramienta interna, backend o integración?
+* ¿Quién va a usar la plataforma: perfil funcional, desarrollador, equipo IT?
+* ¿Necesito ver, editar y versionar el código?
+* ¿Puedo exportar el proyecto o quedo atrapado en la plataforma?
+* ¿Dónde se ejecuta la aplicación durante la construcción?
+* ¿Dónde se alojan los datos?
+* ¿Qué ocurre con prompts, código y conversaciones?
+* ¿La plataforma permite trabajar sólo con datos ficticios?
+* ¿Qué opciones de autenticación y permisos ofrece?
+* ¿Cómo se despliega y cómo se desactiva una demo?
+* ¿Cuánto cuesta iterar, desplegar y mantener?
+* ¿Qué pasa si el proyecto crece?
+* ¿Qué pasa si la plataforma cambia de precio, limita funciones o desaparece?
+
+Para entornos sanitarios añadiremos preguntas específicas:
+
+* ¿Puede aparecer información personal, clínica, laboral o sensible?
+* ¿La herramienta cumple las políticas internas de seguridad?
+* ¿Hay contrato, acuerdo de tratamiento de datos o evaluación jurídica suficiente?
+* ¿Se puede auditar quién accede y qué cambios realiza?
+* ¿Se integra con identidad corporativa o crea cuentas paralelas?
+* ¿Quién será responsable si la demo se empieza a usar como herramienta real?
+
+[TIP]
+====
+Una elección razonable para formación es probar dos herramientas con el mismo caso: una más orientada a código y ejecución, como Replit o Bolt.new, y otra más orientada a interfaz o producto, como v0, Lovable o Base44. La comparación enseña más que una demo aislada.
+====
+
+=== Señales de buena elección
+
+Una plataforma encaja bien cuando:
+
+* permite llegar rápido a una versión discutible;
+* deja claro qué está generando;
+* permite revisar o exportar el código;
+* facilita trabajar con datos ficticios;
+* permite deshacer cambios o volver a versiones anteriores;
+* documenta sus límites y costes;
+* se integra con el ecosistema que el equipo ya usa;
+* no obliga a llevar a producción algo que nació como experimento;
+* ayuda a conversar mejor con usuarios y responsables.
+
+También es buena señal que la herramienta no oculte demasiado. En una organización profesional interesa saber qué archivos se han creado, qué dependencias se han añadido, qué servicios externos se han conectado y qué permisos se han concedido.
+
+=== Señales de alerta
+
+Conviene frenar o replantear el uso cuando:
+
+* la plataforma no permite exportar ni revisar código suficiente;
+* el coste real depende de créditos difíciles de prever;
+* no queda claro dónde viven los datos;
+* se mezclan datos reales con pruebas;
+* el despliegue público es demasiado fácil y no tiene controles;
+* no hay responsable técnico del resultado;
+* se generan dependencias o servicios que nadie entiende;
+* el agente aplica cambios amplios sin explicar su impacto;
+* la herramienta se usa para sustituir una revisión de seguridad;
+* una demo empieza a usarse como aplicación real sin pasar por gobierno.
+
+[WARNING]
+====
+La señal de alerta más común no es técnica, sino organizativa: "ya que funciona, que lo use el equipo". Ese salto convierte una demo en sistema de facto sin haber decidido soporte, seguridad, mantenimiento ni responsabilidad.
+====
+
+=== Fuentes oficiales revisadas
+
+Para preparar este panorama se han consultado fuentes oficiales de documentación y producto, entre ellas:
+
+* Firebase Studio: https://firebase.google.com/docs/studio/ai-assistance[AI assistance within Firebase Studio, window=_blank] y https://firebase.google.com/docs/studio/pricing[pricing, quotas, and limits, window=_blank].
+* Replit Agent: https://docs.replit.com/references/agent/overview[Replit Agent documentation, window=_blank].
+* Bolt.new: https://github.com/stackblitz/bolt.new[repositorio oficial de Bolt.new / StackBlitz, window=_blank].
+* Lovable: https://docs.lovable.dev/integrations/supabase[documentación de integración con Supabase, window=_blank] y https://docs.lovable.dev/integrations/git-integration[integración con GitHub, window=_blank].
+* v0: https://v0.app/docs[documentación oficial de v0, window=_blank].
+* GitHub Spark: https://docs.github.com/en/copilot/tutorials/spark[documentación de GitHub Spark, window=_blank].
+* Base44: https://docs.base44.com/Getting-Started/Quick-start-guide[guía de inicio de Base44, window=_blank] y https://docs.base44.com/documentation/building-your-app/developer-tools[herramientas de desarrollo, window=_blank].
+
+[NOTE]
+====
+El dato más sensible de este panorama es Firebase Studio: la documentación oficial indica que el producto se retirará el 22 de marzo de 2027 y recomienda migrar proyectos a Google AI Studio o Google Antigravity antes de esa fecha. Por tanto, puede seguir siendo útil para entender el modelo de plataforma, pero no debería adoptarse como apuesta nueva a largo plazo sin plan de transición.
+====
+
+=== Ideas clave del apartado
+
+* No existe una única plataforma "mejor"; existe una herramienta más o menos adecuada para un contexto.
+* Replit y Bolt.new destacan como entornos de creación y ejecución en navegador.
+* v0 es especialmente fuerte en generación de interfaces y aplicaciones frontend modernas.
+* Lovable y Base44 reducen fricción para perfiles no técnicos y MVPs rápidos, pero exigen revisar control, datos y dependencia.
+* GitHub Spark interesa especialmente si el equipo ya vive dentro de GitHub y Copilot.
+* Firebase Studio es relevante conceptualmente y por integración con Firebase, pero debe analizarse como producto en transición por su sunset anunciado.
+* En sanidad, la elección debe partir de datos, riesgo, gobierno y mantenimiento, no sólo de la velocidad de generación.
+
+== Firebase Studio
+
+Firebase Studio es la plataforma de Google/Firebase para crear, prototipar y desarrollar aplicaciones desde un entorno cloud con asistencia de IA. Combina un workspace de desarrollo en navegador, integración con Gemini, plantillas, vista previa, herramientas de depuración, servicios Firebase y un agente de prototipado capaz de generar aplicaciones web a partir de lenguaje natural.
+
+Dentro de este tutorial es una herramienta especialmente interesante por dos razones. La primera es conceptual: representa muy bien el modelo de plataforma que une prompt, generación de aplicación, backend gestionado, vista previa y despliegue. La segunda es estratégica: al estar conectada con Firebase y Google Cloud, obliga a hablar de algo fundamental en entornos profesionales: qué ocurre cuando un prototipo empieza a tocar servicios reales, facturación, identidad, datos y despliegue.
+
+Sin embargo, hay un matiz importante. La documentación oficial de Firebase indica que **Firebase Studio se retirará el 22 de marzo de 2027** y recomienda migrar proyectos a Google AI Studio o Google Antigravity antes de esa fecha. También indica que las apps ya desplegadas en Firebase seguirán funcionando y que los productos centrales de Firebase, como Firestore, Authentication o App Hosting, no se ven afectados por esa retirada.
+
+[IMPORTANT]
+====
+Para este curso, Firebase Studio debe entenderse como una herramienta útil para estudiar el patrón de trabajo "idea -> prototipo -> Firebase", pero no como una apuesta nueva a largo plazo sin plan de migración. Si se usa para prácticas, conviene hacerlo con datos ficticios y con conciencia de que el producto está en transición.
+====
+
+=== Qué es y qué promete
+
+Firebase Studio ayuda a construir y publicar aplicaciones full-stack con IA desde un entorno de desarrollo en la nube. Según la documentación oficial, permite empezar de varias formas:
+
+* importando o subiendo un proyecto existente desde control de versiones o archivo comprimido;
+* usando el **App Prototyping agent** para crear una app web mediante lenguaje natural;
+* partiendo de plantillas y ejemplos;
+* trabajando en un workspace con asistencia de Gemini.
+
+La experiencia tiene dos modos especialmente relevantes:
+
+* **Prototyper view:** vista orientada a crear una aplicación desde prompts, imágenes o indicaciones visuales. Es el modo más cercano a _prompt-to-app_.
+* **Code view:** vista de desarrollo donde se pueden revisar archivos, modificar código, usar terminal, depurar y pedir ayuda a Gemini dentro del workspace.
+
+Esta dualidad es importante. Firebase Studio no se limita a generar una maqueta visual. Permite pasar del prototipo conversacional al código, y desde ahí conectar servicios Firebase, revisar archivos y trabajar de forma más cercana a un entorno de desarrollo tradicional.
+
+.Idea central
+****
+Firebase Studio intenta que una persona pueda describir una aplicación, obtener una primera versión Next.js, probarla en el navegador, pedir cambios por conversación, añadir servicios Firebase y publicarla con Firebase App Hosting.
+
+La promesa no es sólo "generar código", sino acercar varias fases del ciclo de vida a un mismo espacio de trabajo.
+****
+
+=== Piezas principales
+
+[cols="2,4,4",options="header"]
+|===
+| Pieza | Qué aporta | Lectura práctica
+
+| App Prototyping agent
+| Genera una aplicación web a partir de lenguaje natural, imágenes o indicaciones visuales.
+| Es la entrada más útil para prototipos rápidos y ejercicios de clase.
+
+| Gemini en Firebase
+| Asistencia de IA para generar, explicar, modificar código, interpretar errores y ayudar en el workspace.
+| Actúa como copiloto dentro del entorno, pero sus resultados deben validarse.
+
+| Workspace cloud
+| Entorno de desarrollo en navegador con archivos, terminal, vista previa y herramientas integradas.
+| Evita configuración local y facilita prácticas guiadas.
+
+| Code view
+| Permite abrir el proyecto generado, revisar archivos y editar código directamente.
+| Es clave para enseñar que el prototipo produce código que debe entenderse.
+
+| Preview
+| Muestra la aplicación generada y permite interactuar con ella.
+| Convierte el requisito en algo visible y discutible.
+
+| Firebase Authentication
+| Servicio de autenticación gestionado.
+| Útil para prototipos con usuarios, siempre revisando permisos y configuración.
+
+| Cloud Firestore
+| Base de datos NoSQL gestionada.
+| Permite persistencia rápida, pero exige revisar reglas de seguridad.
+
+| Firebase App Hosting
+| Publicación de aplicaciones web, especialmente Next.js.
+| Facilita compartir una demo, pero puede requerir Cloud Billing.
+
+| Genkit
+| Framework para construir y probar flujos de IA generativa.
+| Interesa en apps "AI-forward", donde la IA forma parte de la aplicación.
+
+| Exportación a GitHub
+| Permite llevar el trabajo a un repositorio.
+| Importante si el prototipo debe revisarse, conservarse o migrarse.
+|===
+
+=== Flujo típico de uso
+
+Un flujo razonable para una práctica sería:
+
+1. abrir Firebase Studio con una cuenta de Google;
+2. describir la aplicación en el campo de prototipado con IA;
+3. revisar el blueprint que propone el agente;
+4. ajustar nombre, funcionalidades, estilo o restricciones;
+5. generar el prototipo;
+6. probar la vista previa;
+7. pedir cambios concretos mediante chat;
+8. cambiar a Code view para inspeccionar archivos;
+9. pedir explicación del código generado;
+10. añadir, si procede, autenticación o Firestore;
+11. revisar reglas, datos y dependencias;
+12. exportar a GitHub o publicar una demo controlada.
+
+La parte más interesante para aprender no es sólo el paso 5, cuando aparece la aplicación. Lo más valioso está entre los pasos 6 y 11: probar, detectar incoherencias, pedir cambios, revisar código y descubrir qué decisiones técnicas ha tomado la herramienta.
+
+[TIP]
+====
+Para un ejercicio práctico, conviene pedir a Firebase Studio una aplicación sencilla y después cambiar a Code view. La pregunta no debe ser sólo "¿funciona?", sino "¿qué archivos ha creado, qué dependencias ha añadido, dónde guarda datos y qué habría que revisar antes de publicar?".
+====
+
+=== Ejemplo de prompt para el curso
+
+Un prompt inicial para un entorno hospitalario de bajo riesgo podría ser:
+
+[source,text]
+----
+Crea una aplicación web para registrar incidencias no clínicas de mantenimiento
+en un hospital. Debe usar datos ficticios y no debe incluir información de pacientes.
+
+Funcionalidades:
+- crear una incidencia con título, descripción, ubicación, prioridad y estado;
+- ver un listado filtrable por estado y prioridad;
+- cambiar el estado entre abierta, en curso y cerrada;
+- mostrar un panel resumen con número de incidencias por estado;
+- incluir datos de ejemplo;
+- usar una interfaz clara y sobria para personal interno.
+
+Antes de construir, genera un blueprint con pantallas, datos, permisos
+y supuestos de seguridad.
+----
+
+Este prompt incluye varias decisiones pedagógicas:
+
+* acota el caso a incidencias **no clínicas**;
+* exige datos ficticios;
+* prohíbe información de pacientes;
+* pide un blueprint antes de construir;
+* obliga a explicitar pantallas, datos, permisos y seguridad.
+
+Después de generar el prototipo, se puede continuar con prompts de revisión:
+
+[source,text]
+----
+Revisa la aplicación como si fueras responsable de seguridad IT
+de un hospital. Enumera riesgos, supuestos incorrectos, datos sensibles
+que podrían aparecer, permisos que faltan y cambios necesarios antes
+de pensar en un piloto.
+----
+
+[source,text]
+----
+Explica la estructura del proyecto: principales carpetas, componentes,
+rutas, dependencias y puntos donde se gestionan datos o estado.
+----
+
+=== Qué aporta en formación
+
+Firebase Studio resulta útil en formación porque permite enseñar de forma compacta varias ideas importantes:
+
+* cómo un prompt se transforma en una propuesta de aplicación;
+* cómo el agente interpreta requisitos ambiguos;
+* cómo aparece un blueprint antes del código;
+* cómo una interfaz inicial ayuda a discutir requisitos;
+* cómo se puede pasar de vista visual a revisión de código;
+* cómo entran en juego servicios reales como autenticación, base de datos y hosting;
+* cómo la publicación puede activar decisiones de facturación;
+* cómo una herramienta cloud genera dependencias operativas.
+
+En cursos para personal IT hospitalario, esta combinación es valiosa porque permite conectar la conversación sobre IA con problemas cotidianos de ingeniería: permisos, reglas de base de datos, ubicación de información, coste, despliegue, logs y responsabilidad sobre el ciclo de vida.
+
+=== Casos de uso razonables
+
+Firebase Studio puede tener sentido para:
+
+* prototipos web conectados al ecosistema Firebase;
+* demos de aplicaciones internas con datos ficticios;
+* formación en desarrollo cloud y servicios gestionados;
+* exploración de flujos con autenticación y base de datos;
+* pruebas de concepto de apps con Gemini o Genkit;
+* aprendizaje de Next.js en un entorno preparado;
+* comparación entre prototipado visual y revisión de código;
+* ejercicios de evaluación de seguridad de una app generada por IA.
+
+Un ejemplo razonable sería una demo de registro de incidencias internas, una aplicación de inventario ficticio, un panel de seguimiento de solicitudes o un simulador para explicar flujos de aprobación. En todos los casos, el valor está en aprender y validar, no en sustituir el proceso formal de desarrollo.
+
+=== Planes, cuotas y costes
+
+La documentación oficial indica que el acceso a Firebase Studio está disponible sin coste, con límites de workspaces que dependen del perfil del usuario y del Google Developer Program. También advierte que algunas integraciones, como Firebase App Hosting, pueden requerir una cuenta de Cloud Billing.
+
+El punto crítico es este: al vincular una cuenta de facturación a un proyecto Firebase, el proyecto puede pasar al plan de pago por uso Blaze, y los servicios de Google Cloud, Firebase o Gemini Developer API pueden generar cargos si se superan las cuotas sin coste.
+
+Para el curso, esto se traduce en tres reglas prácticas:
+
+* no publicar ni activar servicios de pago salvo que sea necesario para una práctica controlada;
+* no vincular facturación sin explicar antes qué se está activando;
+* revisar siempre qué proyecto Firebase se ha creado y qué servicios quedan habilitados.
+
+=== Datos, privacidad y seguridad
+
+Firebase Studio incorpora advertencias importantes sobre el uso de Gemini y el agente de prototipado. La documentación oficial recomienda validar las salidas generadas, no usar código no probado en producción y no introducir información personal identificable ni datos de usuarios en el chat.
+
+En un contexto hospitalario, esta advertencia debe ampliarse:
+
+* no introducir datos de pacientes;
+* no pegar logs reales con identificadores personales;
+* no subir capturas de sistemas internos;
+* no compartir claves, tokens, URLs internas ni credenciales;
+* no conectar la demo a sistemas reales del hospital;
+* no publicar una URL con información operativa sensible;
+* revisar reglas de Firestore si se añade base de datos;
+* revisar autenticación y permisos antes de cualquier piloto;
+* borrar proyectos y recursos que ya no se usen.
+
+[IMPORTANT]
+====
+Para practicar con Firebase Studio en sanidad, la regla debe ser: datos ficticios, contexto aislado y revisión explícita. La herramienta puede ayudar a aprender, pero no debe convertirse en un canal informal para procesar información sensible.
+====
+
+=== Fortalezas
+
+Firebase Studio destaca por:
+
+* integración natural con Firebase y Google Cloud;
+* asistencia de Gemini dentro del workspace;
+* generación de prototipos desde lenguaje natural;
+* posibilidad de revisar el código generado;
+* transición entre Prototyper view y Code view;
+* conexión con servicios reales como Authentication, Firestore y App Hosting;
+* vista previa integrada;
+* posibilidad de exportar a GitHub;
+* buen encaje para equipos que ya conocen Firebase.
+
+Su mayor fortaleza no es sólo generar una pantalla. Es mostrar cómo una aplicación generada por IA empieza a tocar piezas reales de plataforma: proyecto cloud, API key, base de datos, autenticación, reglas y hosting. Para un curso de IT, eso abre una conversación mucho más rica que una simple maqueta.
+
+=== Limitaciones
+
+Sus limitaciones principales son:
+
+* producto con retirada anunciada para el 22 de marzo de 2027;
+* dependencia fuerte del ecosistema Google/Firebase;
+* riesgo de activar servicios con coste si se publica o se vincula facturación;
+* necesidad de revisar cuidadosamente reglas de seguridad y permisos;
+* soporte especialmente orientado a apps web Next.js en el agente de prototipado;
+* posible falsa confianza por la facilidad de generar y publicar;
+* privacidad y gobierno de prompts, código y datos;
+* necesidad de migrar proyectos si se quiere continuidad más allá del sunset.
+
+Además, como cualquier herramienta generativa, puede producir código plausible pero incorrecto, configuraciones incompletas o decisiones técnicas poco justificadas. El hecho de que el resultado se ejecute no implica que sea seguro, mantenible ni adecuado para producción.
+
+=== Cuándo elegirla
+
+Firebase Studio puede ser una buena elección cuando:
+
+* el objetivo es aprender el flujo completo de prototipo, código y Firebase;
+* se trabaja con datos ficticios;
+* el equipo ya conoce Firebase o Google Cloud;
+* se quiere explorar autenticación, base de datos y hosting gestionado;
+* se necesita una demo web rápida;
+* se quiere comparar prototipado conversacional con revisión de código;
+* se acepta que la herramienta está en transición y se planifica la migración;
+* el resultado no se va a convertir directamente en producción.
+
+Para este curso, es especialmente adecuada como herramienta de laboratorio: permite mostrar posibilidades, riesgos y decisiones técnicas en una misma sesión.
+
+=== Cuándo evitarla
+
+Conviene evitarla, o al menos no usarla como base principal, cuando:
+
+* se busca una plataforma estable a largo plazo sin plan de migración;
+* el proyecto va a manejar datos personales o clínicos reales;
+* no hay capacidad de revisar código y configuración Firebase;
+* no se puede controlar la activación de facturación;
+* el equipo no quiere dependencia del ecosistema Google;
+* el proyecto requiere arquitectura compleja o integraciones hospitalarias reales;
+* no está claro quién será responsable de mantenimiento y seguridad;
+* se pretende pasar de demo a producción sin rediseño técnico.
+
+[CAUTION]
+====
+Firebase Studio puede ser muy útil para enseñar y prototipar, pero el sunset anunciado cambia su lectura estratégica. En 2026 no debería evaluarse sólo por lo que permite construir, sino por cómo se migra, qué piezas sobreviven fuera de Studio y qué parte del trabajo queda realmente en Firebase, GitHub o el código exportado.
+====
+
+=== Ejercicio propuesto
+
+**Objetivo**: Crear un prototipo de baja criticidad, revisarlo técnicamente y separar qué parte sirve como demo y qué parte exigiría trabajo adicional antes de un piloto.
+
+Pasos sugeridos:
+
+1. Crear una app de incidencias no clínicas con el prompt del apartado anterior.
+2. Revisar el blueprint antes de generar la aplicación.
+3. Generar el prototipo.
+4. Probar la vista previa con tres incidencias ficticias.
+5. Pedir al agente que añada un filtro por prioridad.
+6. Cambiar a Code view y localizar los componentes principales.
+7. Pedir a Gemini que explique la estructura del proyecto.
+8. Identificar dónde se gestionan datos, estado y validaciones.
+9. Pedir una revisión de riesgos antes de un piloto.
+10. Elaborar una lista de cambios necesarios para pasar de demo a piloto controlado.
+
+Preguntas de reflexión:
+
+* ¿Qué ha resuelto bien la plataforma?
+* ¿Qué ha supuesto sin preguntar?
+* ¿Qué decisiones de seguridad faltan?
+* ¿Qué datos no deberían introducirse nunca?
+* ¿Qué partes del código revisarías antes?
+* ¿Qué servicios Firebase se han activado o podrían activarse?
+* ¿Qué coste podría aparecer si se publica?
+* ¿Qué habría que migrar si Firebase Studio deja de estar disponible?
+
+**Enlaces de intereés**
+
+* https://firebase.google.com/docs/studio/get-started[Get started with Firebase Studio, window=_blank].
+* https://firebase.google.com/docs/studio/get-started-ai[Get started with the App Prototyping agent, window=_blank].
+* https://firebase.google.com/docs/studio/ai-assistance[AI assistance within Firebase Studio, window=_blank].
+* https://firebase.google.com/docs/studio/pricing[Firebase Studio pricing, quotas, and limits, window=_blank].
+
+=== Ideas clave
+
+* Firebase Studio combina prototipado con IA, workspace cloud, Gemini, vista previa, código y servicios Firebase.
+* Su App Prototyping agent permite crear apps web desde lenguaje natural y continuar iterando mediante conversación.
+* Code view es esencial para no quedarse en la demo: permite revisar archivos, dependencias y estructura.
+* La integración con Firebase Authentication, Firestore y App Hosting es potente, pero introduce decisiones reales de seguridad, datos y coste.
+* En sanidad debe usarse sólo con datos ficticios o anonimizados y en entornos controlados.
+* El sunset anunciado para el 22 de marzo de 2027 obliga a tratarla como herramienta de aprendizaje o transición, no como apuesta nueva sin plan de migración.
+
+== Google AI Studio
+
+Google AI Studio es la herramienta principal de Google para experimentar con modelos Gemini, diseñar prompts, obtener código para la Gemini API y, desde su evolución reciente, construir aplicaciones completas desde lenguaje natural mediante **Build mode**. En el contexto de este tutorial nos interesa especialmente porque Google la plantea como una de las rutas de continuidad para usuarios de Firebase Studio.
+
+La diferencia respecto a Firebase Studio no es sólo un cambio de nombre. Firebase Studio estaba planteado como un entorno cloud de desarrollo muy conectado a Firebase. Google AI Studio empezó como un espacio para probar modelos, prompts y APIs, pero ha ido incorporando una experiencia de construcción de aplicaciones: generación de apps web, runtime servidor, edición de código, integración con Firebase, gestión de secretos, despliegue en Cloud Run, galería de apps y exportación.
+
+Por tanto, Google AI Studio ocupa una posición híbrida:
+
+* es un **playground de modelos Gemini**;
+* es una herramienta para **prototipar prompts y obtener código de API**;
+* es una plataforma para **construir apps desde lenguaje natural**;
+* es una vía de **migración desde Firebase Studio**;
+* es una puerta de entrada al ecosistema Gemini API, Firebase y Google Cloud.
+
+[IMPORTANT]
+====
+En este tutorial conviene separar dos usos de Google AI Studio. El primero es experimentar con modelos, prompts y API keys. El segundo es construir aplicaciones en Build mode. Son usos relacionados, pero tienen riesgos distintos: el primero afecta sobre todo a prompts, datos y consumo de API; el segundo añade código, despliegue, secretos, backend, usuarios y costes cloud.
+====
+
+=== Qué es y qué promete
+
+La documentación oficial define Google AI Studio como una herramienta para probar modelos rápidamente, experimentar con prompts y, cuando se está listo para construir, usar la opción **Get code** para llevar el trabajo a la Gemini API. Además, Google AI Studio incorpora **Build mode**, una experiencia para crear aplicaciones mediante prompts.
+
+En Build mode, el usuario puede empezar de varias formas:
+
+* escribiendo una descripción de la app que quiere construir;
+* usando sugerencias o _AI Chips_ para añadir capacidades concretas, como imagen, mapas u otras funciones;
+* usando voz para describir lo que quiere;
+* partiendo de una app de la galería y haciendo un _remix_;
+* explorando ejemplos existentes para entender qué puede hacer Gemini.
+
+Al ejecutar el prompt, AI Studio genera código y archivos, y muestra una vista previa en vivo de la aplicación. Para apps web, la documentación indica que crea un entorno full-stack con frontend web, React por defecto, y un runtime Node.js en servidor. También puede generar apps Android nativas con Kotlin y Jetpack Compose.
+
+.Idea central
+****
+Google AI Studio intenta convertirse en el punto de entrada de Google para pasar de una idea a una app con Gemini: primero se experimenta con el comportamiento del modelo, después se construye una app en Build mode, y finalmente se puede exportar, conectar Firebase o desplegar en Cloud Run.
+****
+
+=== Relación con Firebase Studio
+
+Google ha anunciado que Firebase Studio se retirará el 22 de marzo de 2027 y que los caminos recomendados son Google AI Studio y Google Antigravity. La lógica es la siguiente:
+
+* **Google AI Studio** queda como herramienta web para construir apps, probar modelos Gemini y avanzar de prompt a aplicación.
+* **Google Antigravity** queda como plataforma de desarrollo agentic más cercana a un entorno IDE avanzado.
+* **Firebase** sigue existiendo como backend y plataforma de servicios: Firestore, Authentication, App Hosting y otros productos no desaparecen por el sunset de Firebase Studio.
+
+Según el blog oficial de Firebase, Google AI Studio puede detectar que una app necesita almacenamiento de datos o identidad de usuario y ofrecer configurar Firebase. Con aprobación del usuario, puede crear el proyecto Firebase, provisionar Firestore, activar Authentication, conectar el código de la app, crear pantalla de login con Google Sign-In, generar código de Firestore y proponer reglas de seguridad.
+
+[NOTE]
+====
+La migración desde Firebase Studio no debe entenderse como "todo sigue igual en otra pestaña". Hay que revisar qué parte del proyecto queda en código exportable, qué parte vive en Firebase, qué parte depende de Build mode, qué servicios se han activado y qué costes o permisos se heredan.
+====
+
+=== Piezas principales
+
+[cols="2,4,4",options="header"]
+|===
+| Pieza | Qué aporta | Lectura práctica
+
+| Playground de prompts
+| Permite probar modelos Gemini, instrucciones de sistema, conversaciones, parámetros y herramientas.
+| Es útil para aprender prompt engineering y evaluar comportamiento antes de programar.
+
+| Get code
+| Convierte un prompt probado en código para usar la Gemini API desde distintos lenguajes.
+| Sirve como puente entre experimentación y desarrollo real.
+
+| Build mode
+| Permite crear apps desde lenguaje natural y seguir iterando mediante conversación.
+| Es la parte más cercana a Firebase Studio, Bolt.new o Replit Agent.
+
+| Antigravity Agent
+| Gestiona contexto del proyecto, varios archivos, dependencias y cambios multi-paso.
+| Reduce la sensación de "generador de fragmentos" y se acerca a un agente de desarrollo.
+
+| Frontend web
+| Genera una interfaz web, con React como opción por defecto en apps web.
+| Buen punto de partida para prototipos, paneles y herramientas internas.
+
+| Runtime servidor
+| Añade backend Node.js para lógica que no debe exponerse al cliente.
+| Permite usar secretos, APIs externas, paquetes npm y llamadas seguras.
+
+| Gestión de secretos
+| Permite almacenar API keys y credenciales en entorno servidor.
+| Evita exponer claves en el navegador, aunque exige gobierno y revisión.
+
+| Integración Firebase
+| Puede configurar Firestore y Firebase Authentication para persistencia e identidad.
+| Muy relevante como sustituto parcial del flujo Firebase Studio.
+
+| Integraciones Google Workspace
+| Permite conectar apps con APIs de Gmail, Sheets, Docs, Drive, Calendar y otros servicios.
+| Potente para automatización, pero sensible en organizaciones con datos corporativos.
+
+| Despliegue en Cloud Run
+| Permite publicar apps como servicios gestionados y escalables.
+| Convierte una demo en una URL real, con implicaciones de coste, seguridad y operación.
+
+| Exportación
+| Permite descargar el código como ZIP o llevarlo a GitHub.
+| Es clave para revisar, versionar y continuar fuera de AI Studio.
+|===
+
+=== Flujo típico de uso
+
+Un flujo razonable para trabajar con Google AI Studio en este curso sería:
+
+1. abrir Google AI Studio con una cuenta autorizada;
+2. probar primero un prompt en el playground si la app depende de Gemini;
+3. ajustar instrucciones, formato de salida, seguridad y herramientas;
+4. pasar a Build mode;
+5. describir una app sencilla con datos ficticios;
+6. revisar el código y la vista previa generada;
+7. pedir cambios concretos al agente;
+8. usar anotaciones sobre la UI si se quiere modificar una parte visual concreta;
+9. añadir backend sólo si es necesario;
+10. añadir Firebase sólo si el ejercicio lo requiere;
+11. revisar secretos, API keys, reglas y permisos;
+12. exportar a GitHub o ZIP para inspección;
+13. publicar sólo si hay un objetivo claro y control de costes.
+
+La secuencia importante es: **probar modelo -> construir prototipo -> revisar código -> revisar datos -> decidir si desplegar**. Si se salta directamente del prompt al despliegue, se pierde la parte más valiosa para un curso de IT: entender qué ha construido la plataforma y qué riesgos introduce.
+
+=== Ejemplo de prompt para Build mode
+
+Un prompt orientado a formación podría ser:
+
+[source,text]
+----
+Crea una aplicación web para simular el registro de solicitudes internas
+del departamento de informática de un hospital.
+
+Restricciones:
+- usa únicamente datos ficticios;
+- no incluyas información de pacientes;
+- no conectes sistemas reales;
+- no añadas servicios de pago sin pedir confirmación;
+- separa claramente demo, piloto y producción.
+
+Funcionalidades:
+- formulario de nueva solicitud con título, descripción, servicio solicitante,
+  prioridad y estado;
+- listado filtrable por prioridad y estado;
+- panel resumen con número de solicitudes abiertas, en curso y cerradas;
+- datos de ejemplo;
+- interfaz sobria para personal interno.
+
+Antes de generar el código, resume el diseño propuesto, los datos usados,
+los supuestos de seguridad y las limitaciones del prototipo.
+----
+
+Después de generar la app, se pueden usar prompts de revisión:
+
+[source,text]
+----
+Revisa esta app como responsable de seguridad y cumplimiento en un hospital.
+Indica qué datos podrían ser sensibles, qué permisos faltan, qué riesgos
+aparecen si se comparte la URL y qué cambios serían obligatorios antes
+de un piloto controlado.
+----
+
+[source,text]
+----
+Explica qué partes de la app se ejecutan en cliente y cuáles en servidor.
+Indica dónde se gestionan secretos, llamadas a Gemini API, datos persistentes
+y dependencias externas.
+----
+
+=== Qué aporta respecto a Firebase Studio
+
+Google AI Studio aporta varias capacidades que lo convierten en una alternativa natural para parte de los usos de Firebase Studio:
+
+* Build mode permite generar apps desde prompts.
+* El agente puede gestionar varios archivos y cambios complejos.
+* El runtime servidor permite separar lógica sensible del frontend.
+* La gestión de secretos mejora el manejo de claves respecto a prototipos sólo cliente.
+* La integración con Firebase permite añadir Firestore y Authentication.
+* Cloud Run ofrece una vía de despliegue gestionado.
+* La exportación a GitHub o ZIP facilita continuar fuera de la plataforma.
+* El playground de Gemini permite probar prompts antes de construir la app.
+
+La diferencia práctica es que AI Studio no es sólo "Firebase Studio con otro nombre". Es un punto de entrada más amplio al ecosistema Gemini. Para una app que depende de IA generativa, AI Studio puede ser incluso más natural: primero se diseña el comportamiento del modelo y después se convierte en aplicación.
+
+=== Qué aporta en formación
+
+Google AI Studio es especialmente útil para enseñar tres niveles de trabajo:
+
+* **Nivel prompt:** cómo cambia el comportamiento de Gemini al modificar instrucciones, ejemplos, herramientas y parámetros.
+* **Nivel aplicación:** cómo un prompt se transforma en UI, código, backend y dependencias.
+* **Nivel operación:** qué ocurre al introducir API keys, Firebase, Cloud Run, compartir apps y exponer una URL.
+
+En formación para IT hospitalario permite plantear ejercicios muy ricos:
+
+* crear un chatbot con instrucciones controladas;
+* exigir salida estructurada en JSON para integrarla con una app;
+* generar una interfaz para visualizar datos ficticios;
+* añadir persistencia con Firebase;
+* analizar qué ocurre con secretos y llamadas servidor;
+* revisar riesgos de compartir una app con usuarios;
+* comparar una demo local con un despliegue en Cloud Run.
+
+[TIP]
+====
+Una práctica potente consiste en pedir primero sólo el prompt del modelo, sin app. Después, cuando el comportamiento sea aceptable, pedir la aplicación. Así el alumnado ve que una app con IA no empieza por la pantalla, sino por decidir qué debe hacer el modelo, con qué límites y con qué formato de salida.
+====
+
+=== Casos de uso razonables
+
+Google AI Studio puede tener sentido para:
+
+* prototipar aplicaciones que usan Gemini API;
+* construir demos web con UI y backend ligero;
+* crear asistentes internos con datos ficticios;
+* generar paneles que llaman a APIs externas;
+* probar salidas estructuradas y function calling;
+* experimentar con herramientas como Google Search, Google Maps o code execution;
+* crear apps con Firestore y Google Sign-In para pilotos controlados;
+* desplegar demos en Cloud Run;
+* exportar código para revisión técnica;
+* comparar modelos, prompts y costes antes de desarrollar.
+
+En sanidad, un caso razonable sería una app que explique logs ficticios, un asistente para redactar borradores de documentación técnica sin datos reales, una demo de clasificación de solicitudes internas o una herramienta de simulación para enseñar flujos de soporte.
+
+No es un caso razonable conectar directamente sistemas reales del hospital, pegar datos clínicos en prompts o publicar apps con información interna sin revisión.
+
+=== Despliegue, costes y cuotas
+
+Google AI Studio ofrece varias capas de uso:
+
+* uso gratuito para empezar con modelos y límites asociados;
+* planes de pago para mayor volumen, modelos avanzados y condiciones de datos distintas;
+* despliegue desde Build mode mediante Google Cloud Starter Tier;
+* despliegue estándar con proyecto de Google Cloud y facturación;
+* Cloud Run como destino de publicación de aplicaciones.
+
+La documentación de despliegue indica que el **Google Cloud Starter Tier** permite publicar hasta dos aplicaciones full-stack sin configurar un proyecto de Google Cloud ni una cuenta de facturación. Cada despliegue crea un servicio en Cloud Run. Para necesidades superiores, mayor cuota o más productos cloud, hay que pasar a despliegue estándar con proyecto de Google Cloud y facturación habilitada.
+
+También hay un punto crítico sobre Gemini API: en el nivel gratuito, el contenido puede usarse para mejorar productos de Google, mientras que en niveles de pago se ofrecen condiciones distintas. Para entornos sanitarios, esta diferencia no debe pasarse por alto.
+
+[WARNING]
+====
+El paso de "probar en AI Studio" a "desplegar en Cloud Run" cambia la naturaleza del ejercicio. Ya no es sólo una conversación con un modelo: hay una aplicación publicada, consumo de API, posible facturación, responsabilidades de seguridad y usuarios que pueden acceder a una URL.
+====
+
+=== Datos, privacidad y seguridad
+
+Google AI Studio incluye mecanismos útiles, pero no elimina la responsabilidad del equipo:
+
+* las API keys de Gemini se configuran como secretos del lado servidor;
+* las llamadas a Gemini API pueden hacerse desde backend, sin exponer la clave en el navegador;
+* se pueden añadir secretos para servicios externos;
+* Firebase puede aportar autenticación y persistencia;
+* Cloud Run permite desplegar en un entorno gestionado;
+* Workspace permite controlar acceso a AI Studio desde administración corporativa.
+
+En un hospital, esas capacidades deben acompañarse de reglas claras:
+
+* no introducir datos clínicos, identificadores personales ni logs reales;
+* no usar cuentas personales para prototipos corporativos sensibles;
+* no habilitar APIs de Workspace sin revisión;
+* no compartir apps fuera del grupo autorizado;
+* revisar quién puede ver el código de una app compartida;
+* revisar qué API key consume las llamadas de usuarios;
+* revisar permisos de Firestore y Authentication;
+* revisar configuración de Cloud Run antes de publicar;
+* eliminar apps y despliegues que ya no se usen.
+
+La documentación oficial recuerda que el propietario de la aplicación es responsable de su comportamiento y de los datos que maneja. Esa frase es especialmente importante: la plataforma ayuda a construir, pero la responsabilidad no se transfiere al agente.
+
+=== Fortalezas
+
+Google AI Studio destaca por:
+
+* acceso directo a modelos Gemini y Gemini API;
+* playground para experimentar antes de construir;
+* Build mode para generar apps desde lenguaje natural;
+* agente con gestión de contexto y múltiples archivos;
+* generación de apps web full-stack;
+* runtime Node.js servidor;
+* gestión de secretos;
+* integración con Firebase, Firestore y Authentication;
+* despliegue en Cloud Run;
+* exportación a ZIP y GitHub;
+* integración con Google Workspace y APIs de Google;
+* buena posición como ruta de migración desde Firebase Studio.
+
+Su fortaleza principal es que une el mundo del modelo con el mundo de la aplicación. Permite pasar de "quiero que Gemini responda así" a "quiero una app que use Gemini así".
+
+=== Limitaciones
+
+Sus límites principales son:
+
+* producto en evolución rápida, con cambios frecuentes en funciones, modelos y cuotas;
+* dependencia fuerte del ecosistema Google;
+* necesidad de entender Gemini API, claves, cuotas y facturación;
+* riesgo de publicar demos sin gobierno;
+* GitHub con capacidades todavía limitadas, por ejemplo sin soporte completo para traer cambios remotos según la documentación actual;
+* uso compartido que puede permitir a otros ver código y bifurcar apps;
+* posible consumo de API por parte de usuarios de una app compartida;
+* necesidad de revisar manualmente Firestore Security Rules;
+* riesgo de conectar APIs de Workspace o terceros sin control suficiente;
+* no sustituye un IDE o flujo DevOps completo para proyectos complejos.
+
+Además, al igual que otras plataformas generativas, puede producir código plausible pero incompleto. El agente puede instalar dependencias, crear rutas, añadir backend y configurar servicios, pero el equipo sigue teniendo que revisar arquitectura, permisos, pruebas, accesibilidad, observabilidad y mantenimiento.
+
+=== Cuándo elegirla
+
+Google AI Studio puede ser una buena elección cuando:
+
+* la app depende de Gemini o de la Gemini API;
+* se quiere probar primero el comportamiento del modelo;
+* se necesita una app web rápida con backend ligero;
+* se quiere migrar un prototipo desde Firebase Studio;
+* el equipo ya usa Google Cloud, Firebase o Workspace;
+* se quiere añadir Firestore y Google Sign-In con poca fricción;
+* se quiere publicar una demo controlada en Cloud Run;
+* se necesita exportar código para revisión posterior;
+* el objetivo es formación, prototipado o MVP inicial.
+
+Para este curso, Google AI Studio es especialmente interesante porque permite trabajar tanto la ingeniería de prompts como la ingeniería de aplicación. Es decir, no sólo enseña a pedir una pantalla, sino a diseñar el comportamiento de una app que usa IA.
+
+=== Cuándo evitarla
+
+Conviene evitarla o limitarla cuando:
+
+* el proyecto no debe depender del ecosistema Google;
+* hay datos personales o clínicos reales y no existe evaluación legal y de seguridad;
+* no se puede controlar quién accede a la app o al código;
+* no se entiende bien el modelo de consumo de Gemini API;
+* no hay responsable de revisar secretos, permisos y despliegue;
+* se necesita un flujo de desarrollo empresarial completo desde el primer día;
+* la app requiere integraciones hospitalarias complejas;
+* se pretende publicar sin pruebas, logs, soporte ni plan de mantenimiento.
+
+[CAUTION]
+====
+Google AI Studio baja mucho la fricción para construir apps con IA. Esa es su virtud y también su riesgo. En entornos sanitarios, la facilidad para conectar modelo, datos, autenticación y despliegue debe ir acompañada de una política clara de uso.
+====
+
+=== Ejercicio propuesto
+
+**Objetivo**: Construir una app sencilla con Gemini, revisar qué parte corresponde al modelo, qué parte corresponde a la aplicación y qué riesgos aparecen al compartir o desplegar.
+
+Pasos sugeridos:
+
+1. Crear en el playground un prompt para clasificar solicitudes internas ficticias.
+2. Pedir que la salida sea JSON con campos `categoria`, `prioridad`, `resumen` y `justificacion`.
+3. Probarlo con cinco solicitudes inventadas.
+4. Pasar a Build mode y pedir una app que use ese comportamiento.
+5. Generar una interfaz con formulario, resultado y listado de ejemplos.
+6. Revisar el código generado.
+7. Identificar dónde se llama a Gemini API.
+8. Comprobar que la API key no aparece en el frontend.
+9. Pedir al agente una revisión de riesgos.
+10. Decidir si el prototipo se queda como demo o podría pasar a piloto.
+
+Preguntas de reflexión:
+
+* ¿Qué instrucciones controlan el comportamiento del modelo?
+* ¿Qué ocurre si el usuario escribe información sensible?
+* ¿Qué parte de la app vive en cliente y qué parte en servidor?
+* ¿Qué coste puede tener si muchas personas usan la demo?
+* ¿Quién puede ver el código si se comparte la app?
+* ¿Qué habría que revisar antes de desplegar en Cloud Run?
+* ¿Qué cambia si se añade Firestore o Authentication?
+
+=== Fuentes oficiales consultadas
+
+* https://ai.google.dev/gemini-api/docs/ai-studio-quickstart[Google AI Studio quickstart, window=_blank].
+* https://ai.google.dev/gemini-api/docs/aistudio-build-mode[Build apps in Google AI Studio, window=_blank].
+* https://ai.google.dev/gemini-api/docs/aistudio-fullstack[Develop Full-Stack Apps in Google AI Studio, window=_blank].
+* https://ai.google.dev/gemini-api/docs/aistudio-deploying[Deploying from Google AI Studio, window=_blank].
+* https://ai.google.dev/gemini-api/docs/pricing[Gemini Developer API pricing, window=_blank].
+* https://ai.google.dev/gemini-api/docs/billing[Gemini API billing, window=_blank].
+* https://ai.google.dev/gemini-api/docs/workspace[Access Google AI Studio with your Workspace account, window=_blank].
+* https://firebase.blog/posts/2026/03/announcing-ai-studio-integration/[From prompt to production: Build full-stack apps faster with Google AI Studio and Firebase, window=_blank].
+
+=== Ideas clave
+
+* Google AI Studio es una plataforma para probar Gemini, diseñar prompts, obtener código y construir apps en Build mode.
+* Google la presenta como una de las alternativas de migración desde Firebase Studio.
+* Build mode puede generar apps web full-stack y apps Android desde lenguaje natural.
+* La integración con Firebase permite añadir Firestore y Authentication con menos fricción.
+* El runtime servidor y la gestión de secretos ayudan a no exponer API keys en el navegador.
+* Cloud Run permite desplegar, pero el despliegue cambia el riesgo, el coste y la responsabilidad.
+* En sanidad debe usarse con datos ficticios, cuentas controladas y revisión explícita de privacidad, seguridad y costes.
+
+== Otras plataformas relevantes: Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44
+
+Después de revisar las alternativas del ecosistema Google, conviene ampliar el mapa con otras plataformas que están marcando la evolución del desarrollo asistido por IA. No todas persiguen exactamente lo mismo. Algunas se acercan más a un entorno de desarrollo completo en navegador. Otras son más fuertes en interfaz. Otras intentan que perfiles no técnicos puedan construir una aplicación completa con backend gestionado.
+
+En este apartado reunimos seis herramientas:
+
+* **Replit**, como entorno cloud de desarrollo con agente de IA y despliegue.
+* **Bolt.new**, como constructor full-stack web en navegador basado en prompts.
+* **Lovable**, como plataforma de MVPs y apps web con foco visual y backend integrado, especialmente Supabase.
+* **v0 by Vercel**, como generador de interfaces y aplicaciones React/Next.js conectado al ecosistema Vercel.
+* **GitHub Spark**, como plataforma de apps inteligentes integrada con GitHub y Copilot.
+* **Base44**, como app builder conversacional con backend e infraestructura gestionados.
+
+[NOTE]
+====
+La idea no es aprender todas en profundidad, sino entender para qué sirve cada una, qué tipo de prototipo favorece y qué cautelas introduce. En la práctica, elegir bien suele depender más del caso de uso, el equipo y los datos que de la herramienta que parezca más espectacular en una demo.
+====
+
+=== Replit
+
+Replit nació como un entorno de desarrollo en navegador y ha evolucionado hacia una plataforma de creación de aplicaciones asistida por IA. Su **Replit Agent** permite describir lo que se quiere construir en lenguaje natural y generar una aplicación con archivos, dependencias, vista previa, base de datos y opciones de despliegue.
+
+Su principal fortaleza es que combina varias piezas en un mismo lugar:
+
+* workspace en navegador;
+* editor de código;
+* terminal;
+* ejecución de la aplicación;
+* vista previa;
+* agente de IA;
+* checkpoints y posibilidad de rollback;
+* base de datos e integraciones;
+* despliegue desde la propia plataforma.
+
+Esto lo convierte en una herramienta muy interesante para formación. El alumnado puede ver rápidamente cómo una instrucción se convierte en archivos, cómo se ejecuta una app, qué errores aparecen, cómo se corrigen y cómo se despliega una demo. A diferencia de herramientas más visuales, Replit mantiene una relación bastante directa con el código.
+
+.Buen caso de uso
+****
+Crear una pequeña aplicación interna con datos ficticios: registro de incidencias, gestor de tareas, inventario de aula, panel de solicitudes o prototipo de dashboard. El valor está en que el proyecto se puede ejecutar, inspeccionar y modificar dentro del mismo entorno.
+****
+
+Fortalezas:
+
+* arranque muy rápido sin instalación local;
+* buen entorno para aprender código, terminal y despliegue;
+* agente capaz de planificar, crear, corregir y probar;
+* soporte para varios tipos de aplicaciones;
+* útil para colaboración y demos;
+* checkpoints que ayudan a recuperar estados anteriores.
+
+Limitaciones y cautelas:
+
+* el agente puede hacer cambios amplios que hay que revisar;
+* el coste depende del uso, planes y capacidad consumida;
+* no conviene introducir datos sensibles en prompts ni proyectos;
+* una app desplegada desde Replit sigue necesitando seguridad, permisos y mantenimiento;
+* puede crear dependencia del workspace si no se exporta o versiona adecuadamente.
+
+Para IT hospitalario, Replit encaja bien como laboratorio de prototipado y enseñanza. No debería usarse como atajo para conectar sistemas corporativos reales sin una revisión técnica completa.
+
+=== Bolt.new
+
+Bolt.new, de StackBlitz, está orientado a crear, ejecutar, editar y desplegar aplicaciones web full-stack desde el navegador. Su propuesta se apoya en la tecnología WebContainers de StackBlitz, que permite ejecutar entornos Node.js directamente en el navegador sin preparar una máquina local.
+
+El flujo típico es muy directo: se describe la aplicación, Bolt genera el proyecto, instala dependencias, muestra una vista previa y permite seguir iterando por conversación. Es especialmente fuerte para prototipos web rápidos en ecosistemas JavaScript/TypeScript.
+
+Puede ser una buena opción cuando se quiere:
+
+* pasar de una idea a una app web funcional en poco tiempo;
+* generar una primera estructura React, Vite, Next.js u otro stack web;
+* probar flujos de interfaz y backend ligero;
+* conectar con Supabase u otros servicios;
+* exportar o continuar el proyecto en GitHub;
+* preparar demos con despliegue rápido.
+
+Fortalezas:
+
+* excelente velocidad de arranque;
+* entorno ejecutable en navegador;
+* buena experiencia de prompt, código y preview;
+* enfoque práctico para apps web modernas;
+* integración natural con el ecosistema StackBlitz;
+* útil para prototipos full-stack.
+
+Limitaciones y cautelas:
+
+* puede consumir créditos o tokens con rapidez si se itera sin control;
+* el código generado debe revisarse como cualquier código externo;
+* las integraciones con backend requieren validar seguridad, permisos y secretos;
+* no debe usarse con datos reales sin gobierno;
+* en proyectos grandes puede ser necesario migrar a un flujo de desarrollo más controlado.
+
+[TIP]
+====
+Bolt.new funciona bien para ejercicios comparativos: pedir la misma app a Bolt y a Replit, y después comparar estructura de proyecto, facilidad de revisión, manejo de errores y calidad del resultado.
+====
+
+=== Lovable
+
+Lovable es una plataforma orientada a construir aplicaciones web y MVPs a partir de lenguaje natural, con especial énfasis en una experiencia visual cuidada y en la rapidez para validar ideas. Se ha popularizado entre perfiles de producto, founders, equipos pequeños y usuarios que quieren pasar de una idea a una app visible sin empezar por configuración técnica.
+
+Una de sus integraciones más relevantes es Supabase, que aporta base de datos PostgreSQL, autenticación, almacenamiento y funciones. Lovable también documenta integración con GitHub para sincronizar el proyecto y trabajar con control de versiones.
+
+Lovable encaja especialmente bien cuando el objetivo es:
+
+* crear un MVP web;
+* validar una idea de producto;
+* construir formularios, dashboards o portales sencillos;
+* trabajar con datos ficticios o de bajo riesgo;
+* probar flujos de usuario;
+* compartir una demo visualmente convincente.
+
+Fortalezas:
+
+* baja fricción para perfiles no técnicos;
+* buena calidad visual inicial;
+* integración con Supabase;
+* publicación sencilla;
+* posibilidad de sincronización con GitHub;
+* útil para MVPs y validación temprana.
+
+Limitaciones y cautelas:
+
+* la facilidad visual puede ocultar decisiones de backend;
+* hay que revisar políticas de Row Level Security en Supabase;
+* conviene controlar qué datos se almacenan y dónde;
+* no sustituye una arquitectura revisada para producción;
+* puede quedarse corto si el backend o las integraciones son complejas;
+* hay que vigilar dependencia de plataforma y plan contratado.
+
+En entornos sanitarios, Lovable puede ser útil para crear prototipos de conversación con usuarios, pero debe trabajar con datos ficticios y sin conexión a sistemas reales. Si se usa Supabase, las reglas de acceso no son opcionales: son parte central del ejercicio.
+
+=== v0 by Vercel
+
+v0, de Vercel, comenzó destacando como generador de interfaces a partir de lenguaje natural y ha evolucionado hacia una plataforma capaz de crear aplicaciones React y Next.js, con vista previa, edición, integración con Vercel y opciones para llevar el resultado a un flujo de desarrollo real.
+
+Su punto fuerte sigue siendo la capa de interfaz:
+
+* componentes React;
+* pantallas de administración;
+* dashboards;
+* formularios;
+* layouts;
+* prototipos visuales;
+* aplicaciones Next.js;
+* conexión natural con Vercel.
+
+Para equipos frontend, v0 es especialmente interesante porque genera código en un ecosistema reconocible. No se limita a una maqueta estática: puede producir componentes que después se revisan, ajustan y llevan al repositorio.
+
+Fortalezas:
+
+* excelente para UI moderna;
+* buen encaje con React, Next.js y Vercel;
+* genera código útil para equipos frontend;
+* permite iterar visualmente y por prompt;
+* buena opción para dashboards, paneles y formularios;
+* facilita pasar de prototipo visual a componente revisable.
+
+Limitaciones y cautelas:
+
+* no siempre es la mejor opción para backend complejo;
+* puede generar una interfaz convincente sin reglas de negocio reales;
+* requiere revisión de accesibilidad, estados de error y datos reales;
+* el despliegue en Vercel introduce dependencia de plataforma;
+* una UI generada no equivale a una aplicación gobernada.
+
+.Caso de uso interesante
+****
+Pedir a v0 un panel de seguimiento de solicitudes internas con datos ficticios. Después, identificar qué es sólo presentación, qué lógica falta, qué endpoints serían necesarios y qué permisos habría que diseñar antes de usarlo en un entorno real.
+****
+
+=== GitHub Spark
+
+GitHub Spark es la propuesta de GitHub para crear aplicaciones inteligentes mediante lenguaje natural dentro del ecosistema GitHub/Copilot. La documentación oficial lo presenta como una herramienta para describir una app y obtener una aplicación full-stack con almacenamiento de datos, funciones de IA y autenticación de GitHub, con posibilidad de iterar mediante prompts, herramientas visuales o código.
+
+Su principal ventaja es el encaje con GitHub:
+
+* integración con Copilot;
+* posibilidad de abrir un Codespace;
+* creación de repositorio para colaboración;
+* continuidad hacia flujos de revisión y desarrollo conocidos;
+* despliegue en runtime gestionado;
+* autenticación de GitHub integrada.
+
+Esto lo hace especialmente relevante para equipos que ya trabajan con repositorios, pull requests, issues, GitHub Enterprise y políticas de organización. En lugar de quedarse en una herramienta aislada, Spark intenta conectar la app generada con el ecosistema donde el equipo ya desarrolla.
+
+Fortalezas:
+
+* integración natural con GitHub y Copilot;
+* buen encaje con equipos técnicos;
+* continuidad hacia repositorios y Codespaces;
+* permite prompts, controles visuales y código;
+* interesante para apps internas con autenticación GitHub;
+* facilita colaboración y trazabilidad.
+
+Limitaciones y cautelas:
+
+* hay que revisar disponibilidad según plan y organización;
+* las políticas de GitHub Enterprise importan mucho;
+* no debe confundirse con una revisión formal de seguridad;
+* una app generada sigue necesitando pruebas y gobierno;
+* conviene revisar cómo se procesan prompts y contexto;
+* el runtime gestionado puede no encajar con todos los requisitos corporativos.
+
+Para IT hospitalario, GitHub Spark resulta atractivo si el departamento ya usa GitHub de forma corporativa. El caso natural sería prototipar una app interna y llevarla rápidamente a un repositorio revisable, no desplegar soluciones críticas sin control.
+
+=== Base44
+
+Base44 es una plataforma de creación de aplicaciones mediante IA con orientación _no-code/low-code_ y backend gestionado. Su propuesta consiste en permitir que el usuario describa una aplicación, la construya conversando con el sistema y dependa de la plataforma para muchas piezas de infraestructura: base de datos, autenticación, funciones, integraciones, hosting y herramientas de desarrollo.
+
+La documentación oficial presenta Base44 como un entorno donde se puede trabajar con el código de la app, usar herramientas de desarrollo, integrarse con GitHub y apoyarse en la plataforma como backend. También ofrece integraciones para conectar la app con servicios externos y automatizar flujos.
+
+Base44 puede ser interesante para:
+
+* perfiles no técnicos;
+* equipos de negocio;
+* prototipos internos;
+* MVPs rápidos;
+* formularios y herramientas administrativas;
+* apps con backend gestionado;
+* automatizaciones con integraciones externas.
+
+Fortalezas:
+
+* baja barrera de entrada;
+* backend e infraestructura gestionados;
+* integración con servicios externos;
+* posibilidad de trabajar con código y GitHub;
+* buena opción para apps internas sencillas;
+* útil para validar ideas sin montar stack propio.
+
+Limitaciones y cautelas:
+
+* menor control profundo que un stack propio;
+* dependencia fuerte de la plataforma;
+* integraciones y funciones pueden depender del plan;
+* hay que revisar gestión de datos, permisos y exportación;
+* no es ideal para arquitectura compleja o requisitos estrictos de cumplimiento;
+* el backend gestionado puede ocultar decisiones que un equipo IT necesita auditar.
+
+En un hospital, Base44 debe entenderse como herramienta para prototipos, formación o apps internas de bajo riesgo. Si el prototipo empieza a tener usuarios reales, datos personales o dependencia operativa, hay que revisar de forma formal qué datos trata, dónde se alojan, quién accede, cómo se audita y cómo se mantiene.
+
+=== Comparativa rápida
+
+[cols="2,3,3,3",options="header"]
+|===
+| Herramienta | Mejor para | Punto fuerte | Riesgo principal
+
+| Replit
+| Aprendizaje, prototipos ejecutables, apps completas en navegador.
+| Entorno cloud completo con agente, código, ejecución y despliegue.
+| Coste, dependencia del workspace y cambios amplios del agente sin suficiente revisión.
+
+| Bolt.new
+| Apps web full-stack rápidas en ecosistema JavaScript/TypeScript.
+| Velocidad de generación, preview y ejecución en navegador.
+| Consumo de créditos/tokens y necesidad de revisar integraciones y seguridad.
+
+| Lovable
+| MVPs visuales, producto, formularios y apps con Supabase.
+| Rapidez para obtener una app atractiva y funcional.
+| Seguridad de backend, permisos y falsa sensación de producción.
+
+| v0
+| Interfaces, dashboards, componentes React y Next.js.
+| Calidad de UI y código frontend aprovechable.
+| Quedarse en una fachada visual sin lógica, datos ni gobierno.
+
+| GitHub Spark
+| Apps inteligentes dentro de GitHub/Copilot.
+| Continuidad con repositorios, Codespaces y flujo GitHub.
+| Disponibilidad, políticas enterprise y runtime gestionado.
+
+| Base44
+| Apps internas y MVPs con backend gestionado para perfiles no técnicos.
+| Baja fricción e infraestructura integrada.
+| Dependencia de plataforma y menor control profundo.
+|===
+
+=== Recomendación por escenario
+
+[cols="3,4,4",options="header"]
+|===
+| Escenario | Herramientas candidatas | Criterio de elección
+
+| Clase práctica de introducción
+| Replit, Bolt.new, v0
+| Permiten ver rápido prompt, código, errores, preview y revisión.
+
+| Prototipo visual para reunión con usuarios
+| v0, Lovable, Base44
+| Priorizar claridad de interfaz y rapidez para obtener feedback.
+
+| MVP web con backend sencillo
+| Lovable, Bolt.new, Replit, Base44
+| Revisar persistencia, autenticación, permisos y exportación.
+
+| Equipo frontend con React/Next.js
+| v0, Bolt.new
+| Importa que el código generado encaje con el stack real.
+
+| Equipo técnico que ya usa GitHub
+| GitHub Spark, Replit, v0
+| Priorizar repositorios, revisión, Codespaces y continuidad.
+
+| Perfil no técnico de negocio
+| Lovable, Base44
+| Priorizar baja fricción, controles visuales y límites claros.
+
+| Demo con datos sanitarios ficticios
+| Replit, Bolt.new, v0, Lovable
+| Usar sólo datos inventados y revisar riesgos antes de compartir.
+
+| Integración con sistemas hospitalarios reales
+| Ninguna como atajo directo
+| Debe tratarse como proyecto formal, no como demo generada.
+|===
+
+=== Criterios comunes de evaluación
+
+Para cualquiera de estas herramientas, conviene responder siempre las mismas preguntas:
+
+* ¿Puedo ver y entender el código generado?
+* ¿Puedo exportarlo o versionarlo?
+* ¿Dónde se ejecuta la app?
+* ¿Dónde se almacenan los datos?
+* ¿Qué ocurre con prompts, archivos y conversaciones?
+* ¿Qué servicios externos se activan?
+* ¿Cómo se gestionan secretos y API keys?
+* ¿Qué coste aparece al iterar o desplegar?
+* ¿Quién puede acceder a la URL publicada?
+* ¿Qué pasa si la herramienta cambia de precio o de política?
+* ¿Qué parte del prototipo puede sobrevivir fuera de la plataforma?
+* ¿Qué revisión sería obligatoria antes de un piloto?
+
+[IMPORTANT]
+====
+La pregunta decisiva no es "¿qué herramienta genera más rápido?", sino "¿qué herramienta permite aprender, revisar y gobernar mejor el resultado para este caso concreto?".
+====
+
+=== Ejercicio propuesto
+
+Se trata de comparar dos plataformas usando el mismo caso y evaluar no sólo el resultado visual, sino también código, datos, despliegue, riesgos y facilidad de continuidad.
+
+Caso común:
+
+[source,text]
+----
+Crea una aplicación web para registrar solicitudes internas ficticias
+del departamento de informática de un hospital.
+
+Debe permitir:
+- crear una solicitud con título, descripción, servicio solicitante,
+  prioridad y estado;
+- listar solicitudes;
+- filtrar por estado y prioridad;
+- mostrar un panel resumen;
+- usar sólo datos ficticios;
+- no incluir información de pacientes;
+- explicar qué faltaría antes de un piloto real.
+----
+
+Comparar:
+
+* estructura de archivos generada;
+* calidad de la interfaz;
+* claridad del código;
+* facilidad para modificar una pantalla;
+* manejo de datos ficticios;
+* opciones de backend;
+* despliegue o publicación;
+* exportación a GitHub o ZIP;
+* coste o créditos consumidos;
+* advertencias de seguridad que ofrece la propia herramienta;
+* facilidad para explicar el resultado a un usuario no técnico.
+
+Preguntas finales:
+
+* ¿Cuál ha generado una demo más útil?
+* ¿Cuál ha generado código más revisable?
+* ¿Cuál ha ocultado más decisiones?
+* ¿Cuál sería más defendible para un piloto controlado?
+* ¿Qué plataforma evitarías para este caso y por qué?
+
+**Enlaces de interés**:
+
+* Replit Agent: https://docs.replit.com/core-concepts/agent/[Replit Agent documentation, window=_blank].
+* Bolt.new: https://github.com/stackblitz/bolt.new[repositorio oficial de Bolt.new / StackBlitz, window=_blank] y https://support.bolt.new/[Bolt Help Center].
+* Lovable: https://docs.lovable.dev/features/publish[Publish your Lovable project, window=_blank], https://docs.lovable.dev/integrations/supabase[Supabase integration, window=_blank] y https://docs.lovable.dev/integrations/git-integration[GitHub integration, window=_blank].
+* v0 by Vercel: https://vercel.com/docs/v0[v0 documentation, window=_blank] y https://v0.dev/docs/en/docs/api[v0 API docs, window=_blank].
+* GitHub Spark: https://docs.github.com/copilot/concepts/spark[About GitHub Spark, window=_blank] y https://docs.github.com/copilot/responsible-use-of-github-copilot-features/responsible-use-of-github-spark[Responsible use of GitHub Spark, window=_blank].
+* Base44: https://docs.base44.com/documentation/building-your-app/developer-tools[Base44 developer tools, window=_blank] y https://docs.base44.com/Integrations[Base44 integrations, window=_blank].
+
+=== Ideas clave
+
+* Replit y Bolt.new son especialmente útiles para ver la relación entre prompt, código, ejecución y despliegue.
+* Lovable y Base44 reducen mucho la barrera para perfiles no técnicos, pero exigen atención especial a datos, permisos y dependencia de plataforma.
+* v0 destaca cuando el problema principal es interfaz, componentes y frontend moderno.
+* GitHub Spark es interesante si el equipo ya vive en GitHub y quiere continuidad hacia repositorios, Copilot y Codespaces.
+* Ninguna de estas plataformas debe conectarse a sistemas hospitalarios reales sin gobierno técnico, legal y de seguridad.
+* Para el curso, el mejor aprendizaje surge al comparar dos herramientas con el mismo caso y revisar qué decisiones quedan visibles y cuáles quedan ocultas.
+
+== Cómo evaluar una plataforma antes de usarla
+
+Antes de adoptar una plataforma de desarrollo asistido por IA conviene hacer una evaluación breve, explícita y documentada. No hace falta convertir cada prueba en un expediente complejo, pero sí evitar que la decisión se base sólo en una demo atractiva o en la sensación de que "ha funcionado a la primera".
+
+La evaluación debe responder a una pregunta central:
+
+[quote]
+____
+¿Esta plataforma es adecuada para este caso, con estos datos, este equipo, este nivel de riesgo y este ciclo de vida esperado?
+____
+
+Una herramienta puede ser excelente para formación y mala para producción. Puede ser magnífica para frontend y débil para backend. Puede funcionar muy bien con datos ficticios y ser inaceptable con datos personales. Por eso la evaluación debe partir del caso de uso, no del brillo de la herramienta.
+
+[IMPORTANT]
+====
+En un entorno hospitalario, evaluar una plataforma no es sólo probar si genera una app. También hay que revisar datos, privacidad, seguridad, identidad, despliegue, coste, trazabilidad, mantenimiento y responsabilidad.
+====
+
+=== Paso 1: Definir el caso de uso
+
+La primera pregunta es qué se quiere hacer realmente. Si el caso está mal definido, la plataforma puede generar algo vistoso pero irrelevante.
+
+Antes de abrir la herramienta, conviene escribir:
+
+* objetivo del prototipo;
+* usuarios previstos;
+* tipo de aplicación;
+* datos que se usarán;
+* datos que no deben usarse;
+* servicios externos necesarios;
+* nivel de riesgo;
+* resultado esperado de la prueba.
+
+Ejemplo:
+
+[source,text]
+----
+Queremos probar si una app sencilla ayuda a registrar solicitudes internas
+del área de informática. La prueba usará únicamente datos ficticios.
+No se conectará a sistemas reales. El objetivo es validar pantallas,
+campos y flujo, no desplegar una herramienta en producción.
+----
+
+Esta definición evita el primer error habitual: empezar con una idea ambigua y dejar que la herramienta decida por nosotros alcance, datos y arquitectura.
+
+=== Paso 2: Clasificar el nivel de riesgo
+
+No todas las pruebas requieren el mismo nivel de control. Una demo con datos inventados no tiene el mismo riesgo que una app conectada a identidad corporativa o a una base de datos real.
+
+[cols="2,4,4",options="header"]
+|===
+| Nivel | Ejemplos | Condiciones mínimas
+
+| Bajo
+| Demo, interfaz con datos ficticios, prototipo sin persistencia real.
+| Datos inventados, sin conexión corporativa, sin despliegue público innecesario.
+
+| Medio
+| Piloto con usuarios internos, datos no clínicos, autenticación básica, backend gestionado.
+| Revisión técnica, control de acceso, entorno separado, responsable asignado.
+
+| Alto
+| Datos personales, integración con sistemas internos, uso por varios servicios, dependencia operativa.
+| Evaluación de seguridad, privacidad, arquitectura, contratos, auditoría y soporte.
+
+| Crítico
+| Sistemas clínicos, decisiones asistenciales, datos de pacientes, integraciones con HCE/HIS/LIS/RIS/PACS.
+| No usar como atajo. Requiere proyecto formal con gobierno completo.
+|===
+
+[WARNING]
+====
+Si durante una prueba aparecen datos reales, usuarios reales o dependencia operativa, el nivel de riesgo cambia. En ese momento deja de ser una demo informal.
+====
+
+=== Paso 3: Evaluar capacidades funcionales
+
+La plataforma debe resolver el tipo de problema que tenemos, no sólo generar una pantalla.
+
+Preguntas útiles:
+
+* ¿Permite describir la aplicación en lenguaje natural?
+* ¿Genera una primera versión ejecutable?
+* ¿Permite modificar el resultado por conversación?
+* ¿Permite editar manualmente?
+* ¿Tiene vista previa fiable?
+* ¿Permite trabajar con formularios, listados, filtros y estados?
+* ¿Permite crear dashboards o visualizaciones?
+* ¿Permite datos de ejemplo?
+* ¿Permite autenticación?
+* ¿Permite persistencia?
+* ¿Permite integraciones externas?
+* ¿Permite publicar una demo controlada?
+
+La evaluación funcional no debe quedarse en "la app se ve bien". Hay que probar cambios concretos: añadir un campo, cambiar un filtro, modificar permisos, corregir un error, explicar un componente y eliminar una funcionalidad.
+
+=== Paso 4: Evaluar control técnico
+
+El control técnico marca la diferencia entre una demo efímera y un prototipo que puede evolucionar.
+
+[cols="3,5",options="header"]
+|===
+| Pregunta | Por qué importa
+
+| ¿Puedo ver el código?
+| Sin código visible, la revisión técnica es limitada.
+
+| ¿Puedo exportarlo?
+| Evita quedar atrapado en la plataforma.
+
+| ¿Puedo sincronizar con GitHub u otro Git?
+| Facilita revisión, historial y colaboración.
+
+| ¿Puedo ejecutar el proyecto fuera de la plataforma?
+| Permite continuidad si cambia el producto o el precio.
+
+| ¿Puedo controlar dependencias?
+| Las dependencias introducen riesgo de seguridad y mantenimiento.
+
+| ¿Puedo ver qué servicios externos se han activado?
+| Evita integraciones ocultas o costes inesperados.
+
+| ¿Puedo separar frontend, backend y datos?
+| Ayuda a revisar arquitectura y seguridad.
+
+| ¿Puedo hacer rollback?
+| Reduce riesgo durante la iteración con agentes.
+|===
+
+Una plataforma con poco control técnico puede seguir siendo útil para ideación o diseño, pero no debería ser la base de una aplicación mantenible sin una estrategia clara de salida.
+
+=== Paso 5: Evaluar datos y privacidad
+
+Esta es la parte más importante en sanidad. Antes de usar una plataforma hay que saber qué datos entran, dónde se procesan y quién puede acceder.
+
+Checklist mínimo:
+
+* No usar datos de pacientes.
+* No introducir nombres, DNI, teléfonos, direcciones, CIP, números de historia ni identificadores internos.
+* No pegar logs reales con datos personales.
+* No subir capturas de aplicaciones corporativas.
+* No introducir credenciales, tokens ni claves.
+* No conectar bases de datos reales.
+* No compartir URLs públicas con datos internos.
+* Usar datos sintéticos o ficticios.
+* Revisar política de privacidad y tratamiento de datos.
+* Revisar si los prompts pueden usarse para entrenamiento o mejora del servicio.
+* Revisar región, proveedor cloud y condiciones contractuales.
+
+[IMPORTANT]
+====
+La anonimización real es difícil. Para prácticas y demos, la opción más segura suele ser crear datos completamente ficticios, no "limpiar" datos reales.
+====
+
+=== Paso 6: Evaluar seguridad
+
+Una app generada por IA puede funcionar y aun así ser insegura. Hay que revisar al menos:
+
+* autenticación;
+* autorización;
+* roles y permisos;
+* reglas de base de datos;
+* validación en cliente y servidor;
+* gestión de secretos;
+* exposición de API keys;
+* dependencias vulnerables;
+* endpoints públicos;
+* logs;
+* subida de archivos;
+* errores que muestran información sensible;
+* despliegue público;
+* borrado de recursos tras la prueba.
+
+Preguntas clave:
+
+* ¿La app diferencia usuarios o todos ven todo?
+* ¿Los permisos están implementados o sólo aparecen en la interfaz?
+* ¿La validación ocurre también en servidor?
+* ¿Las claves están ocultas o aparecen en el frontend?
+* ¿La base de datos tiene reglas restrictivas?
+* ¿Hay forma de auditar acciones?
+* ¿Quién puede acceder a la URL publicada?
+
+=== Paso 7: Evaluar costes y límites
+
+Muchas plataformas parecen gratuitas hasta que se despliega, se itera mucho, se usan modelos avanzados o se activan servicios externos.
+
+Revisar:
+
+* plan gratuito y límites;
+* créditos, tokens o unidades de consumo;
+* coste de agente;
+* coste de despliegue;
+* coste de base de datos;
+* coste de autenticación;
+* coste de almacenamiento;
+* coste de llamadas a modelos;
+* coste por usuarios adicionales;
+* coste de integraciones;
+* alertas de gasto;
+* cómo apagar o borrar recursos.
+
+[TIP]
+====
+Para prácticas de aula, conviene definir una regla simple: no activar facturación ni despliegues persistentes salvo que el ejercicio lo indique de forma explícita.
+====
+
+=== Paso 8: Evaluar continuidad y salida
+
+Una buena demo puede convertirse en un problema si nadie sabe cómo continuarla o abandonarla.
+
+Preguntas de continuidad:
+
+* ¿Qué pasa si la herramienta desaparece?
+* ¿Qué pasa si cambia de precio?
+* ¿Podemos exportar el proyecto?
+* ¿Podemos ejecutarlo localmente?
+* ¿Podemos llevarlo a otro hosting?
+* ¿Podemos migrar la base de datos?
+* ¿Podemos cambiar autenticación?
+* ¿Podemos revisar historial de cambios?
+* ¿Podemos documentar lo generado?
+* ¿Quién mantiene el prototipo si sigue vivo?
+
+Una plataforma es más segura cuando permite salir con el código, los datos y la documentación suficiente para no depender totalmente de ella.
+
+=== Paso 9: Evaluar encaje organizativo
+
+La herramienta debe encajar en cómo trabaja la organización:
+
+* ¿Se puede usar con cuentas corporativas?
+* ¿Permite administración centralizada?
+* ¿Se puede limitar quién despliega?
+* ¿Se puede auditar actividad?
+* ¿Permite trabajar con GitHub Enterprise, Google Workspace, Microsoft Entra ID u otra identidad corporativa?
+* ¿Tiene condiciones empresariales?
+* ¿Permite acuerdos de tratamiento de datos?
+* ¿Encaja con las políticas internas de seguridad?
+* ¿Quién aprueba su uso?
+* ¿Quién da soporte?
+
+En un departamento IT hospitalario, el encaje organizativo puede pesar más que la potencia técnica. Una herramienta brillante pero imposible de gobernar puede ser peor opción que una herramienta más limitada pero compatible con las políticas internas.
+
+=== Matriz de decisión rápida
+
+[cols="3,1,1,1,4",options="header"]
+|===
+| Criterio | Verde | Ámbar | Rojo | Comentario
+
+| Datos usados
+| Ficticios
+| Internos no sensibles
+| Personales o clínicos
+| Con datos reales, subir el nivel de revisión.
+
+| Código
+| Visible y exportable
+| Parcialmente visible
+| No revisable
+| Sin revisión no hay camino serio a piloto.
+
+| Backend
+| Claro y documentado
+| Gestionado pero entendible
+| Opaco
+| Importa saber dónde viven datos y lógica.
+
+| Seguridad
+| Permisos revisables
+| Permisos básicos
+| Sin control real
+| Validar autenticación, roles y reglas.
+
+| Despliegue
+| Controlado y reversible
+| Fácil pero limitado
+| Público sin control
+| Publicar cambia el nivel de riesgo.
+
+| Costes
+| Límites claros
+| Créditos variables
+| Facturación opaca
+| Activar alertas y revisar cuotas.
+
+| Exportación
+| Git/ZIP completo
+| Exportación parcial
+| Sin salida clara
+| Evita dependencia excesiva.
+
+| Encaje corporativo
+| Cuentas y políticas compatibles
+| Uso individual controlado
+| Sin gobierno posible
+| Clave para organizaciones sanitarias.
+|===
+
+=== Resultado de la evaluación
+
+Al terminar la evaluación, la conclusión debería caer en una de estas categorías:
+
+[cols="2,5",options="header"]
+|===
+| Resultado | Significado
+
+| Apta para formación
+| Puede usarse en clase, con datos ficticios y alcance controlado.
+
+| Apta para demo
+| Puede generar una versión visible para discutir una idea, sin uso operativo.
+
+| Apta para piloto controlado
+| Puede probarse con usuarios limitados tras revisión técnica, seguridad y datos.
+
+| Requiere revisión adicional
+| Hay dudas sobre privacidad, coste, seguridad, exportación o soporte.
+
+| No apta para este caso
+| El riesgo, los datos o la falta de control hacen desaconsejable su uso.
+|===
+
+.Documento mínimo de evaluación
+****
+Para cada plataforma probada, basta con una ficha de una página:
+
+* caso probado;
+* datos usados;
+* resultado generado;
+* código visible/exportable;
+* backend y servicios activados;
+* opciones de despliegue;
+* riesgos detectados;
+* costes o límites;
+* conclusión: formación, demo, piloto, revisar o descartar.
+****
+
+=== Prompt de revisión recomendado
+
+Después de generar una app con cualquier plataforma, se puede pedir a la propia IA una revisión crítica:
+
+[source,text]
+----
+Revisa esta aplicación como responsable de arquitectura, seguridad
+y protección de datos de un hospital.
+
+Indica:
+1. qué datos podrían ser sensibles;
+2. qué permisos faltan;
+3. qué riesgos de seguridad ves;
+4. qué dependencias o servicios externos se han añadido;
+5. qué costes podrían aparecer;
+6. qué partes son sólo demo;
+7. qué sería obligatorio revisar antes de un piloto;
+8. qué impediría usarla en producción.
+----
+
+La respuesta de la IA no sustituye una revisión profesional, pero ayuda a descubrir puntos ciegos y convierte la evaluación en una conversación más rica.
+
+=== Ideas clave
+
+* Evaluar una plataforma no es probar si genera una pantalla, sino comprobar si encaja con datos, riesgo, equipo y ciclo de vida.
+* En sanidad, los datos ficticios deben ser la norma para demos y formación.
+* El control de código, backend, permisos, costes y exportación determina si un prototipo puede evolucionar.
+* Una plataforma rápida pero opaca debe limitarse a ideación o demos.
+* La decisión final debe documentarse: formación, demo, piloto controlado, revisión adicional o descarte.
+
+== Taller práctico: de plataforma asistida a desarrollo local
+
+Este taller propone un recorrido completo pero controlado: usar una plataforma de desarrollo asistido por IA para crear una primera versión de una aplicación, revisar el resultado en modo preview, salir de la plataforma mediante un repositorio GitHub y continuar el desarrollo en local con un asistente de programación como Claude, Gemini, GitHub Copilot, Cursor, Codex u otra herramienta equivalente.
+
+La idea no es construir una aplicación compleja. La idea es aprender un patrón de trabajo profesional:
+
+[quote]
+____
+Usar la plataforma para acelerar el primer prototipo, pero conservar el control del código, del repositorio y del desarrollo posterior.
+____
+
+Este enfoque evita uno de los riesgos más habituales de estas herramientas: quedarse atrapado en una demo bonita que nadie sabe mantener fuera de la plataforma.
+
+=== Objetivos del taller
+
+Al finalizar el taller, el alumnado debería ser capaz de:
+
+* crear una aplicación sencilla desde lenguaje natural;
+* probarla en modo preview sin desplegarla en producción;
+* identificar la estructura básica del proyecto generado;
+* exportar o sincronizar el proyecto con GitHub;
+* clonar el repositorio en local;
+* instalar dependencias y ejecutar la aplicación en la máquina de desarrollo;
+* continuar el desarrollo con ayuda de un asistente de IA local o integrado en el IDE;
+* documentar qué parte ha generado la plataforma y qué parte se ha modificado después;
+* distinguir entre prototipo, repositorio controlado y aplicación mantenible.
+
+[IMPORTANT]
+====
+El taller debe realizarse con datos ficticios. No se usarán datos de pacientes, logs reales, capturas de sistemas internos, credenciales corporativas ni información sensible del hospital.
+====
+
+=== Herramienta inicial
+
+La herramienta inicial puede ser **Firebase Studio**, **Google AI Studio**, **Replit**, **Bolt.new**, **Lovable**, **v0** u otra similar, siempre que cumpla tres condiciones:
+
+* permite crear una app sencilla desde un prompt;
+* ofrece un modo preview para probar la aplicación;
+* permite exportar o sincronizar el código con un repositorio GitHub.
+
+Para este taller, Firebase Studio o Google AI Studio encajan bien si se quiere trabajar dentro del ecosistema Google. Replit o Bolt.new son buenas alternativas si se quiere una experiencia más general de desarrollo web en navegador. v0 encaja mejor si se quiere centrar el ejercicio en interfaz y frontend.
+
+[CAUTION]
+====
+Si se usa Firebase Studio, hay que recordar que Google ha anunciado su retirada para el 22 de marzo de 2027. Para el taller sigue siendo útil como ejemplo de plataforma, pero no debe presentarse como apuesta nueva a largo plazo sin plan de migración.
+====
+
+=== Aplicación propuesta
+
+La aplicación debe ser deliberadamente sencilla y **sin persistencia real**. Esto reduce riesgos y obliga a centrarse en el flujo de trabajo: generar, probar, exportar y continuar en local.
+
+Caso propuesto:
+
+[source,text]
+----
+Aplicación web para registrar solicitudes internas ficticias
+del departamento de informática de un hospital.
+
+Debe permitir:
+- crear una solicitud con título, descripción, servicio solicitante,
+  prioridad y estado;
+- mostrar un listado de solicitudes;
+- filtrar por estado y prioridad;
+- cambiar el estado entre abierta, en curso y cerrada;
+- mostrar un pequeño resumen con número de solicitudes por estado;
+- usar únicamente datos ficticios;
+- guardar los datos sólo en memoria del navegador o en estado local;
+- no usar base de datos;
+- no incluir autenticación;
+- no desplegar en producción.
+----
+
+La aplicación puede perder los datos al recargar la página. Eso no es un defecto en este taller; es una decisión de seguridad y simplicidad. La persistencia se deja fuera para evitar bases de datos, permisos, cuentas, facturación y tratamiento de datos.
+
+=== Fase 1: Crear el prototipo en la plataforma
+
+El primer paso consiste en crear el prototipo con lenguaje natural.
+
+Prompt sugerido:
+
+[source,text]
+----
+Crea una aplicación web sencilla para registrar solicitudes internas ficticias
+del departamento de informática de un hospital.
+
+Restricciones:
+- no uses datos reales;
+- no incluyas información de pacientes;
+- no uses base de datos;
+- no añadas autenticación;
+- no configures despliegue;
+- guarda los datos sólo en memoria o en estado local;
+- debe funcionar en modo preview.
+
+Funcionalidades:
+- formulario con título, descripción, servicio solicitante, prioridad y estado;
+- listado de solicitudes;
+- filtros por estado y prioridad;
+- cambio de estado;
+- panel resumen con solicitudes abiertas, en curso y cerradas;
+- datos iniciales ficticios;
+- interfaz sobria y clara para uso interno.
+
+Antes de generar el código, resume la estructura propuesta y confirma
+que no vas a usar persistencia, autenticación ni despliegue.
+----
+
+Tras generar la aplicación, el alumnado debe comprobar:
+
+* que la app se abre en preview;
+* que se puede crear una solicitud;
+* que se puede filtrar;
+* que el panel resumen cambia;
+* que no se ha creado base de datos;
+* que no se ha activado autenticación;
+* que no se ha publicado una URL de producción;
+* que los datos son ficticios.
+
+=== Fase 2: Revisar lo generado
+
+Antes de salir de la plataforma, hay que revisar qué ha creado.
+
+Preguntas mínimas:
+
+* ¿Qué framework ha usado?
+* ¿Qué archivos principales aparecen?
+* ¿Dónde están los componentes de interfaz?
+* ¿Dónde está el estado de la aplicación?
+* ¿Hay llamadas a APIs externas?
+* ¿Se ha añadido alguna dependencia inesperada?
+* ¿Hay variables de entorno?
+* ¿Hay algún servicio cloud activado?
+* ¿El código es entendible para continuar fuera?
+
+Prompt de revisión:
+
+[source,text]
+----
+Explica la estructura del proyecto generado.
+Indica qué archivos son principales, dónde se gestiona el estado,
+qué componentes forman la interfaz, qué dependencias se han añadido
+y confirma si existe algún backend, base de datos, autenticación,
+servicio externo o despliegue configurado.
+----
+
+[NOTE]
+====
+Esta fase es importante porque enseña a no tratar la plataforma como una caja mágica. Antes de exportar, hay que entender mínimamente qué se está exportando.
+====
+
+=== Fase 3: Salir de la plataforma mediante GitHub
+
+El siguiente paso es llevar el proyecto a GitHub. Según la herramienta, esto puede hacerse de varias formas:
+
+* sincronizar directamente con GitHub;
+* crear un repositorio desde la plataforma;
+* exportar a ZIP y subirlo a GitHub;
+* abrir el proyecto en un entorno conectado a GitHub y hacer el primer commit.
+
+Requisitos mínimos del repositorio:
+
+* nombre claro, por ejemplo `solicitudes-it-demo`;
+* README inicial;
+* código completo de la aplicación;
+* archivo de dependencias (`package.json` o equivalente);
+* instrucciones para ejecutar en local;
+* primer commit que identifique que el código base fue generado por la plataforma.
+
+Ejemplo de mensaje de commit:
+
+[source,text]
+----
+Initial prototype generated from AI development platform
+----
+
+El README debe incluir al menos:
+
+[source,markdown]
+----
+# Solicitudes IT Demo
+
+Prototipo generado con una plataforma de desarrollo asistido por IA.
+
+## Alcance
+
+- Datos ficticios
+- Sin persistencia real
+- Sin autenticación
+- Sin despliegue de producción
+- Uso exclusivo para formación
+
+## Ejecución local
+
+npm install
+npm run dev
+
+## Advertencia
+
+Este proyecto no está preparado para producción.
+----
+
+[IMPORTANT]
+====
+Salir a GitHub es una parte central del taller. Si la plataforma no permite exportar o sincronizar el código, no sirve para este ejercicio.
+====
+
+=== Fase 4: Tomar control en local
+
+Una vez creado el repositorio, el alumnado debe clonar el proyecto en local.
+
+Flujo general:
+
+[source,bash]
+----
+git clone URL_DEL_REPOSITORIO
+cd solicitudes-it-demo
+npm install
+npm run dev
+----
+
+Si la aplicación usa otro gestor o framework, se adaptarán los comandos. Lo importante es que el proyecto ya no dependa de la plataforma inicial para ejecutarse.
+
+Comprobaciones:
+
+* la aplicación arranca en local;
+* el preview local funciona;
+* no faltan archivos;
+* las dependencias se instalan;
+* no hay errores críticos;
+* se puede modificar un componente y ver el cambio.
+
+=== Fase 5: Continuar con Claude, Gemini o similar
+
+En esta fase se continúa el desarrollo usando un asistente de programación en local o integrado en el entorno de desarrollo. Puede ser Claude, Gemini, GitHub Copilot, Cursor, Codex u otra herramienta equivalente.
+
+La diferencia respecto a la primera fase es importante:
+
+* la plataforma inicial generó el primer prototipo;
+* GitHub conserva el código y el historial;
+* el entorno local permite revisar, modificar y ejecutar;
+* el asistente ayuda, pero el control lo mantiene el equipo.
+
+Tareas de mejora sugeridas:
+
+* añadir validación de campos obligatorios;
+* mejorar mensajes de error;
+* separar componentes grandes en componentes más pequeños;
+* crear un archivo con datos ficticios iniciales;
+* añadir tests simples si el framework lo permite;
+* mejorar accesibilidad básica;
+* añadir una vista de detalle de solicitud;
+* añadir un botón para reiniciar datos ficticios;
+* documentar limitaciones en el README.
+
+Prompt para el asistente local:
+
+[source,text]
+----
+Revisa este proyecto como una aplicación generada por IA.
+No añadas base de datos, autenticación ni servicios externos.
+
+Quiero mejorar el código manteniendo el alcance:
+- datos ficticios;
+- estado local;
+- sin persistencia;
+- sin despliegue.
+
+Propón una lista de mejoras pequeñas y seguras.
+Después implementaremos una por una.
+----
+
+Prompt para refactorización:
+
+[source,text]
+----
+Analiza los componentes principales y propón una refactorización sencilla.
+No cambies el comportamiento funcional.
+Prioriza legibilidad, separación de responsabilidades y nombres claros.
+----
+
+Prompt para revisión de seguridad:
+
+[source,text]
+----
+Revisa el proyecto desde el punto de vista de seguridad y privacidad.
+Confirma que no hay datos reales, persistencia, autenticación, API keys,
+servicios externos ni despliegue configurado. Indica cualquier riesgo
+o supuesto que debería documentarse.
+----
+
+=== Fase 6: Registrar cambios y comparar
+
+Después de hacer cambios en local, se debe registrar el trabajo en Git.
+
+Ejemplo:
+
+[source,bash]
+----
+git status
+git add .
+git commit -m "Refine local prototype structure"
+----
+
+El alumnado debe comparar:
+
+* versión generada por la plataforma;
+* versión modificada en local;
+* cambios sugeridos por el asistente;
+* cambios aceptados y rechazados;
+* problemas encontrados al ejecutar fuera de la plataforma.
+
+Preguntas de reflexión:
+
+* ¿Qué parte hizo bien la plataforma inicial?
+* ¿Qué parte fue necesario corregir?
+* ¿Fue fácil salir a GitHub?
+* ¿Fue fácil ejecutar en local?
+* ¿Qué dependencia de la plataforma se ha eliminado?
+* ¿Qué dependencia sigue existiendo?
+* ¿Qué aportó el asistente local?
+* ¿Qué decisiones habría que tomar antes de añadir persistencia?
+
+=== Entregables del taller
+
+Cada grupo o alumno debe entregar:
+
+* URL del repositorio GitHub;
+* captura o evidencia del preview inicial;
+* README actualizado;
+* lista de comprobación de que no hay persistencia ni datos reales;
+* primer commit generado desde la plataforma o tras exportación;
+* segundo commit con cambios locales;
+* breve informe de evaluación.
+
+El informe puede seguir esta estructura:
+
+[source,markdown]
+----
+# Informe del taller
+
+## Plataforma usada
+
+## Prompt inicial
+
+## Resultado en preview
+
+## Cómo se exportó a GitHub
+
+## Cómo se ejecutó en local
+
+## Asistente usado en local
+
+## Cambios realizados después
+
+## Problemas encontrados
+
+## Riesgos detectados
+
+## Qué habría que hacer antes de añadir persistencia
+----
+
+=== Criterios de evaluación
+
+[cols="3,5",options="header"]
+|===
+| Criterio | Evidencia esperada
+
+| Prototipo funcional
+| La aplicación funciona en preview con datos ficticios y sin persistencia.
+
+| Salida de la plataforma
+| Existe repositorio GitHub con el código completo.
+
+| Ejecución local
+| El proyecto se puede clonar, instalar y ejecutar fuera de la plataforma.
+
+| Control del desarrollo
+| Hay cambios realizados en local con commit diferenciado.
+
+| Uso responsable de IA
+| Se documentan prompts, decisiones aceptadas y cambios rechazados.
+
+| Seguridad y privacidad
+| No hay datos reales, credenciales, servicios externos ni despliegue de producción.
+
+| Documentación
+| El README explica alcance, instalación, ejecución y limitaciones.
+
+| Reflexión técnica
+| El informe distingue entre demo, prototipo y posible evolución futura.
+|===
+
+=== Extensión opcional
+
+Si el grupo termina pronto, puede hacer una extensión controlada:
+
+* añadir tests básicos;
+* añadir almacenamiento en `localStorage` y documentar por qué no equivale a backend;
+* crear una rama `feature/local-storage`;
+* abrir una pull request;
+* pedir al asistente local una revisión de la pull request;
+* comparar el diff con el prototipo inicial.
+
+[WARNING]
+====
+La extensión opcional no debe añadir base de datos real, autenticación corporativa ni despliegue público. El objetivo sigue siendo aprender el flujo de control, no convertir la demo en producción.
+====
+
+=== Ideas clave del taller
+
+* Las plataformas asistidas son muy útiles para arrancar, pero no deben ser el único lugar donde vive el proyecto.
+* GitHub actúa como punto de control, salida y continuidad.
+* Ejecutar en local obliga a entender dependencias, scripts y estructura.
+* Un asistente como Claude, Gemini, Copilot o Codex puede ayudar a mejorar el código, pero el equipo debe revisar cada cambio.
+* Empezar sin persistencia reduce riesgos y centra el aprendizaje en el flujo de trabajo.
+* El salto importante del taller es pasar de "la plataforma me hizo una demo" a "tengo un repositorio que puedo revisar, ejecutar y mantener".
+
+== Conclusiones
+
+Las plataformas de desarrollo asistido por IA cambian la forma de empezar a construir software. Permiten pasar de una idea escrita en lenguaje natural a una primera aplicación visible, navegable y modificable en muy poco tiempo. Ese cambio tiene un valor enorme para formación, exploración funcional, prototipado, MVPs y conversación temprana con usuarios.
+
+Pero su valor no está en eliminar la ingeniería. Su valor está en adelantar el momento en que podemos ver, probar, discutir y revisar una idea.
+
+La idea central del tutorial puede resumirse así:
+
+[quote]
+____
+Usa estas plataformas para llegar antes a una primera versión discutible, no para saltarte las decisiones que hacen que una aplicación sea segura, mantenible y gobernable.
+____
+
+A lo largo del documento hemos visto que no todas las herramientas ocupan el mismo lugar. Firebase Studio representa bien el modelo de plataforma conectada a Firebase, aunque debe leerse como producto en transición por su retirada anunciada. Google AI Studio amplía el enfoque hacia Gemini, Build mode, apps full-stack, Firebase y Cloud Run. Replit y Bolt.new destacan como entornos de creación y ejecución en navegador. Lovable y Base44 reducen la fricción para perfiles no técnicos y MVPs. v0 sobresale en interfaces y frontend moderno. GitHub Spark conecta la creación por lenguaje natural con el ecosistema GitHub, Copilot y repositorios.
+
+La elección, por tanto, no debe hacerse preguntando "cuál es la mejor", sino "cuál encaja con este caso, este equipo, estos datos y este nivel de riesgo".
+
+=== Lecciones principales
+
+* Una demo funcional no equivale a una aplicación preparada para producción.
+* La velocidad de generación debe equilibrarse con revisión, trazabilidad y control.
+* En sanidad, los datos ficticios deben ser la norma para formación y prototipos.
+* No deben introducirse datos de pacientes, logs reales, credenciales ni capturas de sistemas internos en estas plataformas.
+* El modo preview es útil para aprender y validar, pero publicar una URL cambia el nivel de riesgo.
+* Exportar o sincronizar con GitHub es una práctica clave para evitar dependencia excesiva.
+* Ejecutar en local obliga a comprender el proyecto y permite continuar con herramientas de desarrollo habituales.
+* La IA puede ayudar a generar, explicar y refactorizar, pero la responsabilidad sobre el resultado sigue siendo humana y organizativa.
+
+=== Criterio práctico final
+
+Antes de usar una plataforma, conviene responder siempre a cinco preguntas:
+
+1. ¿Qué datos voy a introducir?
+2. ¿Puedo revisar y conservar el código?
+3. ¿Puedo salir de la plataforma si lo necesito?
+4. ¿Qué coste, permisos o servicios se activan al publicar?
+5. ¿Quién se responsabiliza si el prototipo empieza a usarse de verdad?
+
+Si alguna de estas respuestas no está clara, la herramienta puede seguir siendo útil para aprender o idear, pero no debería avanzar hacia piloto o producción.
+
+=== Mensaje para IT hospitalario
+
+En un departamento de informática hospitalaria, estas plataformas pueden ser muy útiles para acelerar conversaciones, crear prototipos, explicar ideas, formar equipos y explorar automatizaciones de bajo riesgo. También pueden ayudar a perfiles funcionales a expresar mejor sus necesidades y a perfiles técnicos a obtener rápidamente una primera estructura de trabajo.
+
+Pero el contexto sanitario exige una cautela especial. Los sistemas hospitalarios trabajan con información sensible, procesos críticos, integraciones heredadas, requisitos normativos y responsabilidades operativas. Por eso, cualquier paso que acerque un prototipo a datos reales, usuarios reales o sistemas reales debe tratarse como un proyecto técnico formal.
+
+[IMPORTANT]
+====
+La madurez no consiste en prohibir estas herramientas ni en usarlas sin límites. La madurez consiste en saber dónde aportan valor, dónde empiezan los riesgos y qué controles deben existir antes de avanzar.
+====
+
+=== Cierre
+
+El recorrido recomendado es claro:
+
+1. empezar con un caso pequeño y datos ficticios;
+2. generar una primera versión en una plataforma asistida;
+3. probarla en preview;
+4. revisar qué ha creado;
+5. exportar o sincronizar con GitHub;
+6. ejecutar en local;
+7. continuar con un asistente de programación bajo control del equipo;
+8. documentar límites, riesgos y próximos pasos.
+
+Ese flujo convierte la IA en una ayuda real para aprender y construir, sin renunciar al criterio profesional. La plataforma acelera el arranque; el equipo conserva la responsabilidad.

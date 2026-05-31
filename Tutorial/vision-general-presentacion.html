@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IA Generativa aplicada a productividad IT hospitalaria</title>
+  <style>
+    :root {
+      --ink: #15202b;
+      --muted: #52616f;
+      --paper: #f7f8f5;
+      --panel: #ffffff;
+      --line: #d8ddd3;
+      --teal: #007c89;
+      --green: #6f8f39;
+      --red: #b23a48;
+      --amber: #c47a1d;
+      --blue: #2f5f9e;
+      --violet: #6855a3;
+      --shadow: 0 18px 50px rgba(23, 32, 42, 0.12);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(0,124,137,.10) 0 1px, transparent 1px 100%),
+        linear-gradient(0deg, rgba(0,124,137,.08) 0 1px, transparent 1px 100%),
+        var(--paper);
+      background-size: 44px 44px;
+      overflow: hidden;
+    }
+
+    .deck {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 22px;
+      padding: clamp(28px, 5vw, 64px);
+      opacity: 0;
+      transform: translateX(34px) scale(.985);
+      transition: opacity .22s ease, transform .22s ease;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 24px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--teal);
+      font-size: clamp(13px, 1.3vw, 16px);
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 1100px;
+      margin-bottom: 20px;
+      font-size: clamp(42px, 7.2vw, 88px);
+      line-height: .98;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      max-width: 1040px;
+      font-size: clamp(34px, 5vw, 68px);
+      line-height: 1.02;
+      font-weight: 820;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: clamp(22px, 2.3vw, 32px);
+      line-height: 1.15;
+    }
+
+    p, li {
+      font-size: clamp(20px, 2.2vw, 31px);
+      line-height: 1.28;
+    }
+
+    .lead {
+      max-width: 980px;
+      color: var(--muted);
+      font-size: clamp(24px, 3.1vw, 42px);
+      line-height: 1.22;
+    }
+
+    .content {
+      min-height: 0;
+      align-self: center;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .wide { width: min(1360px, 100%); }
+
+    .cover {
+      background:
+        linear-gradient(135deg, rgba(21,32,43,.84), rgba(0,124,137,.58)),
+        radial-gradient(circle at 80% 22%, rgba(255,255,255,.22), transparent 22%),
+        linear-gradient(90deg, rgba(255,255,255,.11) 0 1px, transparent 1px 100%),
+        linear-gradient(0deg, rgba(255,255,255,.10) 0 1px, transparent 1px 100%),
+        #10212c;
+      background-size: auto, auto, 52px 52px, 52px 52px, auto;
+      color: white;
+    }
+
+    .cover .slide-header {
+      border-color: rgba(255,255,255,.24);
+    }
+
+    .cover .kicker, .cover .lead, .cover .meta { color: rgba(255,255,255,.82); }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      min-height: 100%;
+      padding: clamp(20px, 2.4vw, 32px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.86);
+      box-shadow: var(--shadow);
+    }
+
+    .card.compact {
+      padding: 20px;
+      box-shadow: none;
+    }
+
+    .card p, .card li { font-size: clamp(18px, 1.75vw, 25px); }
+
+    ul, ol {
+      margin: 0;
+      padding-left: 1.15em;
+    }
+
+    li + li { margin-top: 12px; }
+
+    .big-number {
+      display: block;
+      margin-bottom: 14px;
+      color: var(--teal);
+      font-size: clamp(44px, 5vw, 72px);
+      font-weight: 870;
+      line-height: 1;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      margin-bottom: 12px;
+      padding: 4px 9px;
+      color: white;
+      background: var(--teal);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .tag.red { background: var(--red); }
+    .tag.green { background: var(--green); }
+    .tag.blue { background: var(--blue); }
+    .tag.amber { background: var(--amber); }
+    .tag.violet { background: var(--violet); }
+
+    .statement {
+      max-width: 1120px;
+      padding-left: clamp(18px, 2vw, 28px);
+      border-left: 9px solid var(--teal);
+      font-size: clamp(28px, 4.2vw, 58px);
+      line-height: 1.12;
+      font-weight: 780;
+    }
+
+    .callout {
+      padding: 24px 28px;
+      border-left: 8px solid var(--amber);
+      background: #fff9ed;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .callout.warning {
+      border-color: var(--red);
+      background: #fff4f4;
+    }
+
+    .callout p, .callout li { font-size: clamp(20px, 2vw, 29px); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      padding: clamp(13px, 1.6vw, 22px);
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: clamp(16px, 1.55vw, 23px);
+      line-height: 1.22;
+    }
+
+    th {
+      color: white;
+      background: #17313f;
+      font-size: clamp(15px, 1.35vw, 20px);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .step {
+      position: relative;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -13px;
+      width: 13px;
+      height: 2px;
+      background: var(--teal);
+    }
+
+    .step p { font-size: clamp(17px, 1.6vw, 24px); }
+
+    .decision {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr .9fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .node {
+      padding: 22px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .node.question {
+      border-color: var(--teal);
+      background: #eef9fa;
+    }
+
+    .node p { font-size: clamp(18px, 1.8vw, 26px); }
+
+    .split-label {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(-50%);
+      padding: 8px;
+      border: 1px solid rgba(21,32,43,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 10px 30px rgba(21,32,43,.18);
+      backdrop-filter: blur(12px);
+    }
+
+    button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: white;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--teal); color: var(--teal); }
+
+    .counter {
+      min-width: 72px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      height: 5px;
+      width: 100%;
+      background: rgba(21,32,43,.08);
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--teal), var(--green), var(--amber));
+      transition: width .2s ease;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .cover .footer { color: rgba(255,255,255,.72); }
+
+    .section-marker {
+      color: var(--teal);
+      font-size: clamp(90px, 16vw, 210px);
+      font-weight: 900;
+      line-height: .8;
+      opacity: .16;
+    }
+
+    code {
+      padding: .08em .25em;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: rgba(255,255,255,.72);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .86em;
+    }
+
+    @media (max-width: 860px) {
+      body { overflow: auto; }
+      .deck { min-height: 100vh; height: auto; }
+      .slide {
+        position: relative;
+        min-height: 100vh;
+        display: none;
+        padding: 26px 18px 90px;
+      }
+      .slide.active { display: grid; }
+      .slide-header, .footer { flex-direction: column; }
+      .cols-2, .cols-3, .decision, .flow { grid-template-columns: 1fr; }
+      .step:not(:last-child)::after { display: none; }
+      th, td { font-size: 15px; }
+    }
+
+    @media print {
+      body { overflow: visible; background: white; }
+      .controls, .progress { display: none; }
+      .deck { height: auto; }
+      .slide {
+        position: relative;
+        page-break-after: always;
+        min-height: 100vh;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <main class="deck" aria-live="polite">
+    <section class="slide cover active">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Curso Torrecardenas IA</p>
+          <h1>IA generativa aplicada a productividad IT hospitalaria</h1>
+          <p class="lead">Una visión práctica para entender dónde aporta valor, dónde no debe entrar sola y cómo convertirla en copiloto operativo.</p>
+        </div>
+      </header>
+      <div class="content">
+        <div class="meta">
+          <span class="pill">Visión general</span>
+          <span class="pill">Junio 2026</span>
+          <span class="pill">IT hospitalario</span>
+        </div>
+      </div>
+      <footer class="footer">
+        <span>Fuente: Tutorial/vision-general.adoc</span>
+        <span>Usa ← → o Espacio</span>
+      </footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">01. Cambio de paradigma</p>
+          <h2>El hospital ya es un ecosistema crítico y complejo</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card">
+          <span class="tag blue">Operación 24/7</span>
+          <h3>Sistemas siempre vivos</h3>
+          <p>HCIS, integración clínica, admisión, farmacia, laboratorio, redes, impresión y puestos de trabajo no pueden tratarse como servicios ordinarios.</p>
+        </article>
+        <article class="card">
+          <span class="tag green">Regulación</span>
+          <h3>Privacidad y trazabilidad</h3>
+          <p>RGPD, seguridad, auditoría y procedimientos internos condicionan cualquier automatización técnica.</p>
+        </article>
+        <article class="card">
+          <span class="tag amber">Heredado</span>
+          <h3>Integraciones difíciles</h3>
+          <p>HL7, FHIR, bases institucionales y aplicaciones legacy consumen buena parte del tiempo de equipos técnicos.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Nuevo paradigma operativo</span><span>2</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">La idea central</p>
+          <h2>GenAI no sustituye los sistemas existentes</h2>
+        </div>
+      </header>
+      <div class="content">
+        <p class="statement">Añade una capa operativa basada en lenguaje natural capaz de razonar, estructurar y acelerar tareas diarias del personal técnico.</p>
+      </div>
+      <footer class="footer"><span>Copiloto, no piloto automático</span><span>3</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Qué ha cambiado</p>
+          <h2>De automatizar casos cerrados a trabajar con intención</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card">
+          <span class="big-number">1</span>
+          <h3>De buscar a sintetizar</h3>
+          <p>La IA encuentra patrones en documentación extensa, logs, tickets y procedimientos dispersos.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">2</span>
+          <h3>Democratización del código</h3>
+          <p>Sistemas, soporte y BI pueden generar scripts, consultas y transformaciones con supervisión senior.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">3</span>
+          <h3>Interfaz universal</h3>
+          <p>El lenguaje natural se convierte en una API para orquestar trabajo técnico y documentarlo.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Buscar menos, validar mejor</span><span>4</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Regla de seguridad</p>
+          <h2>Human-in-the-loop desde el primer día</h2>
+        </div>
+      </header>
+      <div class="content">
+        <div class="callout warning">
+          <p><strong>En un entorno hospitalario, la IA generativa no toma decisiones autónomas ni interactúa con datos de salud sin control.</strong></p>
+          <p>Funciona como copiloto bajo supervisión de una persona responsable, con validación técnica y despliegue controlado.</p>
+        </div>
+      </div>
+      <footer class="footer"><span>Línea base de gobernanza</span><span>5</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">02. Tipos de IA</p>
+          <h2>IA tradicional y generativa resuelven problemas distintos</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead>
+            <tr>
+              <th>Dimensión</th>
+              <th>IA tradicional predictiva</th>
+              <th>IA generativa basada en LLMs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Pregunta</td>
+              <td>¿Qué es esto? ¿Qué pasará?</td>
+              <td>Ayúdame a hacer esto. Estructura esta información.</td>
+            </tr>
+            <tr>
+              <td>Entrada</td>
+              <td>Tablas limpias, variables predefinidas.</td>
+              <td>Texto libre, logs, código, documentación.</td>
+            </tr>
+            <tr>
+              <td>Salida</td>
+              <td>Números, etiquetas, probabilidades.</td>
+              <td>Texto, código, SQL, JSON, resúmenes.</td>
+            </tr>
+            <tr>
+              <td>Ejemplo</td>
+              <td>Predecir riesgo de sepsis en UCI.</td>
+              <td>Analizar logs de admisión y proponer diagnóstico técnico.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>No todo problema necesita un LLM</span><span>6</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">LLM en una frase</p>
+          <h2>Un motor de texto entrenado con patrones masivos</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <h3>Lo que hace bien</h3>
+          <ul>
+            <li>Comprender contexto técnico escrito.</li>
+            <li>Generar código, SQL, documentación y resúmenes.</li>
+            <li>Transformar formatos y explicar lógica heredada.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Lo que no es</h3>
+          <ul>
+            <li>No ejecuta código por sí mismo.</li>
+            <li>No accede a sistemas internos salvo integración explícita.</li>
+            <li>No tiene memoria entre sesiones por defecto.</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>El prompt condiciona la calidad</span><span>7</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Decisión tecnológica</p>
+          <h2>Elegir herramienta según naturaleza del problema</h2>
+        </div>
+      </header>
+      <div class="content wide decision">
+        <div class="node question">
+          <span class="split-label">Necesidad IT hospitalaria</span>
+          <p>¿Hay que predecir un número o clasificar datos estructurados?</p>
+        </div>
+        <div class="node">
+          <span class="tag blue">Sí</span>
+          <h3>IA tradicional</h3>
+          <p>Machine learning, modelos predictivos, analítica clínica o de gestión.</p>
+        </div>
+        <div class="node">
+          <span class="tag green">No</span>
+          <h3>GenAI o reglas</h3>
+          <p>LLMs para lenguaje, código, logs y síntesis. Programación tradicional para reglas cerradas.</p>
+        </div>
+      </div>
+      <footer class="footer"><span>Evita expectativas irreales</span><span>8</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">03. Ecosistema</p>
+          <h2>No existe un único modelo para todo</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <span class="tag violet">Cloud / propietario</span>
+          <h3>Modelos comerciales</h3>
+          <p>Gran capacidad de razonamiento, APIs maduras e integración con herramientas de desarrollo y oficina.</p>
+          <p><strong>Coste:</strong> dependencia de proveedor, tokens, privacidad y configuración contractual.</p>
+        </article>
+        <article class="card">
+          <span class="tag green">Local / abierto</span>
+          <h3>Modelos abiertos</h3>
+          <p>Ejecución dentro del hospital, control de datos y coste por uso casi nulo tras invertir en hardware.</p>
+          <p><strong>Coste:</strong> GPUs, administración, mantenimiento y ajuste operativo.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Coste, privacidad, latencia y razonamiento</span><span>9</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Modelos comerciales</p>
+          <h2>Uso típico: desarrollo, análisis y documentación técnica</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card compact">
+          <h3>ChatGPT / OpenAI</h3>
+          <p>Razonamiento general, APIs maduras y orquestación de flujos.</p>
+        </article>
+        <article class="card compact">
+          <h3>Claude</h3>
+          <p>Desarrollo software, refactorización y documentación técnica limpia.</p>
+        </article>
+        <article class="card compact">
+          <h3>Gemini</h3>
+          <p>Contexto muy amplio para manuales, repositorios y lotes grandes de logs.</p>
+        </article>
+        <article class="card compact">
+          <h3>Copilot</h3>
+          <p>Autocompletado diario en IDE, SQL, M365 y tareas repetitivas.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Configurar bien el contexto enviado</span><span>10</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Modelos abiertos</p>
+          <h2>Uso típico: datos internos, logs y asistentes locales</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <h3>Llama, Mistral, Phi y otros</h3>
+          <p>Procesamiento de tickets internos, parseo de logs sensibles, asistentes locales y análisis de código fuente que no debe salir del perímetro.</p>
+        </article>
+        <article class="card">
+          <h3>Ollama como puerta de entrada</h3>
+          <p>Simplifica descargar y ejecutar modelos en máquinas de laboratorio o servidores IT y expone una API local compatible con flujos habituales.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Privacidad alta, operación más exigente</span><span>11</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">04. Cloud vs On-Premise</p>
+          <h2>La decisión es técnica, legal y operativa</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead>
+            <tr>
+              <th>Dimensión</th>
+              <th>Cloud</th>
+              <th>On-Premise</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Privacidad</td>
+              <td>Contratos B2B, anonimización y control de contexto.</td>
+              <td>Los datos permanecen en red interna.</td>
+            </tr>
+            <tr>
+              <td>Capacidad</td>
+              <td>Modelos frontera con alta calidad conceptual.</td>
+              <td>Modelos optimizados para tareas específicas.</td>
+            </tr>
+            <tr>
+              <td>Coste</td>
+              <td>OpEx por uso y tokens.</td>
+              <td>CapEx en hardware y operación local.</td>
+            </tr>
+            <tr>
+              <td>Latencia</td>
+              <td>Depende de internet y proveedor.</td>
+              <td>Predecible si la cola y VRAM están bien gestionadas.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>La arquitectura gana al dogma</span><span>12</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Arquitectura recomendada</p>
+          <h2>Enfoque híbrido con fronteras claras</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <span class="tag violet">Cloud seguro</span>
+          <h3>Cuando no hay datos sensibles</h3>
+          <ul>
+            <li>Desarrollo de software.</li>
+            <li>Dashboards con datos agregados.</li>
+            <li>Documentación técnica general.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag green">Local</span>
+          <h3>Cuando el contexto es sensible</h3>
+          <ul>
+            <li>Logs de producción.</li>
+            <li>Código fuente interno crítico.</li>
+            <li>Tickets con nombres o sistemas reales.</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>Separar por riesgo y trazabilidad</span><span>13</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">05. Casos de uso</p>
+          <h2>Valor inmediato en el día a día técnico</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card compact"><h3>Documentación</h3><p>README, diagramas, APIs legacy y procedimientos.</p></article>
+        <article class="card compact"><h3>Soporte N1/N2</h3><p>Análisis de tickets, logs y pasos de resolución.</p></article>
+        <article class="card compact"><h3>SQL y DAX</h3><p>Generación, explicación y optimización de consultas.</p></article>
+        <article class="card compact"><h3>Onboarding</h3><p>Respuestas sobre repositorios y procedimientos internos.</p></article>
+        <article class="card compact"><h3>Triaje</h3><p>Clasificación por criticidad y causa probable.</p></article>
+        <article class="card compact"><h3>Revisión</h3><p>Chequeo de guías técnicas, seguridad e ISO.</p></article>
+      </div>
+      <footer class="footer"><span>Empezar por tareas repetitivas y auditables</span><span>14</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Líneas rojas</p>
+          <h2>Qué no se debe hacer</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <div class="callout warning">
+          <ul>
+            <li><strong>Nunca</strong> subir datos de pacientes o historias clínicas a modelos de consumo público.</li>
+            <li>No confiar ciegamente en código, scripts o parámetros generados.</li>
+            <li>No buscar prompts mágicos: contexto claro, técnico y estructurado.</li>
+            <li>No desplegar automatización 100% autónoma sobre sistemas críticos.</li>
+          </ul>
+        </div>
+      </div>
+      <footer class="footer"><span>Seguridad antes que espectacularidad</span><span>15</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">06. Expectativas realistas</p>
+          <h2>Qué es realmente útil hoy</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <span class="tag blue">Copilotos</span>
+          <p>Bloques de código repetitivo, validaciones, contenedores y soporte a sistemas.</p>
+        </article>
+        <article class="card">
+          <span class="tag green">Traducción</span>
+          <p>De PL/SQL a Python, de logs caóticos a JSON, de notas dispersas a documento formal.</p>
+        </article>
+        <article class="card">
+          <span class="tag amber">Refinamiento</span>
+          <p>Revisar seguridad, optimizar scripts, explicar consultas y proponer mejoras.</p>
+        </article>
+        <article class="card">
+          <span class="tag violet">Automatización ligera</span>
+          <p>Procesar lenguaje natural donde antes habría reglas frágiles o expresiones regulares interminables.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Valor práctico, no futurismo</span><span>16</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Workflow profesional</p>
+          <h2>Del chat simple al flujo iterativo</h2>
+        </div>
+      </header>
+      <div class="content wide flow">
+        <article class="step">
+          <span class="big-number">1</span>
+          <h3>Rol y contexto</h3>
+          <p>Definir el marco técnico, restricciones y entorno.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">2</span>
+          <h3>Prompt claro</h3>
+          <p>Dar objetivo, entradas, formato de salida y criterios.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">3</span>
+          <h3>Revisión crítica</h3>
+          <p>Analizar si el resultado es correcto, seguro y aplicable.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">4</span>
+          <h3>Validación</h3>
+          <p>Probar en staging antes de producción.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Iterar es parte del método</span><span>17</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Escenarios</p>
+          <h2>Cómo cambia el flujo de trabajo</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card compact">
+          <h3>Soporte lunes</h3>
+          <p>35 tickets se agrupan por causa raíz probable y equipos afectados.</p>
+        </article>
+        <article class="card compact">
+          <h3>Aplicación legacy</h3>
+          <p>Un script PHP antiguo se explica, comenta y cruza con logs recientes.</p>
+        </article>
+        <article class="card compact">
+          <h3>BI y DAX</h3>
+          <p>La métrica compleja se genera y se explica línea a línea.</p>
+        </article>
+        <article class="card compact">
+          <h3>Proyecto técnico</h3>
+          <p>Correos y notas se convierten en una memoria formal para dirección.</p>
+        </article>
+        <article class="card compact">
+          <h3>Licitaciones</h3>
+          <p>Propuestas distintas se comparan con matriz, evidencia y riesgos.</p>
+        </article>
+        <article class="card compact">
+          <h3>Arquitectura crítica</h3>
+          <p>Testing, migración incremental y rollback antes de modernizar.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>La decisión final sigue siendo humana</span><span>18</span></footer>
+    </section>
+
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Cierre</p>
+          <h2>La clave no es elegir una IA, sino diseñar una práctica responsable</h2>
+        </div>
+      </header>
+      <div class="content">
+        <p class="statement">GenAI libera tiempo técnico, acelera análisis y mejora documentación, siempre que se use con límites claros, validación humana y arquitectura híbrida adaptada al riesgo.</p>
+      </div>
+      <footer class="footer"><span>Productividad con criterio</span><span>19</span></footer>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Controles de presentación">
+    <button id="prev" aria-label="Diapositiva anterior" title="Anterior">‹</button>
+    <span class="counter" id="counter"></span>
+    <button id="next" aria-label="Diapositiva siguiente" title="Siguiente">›</button>
+  </nav>
+
+  <script>
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const bar = document.getElementById("bar");
+    let index = 0;
+
+    function show(nextIndex) {
+      index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      counter.textContent = `${index + 1} / ${slides.length}`;
+      bar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      history.replaceState(null, "", `#${index + 1}`);
+    }
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
+
+    document.addEventListener("keydown", (event) => {
+      const forward = ["ArrowRight", "PageDown", " ", "Enter"];
+      const backward = ["ArrowLeft", "PageUp", "Backspace"];
+      if (forward.includes(event.key)) {
+        event.preventDefault();
+        show(index + 1);
+      }
+      if (backward.includes(event.key)) {
+        event.preventDefault();
+        show(index - 1);
+      }
+      if (event.key === "Home") show(0);
+      if (event.key === "End") show(slides.length - 1);
+    });
+
+    const hashIndex = Number(location.hash.replace("#", "")) - 1;
+    show(Number.isFinite(hashIndex) ? hashIndex : 0);
+  </script>
+</body>
+</html>

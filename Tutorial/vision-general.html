@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.22">
+<meta name="author" content="Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería">
+<title>Visión general de la inteligencia artificial generativa (junio 2026)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment the following line when using as a custom stylesheet */
+/* @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"; */
+html{font-family:sans-serif;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+b,strong{font-weight:bold}
+abbr{font-size:.9em}
+abbr[title]{cursor:help;border-bottom:1px dotted #dddddf;text-decoration:none}
+dfn{font-style:italic}
+hr{height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type=checkbox],input[type=radio]{padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,::before,::after{box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;line-height:1;position:relative;cursor:auto;-moz-tab-size:4;-o-tab-size:4;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:1px solid #dedede;word-wrap:normal}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 .1em #fff;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin:0 auto;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border:1px solid #e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:hsla(0,0%,100%,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details{margin-left:1.25rem}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
+details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
+details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class=paragraph]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
+.sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans-serif;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
+table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
+table.frame-sides{border-width:0 1px}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
+ul.checklist>li>p:first-child{margin-left:-1em}
+ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
+ul.inline{display:flex;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:4px solid #fff;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]{border-bottom:1px dotted}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media amzn-kf8,print{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+</head>
+<body class="book toc2 toc-right">
+<div id="header">
+<h1>Visión general de la inteligencia artificial generativa (junio 2026)</h1>
+<div class="details">
+<span id="author" class="author">Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Tabla de contenidos</div>
+<ul class="sectlevel1">
+<li><a href="#_resumen">Resumen</a></li>
+<li><a href="#_el_nuevo_paradigma_operativo_en_el_it_hospitalario">1. El nuevo paradigma operativo en el IT Hospitalario</a>
+<ul class="sectlevel2">
+<li><a href="#_qué_ha_cambiado_realmente">1.1. ¿Qué ha cambiado realmente?</a></li>
+</ul>
+</li>
+<li><a href="#_inteligencia_artificial_tradicional_vs_inteligencia_artificial_generativa">2. Inteligencia artificial tradicional vs. Inteligencia artificial generativa</a>
+<ul class="sectlevel2">
+<li><a href="#_inteligencia_artificial_tradicional_predictiva">2.1. Inteligencia artificial tradicional (Predictiva)</a></li>
+<li><a href="#_inteligencia_artificial_generativa_basada_en_llms">2.2. Inteligencia artificial generativa (basada en LLMs)</a></li>
+<li><a href="#_tabla_comparativa">2.3. Tabla comparativa</a></li>
+<li><a href="#_flujo_de_decisión_tecnológica">2.4. Flujo de decisión tecnológica</a></li>
+</ul>
+</li>
+<li><a href="#_mapa_del_ecosistema_de_modelos_actuales">3. Mapa del ecosistema de modelos actuales</a>
+<ul class="sectlevel2">
+<li><a href="#_modelos_comerciales_cloud_propietarios">3.1. Modelos comerciales (Cloud / Propietarios)</a></li>
+<li><a href="#_modelos_abiertos_open_source_locales">3.2. Modelos abiertos (Open Source / Locales)</a></li>
+</ul>
+</li>
+<li><a href="#_4_el_gran_dilema_cloud_vs_on_premise">4. 4. El gran dilema: Cloud vs. On-Premise</a>
+<ul class="sectlevel2">
+<li><a href="#_matriz_de_decisión">4.1. Matriz de decisión</a></li>
+<li><a href="#_enfoque_híbrido">4.2. Enfoque híbrido</a></li>
+</ul>
+</li>
+<li><a href="#_algunos_casos_de_uso_ilustrativos">5. Algunos casos de uso ilustrativos</a></li>
+<li><a href="#_qué_es_lo_que_no_se_debe_hacer_gestión_de_riesgos_y_líneas_rojas">6. Qué es lo que NO se debe hacer: Gestión de riesgos y "Líneas rojas"</a></li>
+<li><a href="#_qué_es_realmente_útil_hoy_aterrizando_expectativas">7. ¿Qué es realmente útil HOY? (Aterrizando expectativas)</a></li>
+<li><a href="#_un_vistazo_a_los_workflows_de_ia">8. Un vistazo a los workflows de IA</a>
+<ul class="sectlevel2">
+<li><a href="#_componentes_clave_de_un_flujo_profesional">8.1. Componentes clave de un flujo profesional</a></li>
+<li><a href="#_flujo_operativo_del_curso">8.2. Flujo Operativo del Curso</a></li>
+</ul>
+</li>
+<li><a href="#_9_posibles_escenarios">9. 9. Posibles escenarios</a>
+<ul class="sectlevel2">
+<li><a href="#_escenario_a_soporte_técnico_una_mañana_de_lunes">9.1. Escenario A: Soporte técnico una mañana de lunes</a></li>
+<li><a href="#_escenario_b_la_aplicación_heredada_legacy_sin_documentación">9.2. Escenario B: La aplicación heredada (Legacy) sin documentación</a></li>
+<li><a href="#_escenario_c_analistas_de_bi_y_la_métrica_interminable">9.3. Escenario C: Analistas de BI y la métrica interminable</a></li>
+<li><a href="#_escenario_d_redacción_acelerada_de_un_proyecto_técnico">9.4. Escenario D: Redacción acelerada de un proyecto técnico</a></li>
+<li><a href="#_escenario_e_valoración_técnica_de_licitaciones">9.5. Escenario E: Valoración técnica de licitaciones</a></li>
+<li><a href="#_escenario_f_mejora_de_arquitectura_de_una_aplicación_crítica">9.6. Escenario F: Mejora de arquitectura de una aplicación crítica</a></li>
+</ul>
+</li>
+<li><a href="#_conclusiones">10. Conclusiones</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_resumen">Resumen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Desde 2022, la inteligencia artificial generativa (GenAI) ha emergido como una tecnología disruptiva que está transformando la forma en que los departamentos de informática  abordan sus desafíos diarios. Sus posibilidades ofrecen una nueva capa de interacción basada en lenguaje natural que permite a los profesionales técnicos automatizar tareas complejas, sintetizar información de manera eficiente y acelerar la resolución de problemas. Sin embargo, la adopción de esta tecnología también plantea importantes consideraciones en términos de privacidad, seguridad y gestión de riesgos, especialmente en un entorno tan crítico como el hospitalario. En este tutorial se presenta una visión general del impacto de la inteligencia artificial generativa (GenAI) en el ámbito de la informática. Se exploran los cambios de paradigma que esta tecnología introduce en la gestión de sistemas críticos, la automatización de tareas técnicas y el soporte a desarrolladores. Se comparan las capacidades de la IA tradicional con las de los modelos generativos basados en LLMs, destacando sus aplicaciones específicas en entornos hospitalarios. Además, se analiza la decisión estratégica entre soluciones en la nube y locales, y se presentan casos de uso concretos que ilustran cómo la GenAI puede transformar flujos de trabajo cotidianos en departamentos de IT hospitalarios. Finalmente, se discuten las mejores prácticas para su implementación segura y efectiva, así como los riesgos asociados a su uso inadecuado.</p>
+</div>
+<div class="ulist">
+<div class="title">Objetivos</div>
+<ul>
+<li>
+<p>Comprender el impacto de la inteligencia artificial generativa en la informática en el contexto hospitalario.</p>
+</li>
+<li>
+<p>Identificar las diferencias clave entre la IA tradicional y la IA generativa basada en LLM</p>
+</li>
+<li>
+<p>Evaluar las ventajas y desventajas de soluciones en la nube frente a locales para aplicaciones de IA en el contexto de un departamento de informática en un hospital.</p>
+</li>
+<li>
+<p>Explorar casos de uso concretos que demuestran el valor práctico de la GenAI en entornos hospitalarios.</p>
+</li>
+<li>
+<p>Conocer las mejores prácticas para la implementación segura y efectiva de la inteligencia artificial generativa en departamentos de informática de un hospital.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_el_nuevo_paradigma_operativo_en_el_it_hospitalario">1. El nuevo paradigma operativo en el IT Hospitalario</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>El entorno tecnológico de un hospital es un ecosistema complejo y crítico. Gestionar historias clínicas electrónicas (HCIS), asegurar la disponibilidad de sistemas críticos 24/7, cumplir con normativas estrictas de privacidad (RGPD) y lidiar con integraciones heredadas (HL7, FHIR, bases de datos institucionales) consume la mayor parte del tiempo de los departamentos de IT.</p>
+</div>
+<div class="paragraph">
+<p>Tradicionalmente, la automatización en IT requiere programar de forma explícita cada caso de uso. La llegada de la <strong>Inteligencia Artificial Generativa (GenAI)</strong> cambia las reglas del juego: no viene a sustituir los sistemas existentes, sino a actuar como una <strong>nueva capa operativa basada en lenguaje natural</strong> capaz de razonar, estructurar y acelerar las tareas diarias del personal técnico.</p>
+</div>
+<div class="sect2">
+<h3 id="_qué_ha_cambiado_realmente">1.1. ¿Qué ha cambiado realmente?</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>De buscar a sintetizar:</strong> Ya dedicamos el tiempo a navegar en una documentación interna de 500 páginas o foros obsoletos; la IA puede extraer la aguja en el pajar rápidamente.</p>
+</li>
+<li>
+<p><strong>Democratización del código:</strong> Perfiles de sistemas o soporte ahora pueden generar scripts de automatización complejos, mientras que los desarrolladores senior reducen drásticamente tareas repetitivas (boilerplate code).</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>La IA se puede encargar ahora del scaffolding en situaciones como:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Scripts de altas masivas de usuarios en el sistema de gestión de identidades. La IA genera el código base, y el personal senior ajusta la lógica de permisos específica del hospital.</p>
+</li>
+<li>
+<p>Automatización de backups con validación. La IA se encarga de generar el script, verificar la integridad, rotar logs, generar informes de estado y alertar si algo falla, todo con un prompt bien estructurado. El personal senior añade las reglas de retención de datos específicas del centro.</p>
+</li>
+<li>
+<p>Monitorización de disponibilidad de servicios críticos. La comprobación periódica de la salud de los servidores, la generación de scripts de diagnóstico y envío de alertas se puede delegar en la IA, mientras que el personal senior define los umbrales de alerta y las acciones a tomar.</p>
+</li>
+<li>
+<p>Conectar una API a un sistema de información interna. La IA puede generar el código de la estructura y configuración inicial del proyecto, cliente HTTP con manejo de errores, autenticación y lógica de reintentos, tests unitarios básicos, y documentación de uso. El personal senior se encarga de la lógica de negocio específica del hospital y la integración con sistemas internos.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>La clave es entender que la IA no es un reemplazo de los profesionales técnicos, sino una herramienta de amplificación de su capacidad. El conocimiento técnico sigue siendo esencial para guiar, validar y supervisar el trabajo de la IA, asegurando que las soluciones generadas sean seguras, eficientes y alineadas con las necesidades específicas del entorno hospitalario.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Interfaz universal:</strong> El lenguaje natural se convierte en la API de control para orquestar flujos de trabajo técnicos.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>En un entorno hospitalario, la IA Generativa <strong>no toma decisiones autónomas</strong> ni interactúa directamente con datos de salud en abierto de forma descontrolada. Se implementa como un <strong>Copiloto</strong> bajo la estricta supervisión de una <strong>persona</strong> (Human-in-the-loop).</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_inteligencia_artificial_tradicional_vs_inteligencia_artificial_generativa">2. Inteligencia artificial tradicional vs. Inteligencia artificial generativa</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Es fundamental entender qué herramientas son adecuadas para cada problema. Confundir la inteligencia artificial predictiva (tradicional) con la inteligencia artificial generativa (actual) puede conducir a un proyecto fallido o a expectativas irreales.</p>
+</div>
+<div class="sect2">
+<h3 id="_inteligencia_artificial_tradicional_predictiva">2.1. Inteligencia artificial tradicional (Predictiva)</h3>
+<div class="paragraph">
+<p>Diseñada para clasificar, detectar patrones estadísticos y predecir valores numéricos a partir de datos estructurados históricos. Responde a la pregunta: <strong>¿Qué es esto?</strong> o <strong>¿Qué pasará?</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Ejemplo Hospitalario:</strong> Un sistema que analiza las constantes de pacientes en UCI para predecir el riesgo de sepsis 4 horas antes de que ocurra.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_inteligencia_artificial_generativa_basada_en_llms">2.2. Inteligencia artificial generativa (basada en LLMs)</h3>
+<div class="paragraph">
+<p>Diseñada para comprender el contexto, razonar sobre instrucciones complejas, resumir, transformar formatos y generar nuevo contenido (texto, código, consultas SQL, configuraciones). Responde a la pregunta: <strong>Ayúdame a hacer esto</strong> o <strong>Estructura esta información</strong>.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Ejemplo Hospitalario:</strong> Un asistente que toma un log caótico de errores del sistema que gestiona los ingresos, identifica el mensaje corrupto y genera el script Bash necesario para purgar la cola de mensajes bloqueados.</p>
+</li>
+</ul>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Qué es un LLM (Large Language Model)</div>
+<div class="paragraph">
+<p>Un LLM (Large Language Model) es el motor tecnológico que hay detrás de la inteligencia artificial generativa. Se trata de una red neuronal entrenada con cantidades masivas de texto —documentación técnica, código fuente, libros, foros— que aprende los patrones estadísticos del lenguaje hasta ser capaz de predecir, con alta precisión, qué texto tiene sentido dado un contexto.</p>
+</div>
+<div class="paragraph">
+<p>Lo que hace útil a un LLM en un entorno IT no es que "entienda" en sentido humano, sino que ha visto suficientes ejemplos de scripts Bash, consultas SQL, logs de error y documentación técnica como para generar respuestas coherentes, estructuradas y aplicables a problemas reales.</p>
+</div>
+<div class="paragraph">
+<p>Un LLM recibe una entrada —llamada prompt— y produce una salida de texto. Esa salida puede ser código, una explicación, un JSON formateado, un resumen de un log de 5.000 líneas o los pasos para diagnosticar un fallo en un servicio crítico. La calidad de esa salida depende directamente de cómo se construye el prompt: esto es lo que se conoce como Prompt Engineering, y es una habilidad que trabajaremos a lo largo del curso.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Un LLM no ejecuta código, no accede a sistemas internos ni tiene memoria entre sesiones por defecto. Es un generador de texto muy sofisticado. La integración con herramientas reales —APIs, bases de datos, sistemas del hospital— se logra a través de arquitecturas más avanzadas que veremos en sesiones posteriores.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tabla_comparativa">2.3. Tabla comparativa</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Característica</th>
+<th class="tableblock halign-left valign-top">Inteligencia artificial tradicional</th>
+<th class="tableblock halign-left valign-top">Inteligencia artificial generativa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Salida principal</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Números, etiquetas, probabilidades, clasificaciones.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Texto, código, resúmenes, datos estructurados (JSON/XML).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Entrada requerida</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Tablas de datos limpias, variables predefinidas.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Texto libre, logs, código, documentación técnica.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Lógica interna</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modelos matemáticos rígidos (Regresiones, XGBoost).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Redes de Transformer que entienden el contexto secuencial.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Modo de interacción</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ejecución de código / Consumo de API técnica.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conversación interactiva / Prompt Engineering.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Rol en el IT Hospitalario</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Diagnóstico por imagen, alertas clínicas, analítica predictiva de gestión de camas.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Automatización documental, generación de scripts, soporte técnico rápido, copiloto de programación.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Transformers</div>
+<div class="paragraph">
+<p>Un Transformer es un tipo de arquitectura de red neuronal que ha revolucionado el campo de la inteligencia artificial. Fue introducido en 2017 por Vaswani et al. en el paper "Attention is All You Need". La clave de los Transformers es su mecanismo de atención, que permite a la red enfocarse en diferentes partes del input para generar una salida coherente.</p>
+</div>
+<div class="paragraph">
+<p>En el contexto de los LLMs, los Transformers permiten procesar grandes cantidades de texto y generar respuestas que tienen en cuenta el contexto completo de la conversación o el documento. Esto es lo que hace que los LLMs sean tan efectivos para tareas como la generación de código, la explicación de logs o la creación de documentación técnica a partir de información no estructurada.</p>
+</div>
+<div class="paragraph">
+<p>Antes de los Transformers, los modelos de lenguaje procesaban el texto palabra por palabra, en orden, como si leyeran una frase sin poder releer lo anterior. Esto los hacía lentos y olvidadizos: al llegar al final de un párrafo largo, habían "perdido" el contexto del principio. La idea central de los Transformers es simple pero poderosa: en lugar de procesar el texto en secuencia, el modelo analiza todas las palabras a la vez y calcula cuánta "atención" debe prestar cada palabra a todas las demás.</p>
+</div>
+<div class="paragraph">
+<p>Aplicado a IT hospitalario, cuando un Transformer lee "el servicio de ingresos cayó a las 3:00 AM, justo después de imprimir el informe de protección de datos para el paciente", no procesa cada palabra de forma aislada. En lugar de eso, el modelo identifica que "cayó" está relacionado con "servicio de ingresos" y con "después de imprimir el informe de protección de datos", y construye una respuesta que tiene en cuenta esa relación causal completa. Esto es lo que permite a un LLM leer un log de 500 líneas y señalar directamente la línea problemática, o generar un script que tiene en cuenta las dependencias entre sistemas porque las ha "visto" todas a la vez.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_flujo_de_decisión_tecnológica">2.4. Flujo de decisión tecnológica</h3>
+<pre class='mermaid'>graph TD
+    A[Necesidad en IT Hospitalario] --> B{¿El problema requiere predecir un número o clasificar algo estructurado?}
+    B -- Sí --> C[Usar IA Tradicional / Machine Learning]
+    B -- No --> D{¿El problema implica lenguaje, código, logs o síntesis de información?}
+    D -- Sí --> E[Usar IA Generativa / LLMs]
+    D -- No --> F[Usar Programación Tradicional / Reglas]</pre>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mapa_del_ecosistema_de_modelos_actuales">3. Mapa del ecosistema de modelos actuales</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>No existe un único modelo que sirva para todo. La clave para un departamento IT es elegir el modelo en función del coste, la privacidad, la latencia y la capacidad de razonamiento requerida.</p>
+</div>
+<div class="sect2">
+<h3 id="_modelos_comerciales_cloud_propietarios">3.1. Modelos comerciales (Cloud / Propietarios)</h3>
+<div class="sect3">
+<h4 id="_chatgpt_openai_gpt_5_5">3.1.1. ChatGPT (OpenAI - GPT-5.5)</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Fortalezas:</strong> Máxima capacidad de razonamiento lógico general, excelente en el manejo de tareas lógicas complejas y APIs muy maduras para desarrollo.</p>
+</li>
+<li>
+<p><strong>Debilidades:</strong> Dependencia absoluta de la nube, costes variables por tokens y alta sensibilidad en el cumplimiento estricto de RGPD si se envían datos corporativos.</p>
+</li>
+<li>
+<p><strong>Uso típico:</strong> Orquestación de flujos de trabajo principales, generación de lógica compleja en desarrollo.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_claude_anthropic_claude_sonnet_4_6">3.1.2. Claude (Anthropic - Claude Sonnet 4.6)</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Fortalezas:</strong> El estándar actual para desarrollo de software, refactorización y escritura de documentación técnica limpia. Capacidad de seguir instrucciones milimétricamente.</p>
+</li>
+<li>
+<p><strong>Debilidades:</strong> Ventana de contexto costosa si se abusa de ella, menor ecosistema de plugins nativos que OpenAI.</p>
+</li>
+<li>
+<p><strong>Escenario recomendado:</strong> Herramienta de cabecera para desarrolladores IT y analistas de Business Intelligence (BI) que refactorizan código o estructuras SQL.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_gemini_google_gemini_3_1">3.1.3. Gemini (Google - Gemini 3.1)</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Fortalezas:</strong> Ventana de contexto masiva (hasta 2 millones de tokens). Permite adjuntar manuales enteros de sistemas hospitalarios, bases de datos de código completas o vídeos de errores en una sola sesión.</p>
+</li>
+<li>
+<p><strong>Debilidades:</strong> Respuestas a veces excesivamente creativas que requieren prompts muy acotados.</p>
+</li>
+<li>
+<p><strong>Escenario recomendado:</strong> Auditoría de documentación técnica masiva de aplicaciones heredadas o análisis conjunto de logs de servidores de varios días.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_github_copilot_microsoft_copilot">3.1.4. GitHub Copilot / Microsoft Copilot</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Fortalezas:</strong> Integración nativa en el entorno de desarrollo (VS Code, Visual Studio) y herramientas de oficina (M365).</p>
+</li>
+<li>
+<p><strong>Debilidades:</strong> Caja negra; tienes poco control sobre qué contexto interno del código se está enviando a la nube de Microsoft si no se configura la versión Enterprise adecuadamente.</p>
+</li>
+<li>
+<p><strong>Escenario recomendado:</strong> Autocompletado diario de código y consultas SQL en tiempo real.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modelos_abiertos_open_source_locales">3.2. Modelos abiertos (Open Source / Locales)</h3>
+<div class="sect3">
+<h4 id="_ecosistema_llama_4_meta_mistral_francia_y_phi_4_microsoft">3.2.1. Ecosistema Llama 4 (Meta), Mistral (Francia) y Phi-4 (Microsoft)</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Fortalezas:</strong> Se pueden descargar, modificar y ejecutar dentro de la propia infraestructura del hospital (On-Premise). Privacidad del 100%, coste por uso cero (una vez amortizado el hardware).</p>
+</li>
+<li>
+<p><strong>Debilidades:</strong> Requieren hardware específico (GPUs empresariales) para dar servicio a múltiples usuarios concurrentes con modelos grandes.</p>
+</li>
+<li>
+<p><strong>Escenario recomendado:</strong> Procesamiento automatizado de tickets de soporte técnico internos, parseo de logs con datos de los sistemas de información internos, y asistentes locales para áreas críticas del hospital.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ollama">3.2.2. Ollama</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>¿Qué es?:</strong> La herramienta de facto para simplificar la ejecución de modelos open-source de forma local en máquinas de desarrollo o servidores IT. Actúa como un puente que facilita la descarga y configuración de modelos y expone una API local idéntica a la de OpenAI, lo que permite usar los mismos prompts y flujos de trabajo tanto para modelos comerciales como para modelos locales sin cambiar el código.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Se deja como trabajo autónomo la instalación de Ollama y algún modelo gratuito en un entorno local de laboratorio para realizar una prueba de concepto de generación de código o análisis de logs sin enviar datos a la nube.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_4_el_gran_dilema_cloud_vs_on_premise">4. 4. El gran dilema: Cloud vs. On-Premise</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>La decisión de desplegar soluciones de Inteligencia Artificial en la nube frente a local no es solo una cuestión de preferencia técnica. En el ámbito de la salud, está fuertemente condicionada por la legislación y la seguridad de la información.</p>
+</div>
+<pre class='mermaid'>graph TD
+    SubGraph1[Entorno Cloud]
+    A[Consola/App IT] -->|Internet / Cifrado| B((API Proveedor))
+    B --> C[Modelos de Frontera SOTA]
+
+    SubGraph2[Entorno On-Premise Hospitalario]
+    D[Consola/App IT] -->|Red Interna LAN| E((Servidor Ollama/vLLM))
+    E -->|Hardware Local| F[GPU dedicada NVIDIA]</pre>
+<div class="sect2">
+<h3 id="_matriz_de_decisión">4.1. Matriz de decisión</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Dimensión de análisis</th>
+<th class="tableblock halign-left valign-top">Modelos en la nube (Cloud)</th>
+<th class="tableblock halign-left valign-top">Inferencia Local (On-Premise)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Privacidad y RGPD</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requiere acuerdos B2B específicos (BAAs) y pasarelas que anonimicen datos corporativos antes de salir del perímetro.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Los datos nunca abandonan la red interna del hospital. Cumplimiento normativo nativo.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Potencia y capacidad</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modelos de frontera (State-of-the-Art). Respuestas de alta calidad conceptual de forma nativa.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modelos optimizados (hasta 70B de parámetros). Excelente rendimiento para tareas específicas de ingeniería de software y soporte.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Coste Financiero</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpEx (Pago por uso / consumo de tokens). Económico al inicio, potencialmente caro a escala masiva.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CapEx (Inversión inicial en servidores con GPUs tipo NVIDIA). OpEx casi nulo.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Latencia y Mantenimiento</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Depende de la conexión a internet. Cero mantenimiento de infraestructura de IA.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Latencia predecible según la cola local de peticiones. Requiere administración de sistemas y monitorización de VRAM.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_enfoque_híbrido">4.2. Enfoque híbrido</h3>
+<div class="paragraph">
+<p>Los departamentos IT eficientes no eligen un bando de forma exclusiva. Implementan una arquitectura híbrida:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Uso de Cloud (Entornos seguros):</strong> Para desarrollo de software, asistencia en la creación de dashboards de BI con datos ya agregados y generación de documentación técnica (donde no hay datos de pacientes implicados).</p>
+</li>
+<li>
+<p><strong>Uso de On-Premise (Local):</strong> Para flujos automatizados de tickets que tocan logs de servidores de producción, herramientas que analizan código fuente interno sensible o automatización de tareas administrativas donde figuran nombres de facultativos o pacientes.</p>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_algunos_casos_de_uso_ilustrativos">5. Algunos casos de uso ilustrativos</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A continuación, se detallan microcasos operativos e inmediatos que se podrían abordar de forma práctica a lo largo de este curso:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Documentación técnica acelerada:</strong> Generación automática de archivos README, diagramas Mermaid a partir de especificaciones y documentación de APIs legacy.</p>
+</li>
+<li>
+<p><strong>Soporte TI de nivel 1 y 2:</strong> Un motor local analiza los logs de errores comunes de impresoras de etiquetas de farmacia o caídas de terminales e indica al técnico de guardia los pasos exactos de resolución.</p>
+</li>
+<li>
+<p><strong>Generación y optimización SQL:</strong> Creación rápida de consultas complejas sobre esquemas relacionales de las bases de datos, optimización de JOINs que ralentizan el sistema y explicación en lenguaje natural de consultas heredadas incomprensibles.</p>
+</li>
+<li>
+<p><strong>Análisis de expresiones DAX para Power BI:</strong> Depuración de métricas temporales complejas en los cuadros de mando de control de admisiones o listas de espera.</p>
+</li>
+<li>
+<p><strong>Onboarding de personal técnico:</strong> Respuestas instantáneas a nuevos programadores o administradores sobre cómo configurar el entorno de desarrollo local basándose en el repositorio de procedimientos internos del hospital.</p>
+</li>
+<li>
+<p><strong>Consolidación y triaje de tickets:</strong> Clasificación automática de las incidencias del software de ticketing (Jira/Glpi) por categorías de criticidad reales del hospital (ej: "Error en dispensador" &#8594; <strong>Prioridad Alta</strong>).</p>
+</li>
+<li>
+<p><strong>FAQs dinámicas basadas en documentación interna:</strong> Creación de bots de consulta técnica internos sobre normativas de seguridad, políticas de contraseñas y accesos VPN.</p>
+</li>
+<li>
+<p><strong>Revisión de procedimientos e instrucciones de trabajo:</strong> Verificación de que una nueva guía técnica redactada por un administrador de sistemas cumple con los estándares ISO de seguridad de la información implantados en el centro.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_qué_es_lo_que_no_se_debe_hacer_gestión_de_riesgos_y_líneas_rojas">6. Qué es lo que NO se debe hacer: Gestión de riesgos y "Líneas rojas"</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>El uso de la Inteligencia Artificial en entornos corporativos requiere madurez profesional. Estos son una serie de errores críticos que debemos evitar para no comprometer la seguridad, la privacidad o la integridad de los sistemas hospitalarios:</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>NUNCA subir datos de pacientes o historias clínicas a modelos de consumo público.</strong> (ChatGPT gratuito, Claude gratuito). Todo texto introducido ahí pasa a formar parte del entrenamiento del modelo global del proveedor.</p>
+</li>
+<li>
+<p><strong>No confiar ciegamente en el código o scripts generados.</strong> Los LLMs pueden sufrir "alucinaciones" (inventar parámetros de comandos Linux que no existen o generar funciones SQL inválidas). Todo script debe validarse en un entorno de pre-producción (<strong>Staging</strong>).</p>
+</li>
+<li>
+<p><strong>Evitar los "Prompts mágicos".</strong> No buscar la plantilla perfecta en internet. Una GenIA responde al contexto claro, técnico y estructurado. Los prompts excesivamente largos, confusos o esotéricos reducen la precisión.</p>
+</li>
+<li>
+<p><strong>No desplegar flujos de automatización 100% autónomos en sistemas críticos.</strong> Una Inteligencia Artificial nunca debe ejecutar un <code>DROP TABLE</code> o un script de parcheo de red sin que una <strong>persona</strong> técnica valide el comando final.</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_qué_es_realmente_útil_hoy_aterrizando_expectativas">7. ¿Qué es realmente útil HOY? (Aterrizando expectativas)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Descartemos el futurismo exagerado de las noticias. En el día a día técnico de un hospital, la IA Generativa puede aportar valor real inmediato en cuatro áreas clave:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Copilotos de desarrollo y en Sistemas:</strong> Actúa como un compañero de programación que escribe el código aburrido (bloques try-catch, validación de formularios, configuración de contenedores Docker).</p>
+</li>
+<li>
+<p><strong>Traducción de lenguajes y formatos:</strong> Excelente para pasar una lógica escrita en un procedimiento antiguo en PL/SQL a un script moderno en Python, o para transformar un dump de logs caótico en un JSON perfectamente estructurado listo para ElasticSearch.</p>
+</li>
+<li>
+<p><strong>Refinamiento iterativo:</strong> La capacidad de darle una pieza de código o texto técnico propio y decirle: <strong>"Encuentra fallos de seguridad aquí"</strong> o <strong>"Optimiza este script Bash para que ocupe menos líneas"</strong>.</p>
+</li>
+<li>
+<p><strong>Automatización cognitiva ligera:</strong> El procesamiento de lenguaje natural no estructurado que antes requería semanas de desarrollo de expresiones regulares (RegEx) imposibles de mantener, ahora se resuelve en minutos mediante prompts bien estructurados.</p>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_un_vistazo_a_los_workflows_de_ia">8. Un vistazo a los workflows de IA</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Para maximizar el uso de los LLMs en las siguientes sesiones del curso, adoptaremos una metodología de trabajo basada en flujos iterativos profesionales. Dejaremos atrás el enfoque de "pregunta y respuesta simple" de un chat básico.</p>
+</div>
+<div class="sect2">
+<h3 id="_componentes_clave_de_un_flujo_profesional">8.1. Componentes clave de un flujo profesional</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Contexto persistente (System Prompts):</strong> Definir de manera fija el rol de la IA en la sesión. (Ej: <strong>"Actúas como un DBA Senior experto en PostgreSQL 15 enfocado en entornos médicos"</strong>).</p>
+</li>
+<li>
+<p><strong>Refinamiento iterativo:</strong> Si la primera respuesta de la IA no es del todo exacta, no se descarta el chat. Se le guía corrigiendo el error (Ej: <strong>"Ese comando es correcto, pero recuerda que nuestro servidor corre sobre Red Hat, no Ubuntu; adapta la sintaxis"</strong>).</p>
+</li>
+<li>
+<p><strong>IA + IA (Encadenamiento):</strong> Utilizar un modelo para generar una estructura inicial y un segundo modelo (o una sesión limpia) para actuar como revisor crítico del código generado.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_flujo_operativo_del_curso">8.2. Flujo Operativo del Curso</h3>
+<pre class='mermaid'>graph LR
+    Contexto[1. Definir Rol/Contexto] --> Prompt[2. Prompt Técnico Claro]
+    Prompt --> Output[3. Analizar Output IA]
+    Output --> Analisis{¿Es 100% correcto y seguro?}
+    Analisis -- No --> Refinar[4. Prompt de Corrección/Refinamiento]
+    Refinar --> Output
+    Analisis -- Sí --> Validacion[5. Persona valida en Staging]
+    Validacion --> Produccion[6. Despliegue seguro]</pre>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_9_posibles_escenarios">9. 9. Posibles escenarios</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A continuación se presentan algunos escenarios cotidianos en un departamento de informática de un hospital y cómo la adopción de GenIA podría cambiar el resultado del flujo de trabajo.</p>
+</div>
+<div class="sect2">
+<h3 id="_escenario_a_soporte_técnico_una_mañana_de_lunes">9.1. Escenario A: Soporte técnico una mañana de lunes</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>El problema:</strong> El servicio de soporte amanece con 35 tickets acumulados debido a un cambio en el proxy de red corporativo. Los usuarios describen el fallo de formas totalmente distintas: "No me abre la historia clínica", "Da vueltas la pantalla", "El sistema no funciona en la planta 3".</p>
+</li>
+<li>
+<p><strong>El flujo con IA:</strong> El personal responsable del soporte copia los textos de los 35 tickets en una GenIA y le pide: <strong>"Agrupa estas incidencias por causa raíz probable y extrae los IDs de equipo afectados en formato de lista"</strong>.</p>
+</li>
+<li>
+<p><strong>El resultado:</strong> En 15 segundos, la IA identifica que 32 de los 35 tickets están causados por el mismo error de resolución DNS en el proxy de la red de enfermería de la planta 3. El equipo aplica la solución de forma masiva en lugar de responder individualmente a ciegas durante horas.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_escenario_b_la_aplicación_heredada_legacy_sin_documentación">9.2. Escenario B: La aplicación heredada (Legacy) sin documentación</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>El problema:</strong> Un desarrollador senior abandona el hospital. El desarrollador entrante hereda una aplicación crítica escrita en PHP 5.4 hace 10 años, sin una sola línea de comentarios, encargada de sincronizar agendas médicas con un servicio externo de citas. La aplicación está fallando intermitentemente.</p>
+</li>
+<li>
+<p><strong>El flujo con IA:</strong> El nuevo equipo de desarrollo toma el script principal de PHP y lo introduce en un entorno seguro de Claude junto con el log de errores recientes.</p>
+</li>
+<li>
+<p><strong>El resultado:</strong> La IA genera en segundos un desglose en lenguaje natural de la arquitectura del script, añade comentarios explicativos detallados en el propio código, e identifica un problema de desbordamiento de memoria causado por un bucle <code>while</code> mal cerrado que se activaba bajo ciertas condiciones de red.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_escenario_c_analistas_de_bi_y_la_métrica_interminable">9.3. Escenario C: Analistas de BI y la métrica interminable</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>El problema:</strong> Desde la Gerencia piden un nuevo cuadro de mando en Power BI que calcule la tasa de ocupación de camas cruzada con la estancia media del mes anterior, pero excluyendo los festivos locales. La analista de BI pasa horas intentando ajustar las funciones de inteligencia de tiempo en DAX sin éxito.</p>
+</li>
+<li>
+<p><strong>El flujo con IA:</strong> La analista abre su Copiloto de confianza, introduce el esquema simplificado de su tabla de calendario y la tabla de ingresos del hospital, y redacta su necesidad en lenguaje técnico estructurado.</p>
+</li>
+<li>
+<p><strong>El resultado:</strong> La IA genera la fórmula exacta utilizando <code>CALCULATE</code>, <code>FILTER</code> y <code>ALLSELECTED</code>, explicando línea a línea el por qué de la lógica. La analista comprende la estructura, realiza dos ajustes menores en los nombres de las columnas y el dashboard queda desplegado antes del mediodía.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_escenario_d_redacción_acelerada_de_un_proyecto_técnico">9.4. Escenario D: Redacción acelerada de un proyecto técnico</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>El problema:</strong> El área de informática necesita presentar en 48 horas una memoria técnica para modernizar el sistema de gestión de turnos, incluyendo objetivos, alcance, riesgos, presupuesto preliminar y cronograma por fases. La información existe, pero está dispersa entre correos, notas sueltas y documentos antiguos.</p>
+</li>
+<li>
+<p><strong>El flujo con IA:</strong> El equipo recopila el material base y le pide a la GenIA: <strong>"Estructura este contenido como proyecto técnico formal para dirección: resumen ejecutivo, situación actual, propuesta, plan de implantación, indicadores de éxito y anexos"</strong>. Después solicita una segunda iteración para adaptar el lenguaje a audiencia no técnica.</p>
+</li>
+<li>
+<p><strong>El resultado:</strong> En menos de una hora se obtiene un primer borrador completo, coherente y editable que reduce varios días de redacción manual. El equipo dedica el tiempo restante a validar cifras, ajustar prioridades y cerrar una propuesta de mayor calidad.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_escenario_e_valoración_técnica_de_licitaciones">9.5. Escenario E: Valoración técnica de licitaciones</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>El problema:</strong> El hospital recibe varias ofertas para un nuevo sistema de integración clínica. Cada proveedor usa terminología distinta y documentos extensos, lo que dificulta comparar de forma homogénea criterios como interoperabilidad HL7/FHIR, ciberseguridad, soporte, plan de formación y coste total de propiedad.</p>
+</li>
+<li>
+<p><strong>El flujo con IA:</strong> La comisión de valoración define una matriz de evaluación con pesos y solicita a la IA: <strong>"Analiza estas propuestas y puntúa cada criterio con evidencia textual, marcando ambigüedades, riesgos contractuales y preguntas de aclaración para los licitadores"</strong>.</p>
+</li>
+<li>
+<p><strong>El resultado:</strong> La IA genera una tabla comparativa trazable, identifica omisiones críticas (por ejemplo, ausencia de SLA 24/7 o alcance incompleto de migración de datos) y prepara un listado de preguntas objetivas para la mesa de contratación. La decisión final sigue siendo humana, pero con una base mucho más sólida y auditable.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_escenario_f_mejora_de_arquitectura_de_una_aplicación_crítica">9.6. Escenario F: Mejora de arquitectura de una aplicación crítica</h3>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>El problema:</strong> Una aplicación monolítica que gestiona peticiones internas presenta degradación de rendimiento y fallos en picos de carga. Existe presión para "migrar rápido" a una arquitectura moderna, pero sin romper servicios ya en producción.</p>
+</li>
+<li>
+<p><strong>El flujo con IA:</strong> Antes de proponer cambios, el equipo solicita a la IA un plan en tres etapas: <em>"1) Diseñar estrategia de testing de regresión y contratos para asegurar comportamiento actual; 2) Definir plan de migración incremental con hitos, rollback y criterios de salida; 3) Proponer arquitectura objetivo (por dominios, APIs, observabilidad, seguridad y despliegue)"</em>. A continuación, la IA ayuda a generar casos de prueba, backlog técnico priorizado y un roadmap por iteraciones.</p>
+</li>
+<li>
+<p><strong>El resultado:</strong> El equipo establece primero una red de seguridad de tests automatizados, luego ejecuta una migración por fases con riesgo controlado y finalmente evoluciona hacia una arquitectura más mantenible y escalable. La IA acelera el análisis y la documentación, mientras la validación técnica y la gobernanza de cambios permanecen en manos del equipo responsable.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusiones">10. Conclusiones</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>La Inteligencia artificial generativa no es una moda pasajera, sino una herramienta de transformación profunda para los departamentos de informática hospitalaria. Su capacidad para entender el lenguaje técnico, generar código, sintetizar información y actuar como copiloto de desarrollo tiene el potencial de liberar a los profesionales técnicos de tareas repetitivas, acelerar la resolución de problemas y mejorar la calidad de las soluciones implementadas. Sin embargo, su adopción requiere una gestión cuidadosa de riesgos, una comprensión clara de sus fortalezas y limitaciones, y un enfoque profesional basado en flujos iterativos de validación humana. La clave para el éxito no es elegir entre Cloud u On-Premise, sino diseñar una arquitectura híbrida que aproveche lo mejor de ambos mundos según las necesidades específicas del hospital.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2026-05-31 22:12:23 +0200
+</div>
+</div>
+</body>
+</html>

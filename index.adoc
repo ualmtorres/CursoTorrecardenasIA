@@ -1,0 +1,79 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+
+////
+Nombre y título del trabajo
+////
+
+= Inteligencia artificial generativa aplicada a productividad IT hospitalaria
+Manuel Torres - Universidad de Almería
+
+// NO CAMBIAR!! (Entrar en modo no numerado de apartados)
+:numbered!: 
+
+[abstract]
+== Resumen
+
+Este sitio organiza el material del curso **Inteligencia artificial generativa aplicada a productividad IT hospitalaria**. El curso está orientado a equipos de informática de hospitales que necesitan entender, evaluar y aplicar herramientas de IA generativa con criterio técnico, seguridad, trazabilidad y responsabilidad operativa.
+
+El material combina visión conceptual, criterios de adopción, presentaciones para impartir sesiones y documentos de apoyo. La intención no es presentar la IA como una solución mágica, sino como una capacidad de productividad que debe integrarse con buenas prácticas de ingeniería, gobierno del dato, revisión humana y control del ciclo de vida.
+
+Desde esta página se accede al material navegable del curso. Por ahora se incluyen documentos, presentaciones y otros recursos de interés.
+////
+COLOCA A CONTINUACION LOS OBJETIVOS
+////
+.Objetivos
+Al finalizar el curso, las personas participantes deberían ser capaces de:
+
+* Entender qué aporta la IA generativa al trabajo cotidiano de un departamento IT hospitalario.
+* Diferenciar entre usos razonables, usos experimentales y usos que requieren gobierno estricto.
+* Reconocer límites, riesgos y líneas rojas en privacidad, seguridad, datos sensibles y automatización.
+* Evaluar plataformas y asistentes de desarrollo basados en IA antes de introducirlos en flujos reales.
+* Distinguir entre demo, prototipo, piloto controlado y aplicación preparada para producción.
+* Usar IA como apoyo para análisis, documentación, prototipado, generación de código y revisión crítica.
+* Mantener trazabilidad de fuentes, decisiones, supuestos y validaciones humanas.
+
+// NO CAMBIAR!! (Entrar en modo numerado de apartados)
+:numbered: 
+== Material disponible
+
+[cols="2,2,3,2", options="header"]
+|===
+| Sesión
+| Formato
+| Descripción
+| Enlace
+
+| Visión general de IA generativa aplicada a IT hospitalaria
+| Documento completo
+| Introducción al impacto de la IA generativa en departamentos de informática hospitalaria: paradigma operativo, tipos de IA, ecosistema de modelos, cloud vs. on-premise, casos de uso y riesgos.
+| link:Tutorial/vision-general.html[Abrir HTML, window=_blank]
+
+| Visión general de IA generativa aplicada a IT hospitalaria
+| Presentación
+| Presentación resumida con ideas clave, comparativas, riesgos, workflows y escenarios ilustrativos.
+| link:Tutorial/vision-general-presentacion.html[Abrir presentación, window=_blank]
+
+| Plataformas de desarrollo asistido por IA
+| Documento completo
+| Tutorial sobre herramientas tipo Firebase Studio, Google AI Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44, con criterios de evaluación para uso responsable.
+| link:Tutorial/plaformas-desarrollo-basado-ia.html[Abrir HTML, window=_blank]
+
+| Plataformas de desarrollo asistido por IA
+| Presentación
+| Presentación resumida sobre este tipo de herramientas, promesas y límites, mapa de plataformas, checklist hospitalaria y taller práctico.
+| link:Tutorial/plaformas-desarrollo-basado-ia-presentacion.html[Abrir presentación, window=_blank]
+|===
+
+== Estructura actual del material
+
+* **Visión general**: marco conceptual para entender qué cambia con la IA generativa, dónde puede aportar valor y qué límites deben respetarse en un entorno hospitalario.
+* **Plataformas de desarrollo asistido por IA**: revisión práctica de herramientas que permiten pasar de una descripción en lenguaje natural a prototipos funcionales, con foco en evaluación, control técnico y salida hacia desarrollo gobernado.
