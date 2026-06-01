@@ -1,0 +1,719 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+:icons: font
+
+= Taller: Seguimiento de proyectos con NotebookLM
+Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Caso CITAS360
+
+:numbered!:
+
+[abstract]
+== Resumen
+
+Este documento guía una sesión práctica sobre el uso de NotebookLM para preparar reuniones de seguimiento, comisiones de dirección y análisis de situación a partir de documentación dispersa de un proyecto hospitalario ficticio.
+
+El caso de trabajo es **CITAS360**, un programa de modernización de la gestión de citas médicas del Hospital Universitario Santa Aurelia. La documentación está diseñada para parecer realista: actas, emails, sprints, riesgos, KPIs, incidencias y documentos de proyecto. El objetivo docente no es solo resumir documentos, sino aprender a **preguntar, contrastar, detectar contradicciones, reconstruir una cronología y preparar decisiones ejecutivas con trazabilidad de fuentes**.
+
+[IMPORTANT]
+====
+Todos los datos del caso son ficticios. No contienen datos reales de pacientes ni información real de ningún hospital.
+====
+
+.Objetivos de aprendizaje
+Al finalizar la sesión, las personas participantes deberían ser capaces de:
+
+* Importar un conjunto documental organizado en NotebookLM.
+* Distinguir entre resumen superficial y análisis documental con evidencias.
+* Formular preguntas útiles para preparar una reunión de seguimiento.
+* Detectar riesgos, decisiones abiertas, compromisos incumplidos y contradicciones entre fuentes.
+* Preparar un briefing ejecutivo trazable a partir de documentación heterogénea.
+* Identificar límites de la IA cuando la información está distribuida, es ambigua o contiene contradicciones sutiles.
+* Usar NotebookLM como apoyo al trabajo profesional sin delegar el juicio técnico ni la responsabilidad de decisión.
+
+== Cómo usar este documento
+
+Este documento sirve para tres usos:
+
+* **Durante la clase presencial**: funciona como guion de la sesión, con temporización, actividades, preguntas y recursos enlazados.
+* **Durante la práctica guiada**: permite a cada participante acceder rápidamente a los documentos que se importarán en NotebookLM.
+* **Después de la sesión**: permite repetir el ejercicio en remoto, reconstruir la narrativa y comparar resultados.
+
+[NOTE]
+====
+La sesión está pensada para 90-120 minutos. Si se dispone de menos tiempo, se recomienda realizar solo las fases 1, 2, 4 y 6.
+====
+
+== Recursos del caso
+
+Carpeta raíz del caso:
+
+* link:CITAS360/[CITAS360, window=_blank]
+
+Documento reservado para la guía de la sesión:
+
+* link:CITAS360/INSTRUCTOR_GUIDE.md[INSTRUCTOR_GUIDE.md, window=_blank]
+
+[WARNING]
+====
+No cargar `INSTRUCTOR_GUIDE.md` en NotebookLM durante la práctica con asistentes. Contiene la solución esperada, la cronología completa, las contradicciones sembradas y las respuestas de validación.
+====
+
+=== Paquete recomendado para NotebookLM
+
+Para la práctica principal se deben importar todos los documentos excepto la guía del instructor:
+
+* link:CITAS360/Actas/[Actas, window=_blank]
+* link:CITAS360/Proyecto/[Documentación de proyecto, window=_blank]
+* link:CITAS360/Sprints/[Sprints, window=_blank]
+* link:CITAS360/Riesgos/[Riesgos, window=_blank]
+* link:CITAS360/KPIs/[KPIs, window=_blank]
+* link:CITAS360/Emails/[Emails, window=_blank]
+* link:CITAS360/Incidencias/[Incidencias, window=_blank]
+
+[TIP]
+====
+Si NotebookLM limita el número de fuentes disponibles en la cuenta usada en clase, empezar por: documentos de proyecto, actas 06-12, sprints 08-11, riesgos, KPIs, emails e incidencias. Esa selección conserva la mayor parte del valor analítico del ejercicio.
+====
+
+=== Acceso directo por documento
+
+[cols="1,2,4", options="header"]
+|===
+| Bloque | Documento | Uso en la sesión
+
+| Proyecto
+| link:CITAS360/Proyecto/PROYECTO_INICIO.md[PROYECTO_INICIO.md, window=_blank]
+| Punto de partida, alcance, supuestos y planificación inicial.
+
+| Proyecto
+| link:CITAS360/Proyecto/ANALISIS_FUNCIONAL.md[ANALISIS_FUNCIONAL.md, window=_blank]
+| Reglas funcionales, decisiones abiertas y validación de Admisión.
+
+| Proyecto
+| link:CITAS360/Proyecto/ARQUITECTURA_SOLUCION.md[ARQUITECTURA_SOLUCION.md, window=_blank]
+| Supuestos técnicos, integraciones, seguridad y entornos.
+
+| Proyecto
+| link:CITAS360/Proyecto/ESTADO_ACTUAL_PROYECTO.md[ESTADO_ACTUAL_PROYECTO.md, window=_blank]
+| Foto de situación en agosto y base para briefing directivo.
+
+| Actas
+| link:CITAS360/Actas/ACTA_01.md[ACTA_01.md, window=_blank] · link:CITAS360/Actas/ACTA_02.md[ACTA_02.md, window=_blank] · link:CITAS360/Actas/ACTA_03.md[ACTA_03.md, window=_blank] · link:CITAS360/Actas/ACTA_04.md[ACTA_04.md, window=_blank]
+| Arranque saludable, alcance, decisiones pendientes y supuestos iniciales.
+
+| Actas
+| link:CITAS360/Actas/ACTA_05.md[ACTA_05.md, window=_blank] · link:CITAS360/Actas/ACTA_06.md[ACTA_06.md, window=_blank] · link:CITAS360/Actas/ACTA_07.md[ACTA_07.md, window=_blank] · link:CITAS360/Actas/ACTA_08.md[ACTA_08.md, window=_blank]
+| Desarrollo inicial, compromiso de entrega HIS y primeras señales de tensión.
+
+| Actas
+| link:CITAS360/Actas/ACTA_09.md[ACTA_09.md, window=_blank] · link:CITAS360/Actas/ACTA_10.md[ACTA_10.md, window=_blank] · link:CITAS360/Actas/ACTA_11.md[ACTA_11.md, window=_blank] · link:CITAS360/Actas/ACTA_12.md[ACTA_12.md, window=_blank]
+| Deterioro progresivo, riesgos altos, piloto comprometido y escalado.
+
+| Sprints
+| link:CITAS360/Sprints/SPRINT_08.md[SPRINT_08.md, window=_blank] · link:CITAS360/Sprints/SPRINT_09.md[SPRINT_09.md, window=_blank] · link:CITAS360/Sprints/SPRINT_10.md[SPRINT_10.md, window=_blank] · link:CITAS360/Sprints/SPRINT_11.md[SPRINT_11.md, window=_blank]
+| Velocidad real, bloqueos, historias no terminadas y deuda acumulada.
+
+| Riesgos
+| link:CITAS360/Riesgos/RIESGOS_ABIERTOS.md[RIESGOS_ABIERTOS.md, window=_blank] · link:CITAS360/Riesgos/RIESGOS_ESCALADOS.md[RIESGOS_ESCALADOS.md, window=_blank] · link:CITAS360/Riesgos/RIESGOS_MITIGADOS.md[RIESGOS_MITIGADOS.md, window=_blank]
+| Riesgos actuales, escalados y parcialmente mitigados.
+
+| KPIs
+| link:CITAS360/KPIs/KPI_MAYO.md[KPI_MAYO.md, window=_blank] · link:CITAS360/KPIs/KPI_JUNIO.md[KPI_JUNIO.md, window=_blank] · link:CITAS360/KPIs/KPI_JULIO.md[KPI_JULIO.md, window=_blank]
+| Evolución cuantitativa del deterioro.
+
+| Emails
+| link:CITAS360/Emails/EMAIL_01.md[EMAIL_01.md, window=_blank] · link:CITAS360/Emails/EMAIL_02.md[EMAIL_02.md, window=_blank] · link:CITAS360/Emails/EMAIL_03.md[EMAIL_03.md, window=_blank] · link:CITAS360/Emails/EMAIL_04.md[EMAIL_04.md, window=_blank] · link:CITAS360/Emails/EMAIL_05.md[EMAIL_05.md, window=_blank] · link:CITAS360/Emails/EMAIL_06.md[EMAIL_06.md, window=_blank]
+| Información no reflejada con claridad en las actas.
+
+| Incidencias
+| link:CITAS360/Incidencias/INCIDENCIAS_INTEGRACION.md[INCIDENCIAS_INTEGRACION.md, window=_blank] · link:CITAS360/Incidencias/INCIDENCIAS_RENDIMIENTO.md[INCIDENCIAS_RENDIMIENTO.md, window=_blank] · link:CITAS360/Incidencias/INCIDENCIAS_USUARIOS.md[INCIDENCIAS_USUARIOS.md, window=_blank]
+| Evidencia técnica y funcional que permite contrastar la narrativa oficial.
+|===
+
+:numbered:
+
+== Narrativa paulatina del caso
+
+=== Fase 1: enero-febrero, arranque razonablemente sano
+
+La historia comienza con un proyecto bien planteado en apariencia. CITAS360 tiene patrocinio de Dirección TIC, proveedor definido, alcance claro y una planificación de 12 meses. Las primeras actas no muestran alarma.
+
+.Documentos clave
+* link:CITAS360/Proyecto/PROYECTO_INICIO.md[PROYECTO_INICIO.md, window=_blank]
+* link:CITAS360/Proyecto/ANALISIS_FUNCIONAL.md[ANALISIS_FUNCIONAL.md, window=_blank]
+* link:CITAS360/Proyecto/ARQUITECTURA_SOLUCION.md[ARQUITECTURA_SOLUCION.md, window=_blank]
+* link:CITAS360/Actas/ACTA_01.md[ACTA_01.md, window=_blank]
+* link:CITAS360/Actas/ACTA_02.md[ACTA_02.md, window=_blank]
+* link:CITAS360/Actas/ACTA_03.md[ACTA_03.md, window=_blank]
+* link:CITAS360/Actas/ACTA_04.md[ACTA_04.md, window=_blank]
+
+[NOTE]
+====
+Primer mensaje docente: un proyecto puede parecer sano cuando solo se mira la documentación formal. Aun así, ya aparecen decisiones abiertas: autenticación, SMS, despliegue y agenda antigua.
+====
+
+=== Fase 2: marzo-abril, compromisos y primeras dependencias
+
+El proveedor confirma la viabilidad de la integración y se mantiene mayo como fecha objetivo. El portal avanza, pero se aplazan decisiones que condicionan app, notificaciones y piloto.
+
+.Documentos clave
+* link:CITAS360/Actas/ACTA_05.md[ACTA_05.md, window=_blank]
+* link:CITAS360/Actas/ACTA_06.md[ACTA_06.md, window=_blank]
+* link:CITAS360/Actas/ACTA_07.md[ACTA_07.md, window=_blank]
+* link:CITAS360/Emails/EMAIL_01.md[EMAIL_01.md, window=_blank]
+
+.Highlight para clase
+[IMPORTANT]
+====
+El compromiso de entrega del conector HIS en mayo aparece como estable, pero depende de una condición técnica: disponer de ejemplos completos y que el HIS responda de forma estándar.
+====
+
+=== Fase 3: mayo, señales tempranas de desajuste
+
+En las actas, el proyecto sigue dentro de márgenes aceptables. Sin embargo, sprints, emails e incidencias empiezan a mostrar que la integración HIS no es estándar y que la cancelación de citas no se comporta igual por servicio.
+
+.Documentos clave
+* link:CITAS360/Actas/ACTA_08.md[ACTA_08.md, window=_blank]
+* link:CITAS360/Actas/ACTA_09.md[ACTA_09.md, window=_blank]
+* link:CITAS360/Sprints/SPRINT_08.md[SPRINT_08.md, window=_blank]
+* link:CITAS360/Sprints/SPRINT_09.md[SPRINT_09.md, window=_blank]
+* link:CITAS360/KPIs/KPI_MAYO.md[KPI_MAYO.md, window=_blank]
+* link:CITAS360/Emails/EMAIL_02.md[EMAIL_02.md, window=_blank]
+* link:CITAS360/Incidencias/INCIDENCIAS_INTEGRACION.md[INCIDENCIAS_INTEGRACION.md, window=_blank]
+
+[TIP]
+====
+Aquí conviene pedir a NotebookLM que compare el tono de las actas con la evidencia técnica. Es el primer momento en el que la IA debe cruzar fuentes, no limitarse a resumir una carpeta.
+====
+
+=== Fase 4: junio, el proyecto deja de estar cómodo
+
+MedTech solicita mover la entrega estable del conector HIS a julio. El KPI de junio ya muestra deterioro: menor cumplimiento de planificación, más incidencias, más defectos críticos y menor satisfacción de usuarios piloto.
+
+.Documentos clave
+* link:CITAS360/Actas/ACTA_10.md[ACTA_10.md, window=_blank]
+* link:CITAS360/Sprints/SPRINT_10.md[SPRINT_10.md, window=_blank]
+* link:CITAS360/KPIs/KPI_JUNIO.md[KPI_JUNIO.md, window=_blank]
+* link:CITAS360/Emails/EMAIL_03.md[EMAIL_03.md, window=_blank]
+* link:CITAS360/Incidencias/INCIDENCIAS_USUARIOS.md[INCIDENCIAS_USUARIOS.md, window=_blank]
+
+[IMPORTANT]
+====
+La diferencia entre "incidencias técnicas en corrección" y "replanificación de un hito central" es una de las claves de la práctica.
+====
+
+=== Fase 5: julio, la realidad se vuelve crítica
+
+El deterioro se hace visible en rendimiento, validación funcional y velocidad del equipo. Las actas empiezan a reconocer riesgos altos, pero los emails y las incidencias muestran una situación más grave.
+
+.Documentos clave
+* link:CITAS360/Actas/ACTA_11.md[ACTA_11.md, window=_blank]
+* link:CITAS360/Sprints/SPRINT_11.md[SPRINT_11.md, window=_blank]
+* link:CITAS360/KPIs/KPI_JULIO.md[KPI_JULIO.md, window=_blank]
+* link:CITAS360/Emails/EMAIL_04.md[EMAIL_04.md, window=_blank]
+* link:CITAS360/Emails/EMAIL_05.md[EMAIL_05.md, window=_blank]
+* link:CITAS360/Incidencias/INCIDENCIAS_RENDIMIENTO.md[INCIDENCIAS_RENDIMIENTO.md, window=_blank]
+
+[NOTE]
+====
+Buen punto para discutir sesgos documentales: las actas tienden a suavizar, los emails revelan presión operativa y las incidencias concretan síntomas técnicos.
+====
+
+=== Fase 6: agosto, preparación de comisión de dirección
+
+En agosto el proyecto no está fallido, pero necesita recuperación. Hay que preparar a Dirección TIC para tomar decisiones: alcance del piloto, exigencia al proveedor, cierre de decisiones y priorización.
+
+.Documentos clave
+* link:CITAS360/Actas/ACTA_12.md[ACTA_12.md, window=_blank]
+* link:CITAS360/Proyecto/ESTADO_ACTUAL_PROYECTO.md[ESTADO_ACTUAL_PROYECTO.md, window=_blank]
+* link:CITAS360/Riesgos/RIESGOS_ABIERTOS.md[RIESGOS_ABIERTOS.md, window=_blank]
+* link:CITAS360/Riesgos/RIESGOS_ESCALADOS.md[RIESGOS_ESCALADOS.md, window=_blank]
+* link:CITAS360/Riesgos/RIESGOS_MITIGADOS.md[RIESGOS_MITIGADOS.md, window=_blank]
+* link:CITAS360/Emails/EMAIL_06.md[EMAIL_06.md, window=_blank]
+
+[IMPORTANT]
+====
+El resultado esperado no es un resumen largo. Es un briefing accionable: qué pasa, qué evidencia lo demuestra, qué decisiones faltan y qué preguntas debe hacer Dirección.
+====
+
+== Visualizaciones de apoyo
+
+=== Línea temporal del deterioro
+
+[mermaid]
+....
+timeline
+    title Evolución de CITAS360
+    Enero : Inicio formal
+          : Sin riesgos críticos
+          : Alcance y gobierno definidos
+    Febrero : Análisis funcional
+            : Arquitectura asume APIs HIS estándar
+            : Decisiones abiertas
+    Marzo : Prototipo y compromiso de entrega HIS en mayo
+          : Autenticación y SMS sin cerrar
+    Abril : Demo de portal
+          : Dependencia HIS creciente
+    Mayo : Primeras incidencias de integración
+         : KPI todavía aceptable
+         : Emails advierten respuestas no estándar
+    Junio : Replanificación del conector HIS a julio
+          : Baja velocidad
+          : Más defectos críticos
+    Julio : Problemas de carga
+          : Rechazo funcional informal
+          : Satisfacción baja
+    Agosto : Riesgos críticos escalados
+           : Plan de recuperación exigido
+....
+
+=== Mapa de fuentes y señales
+
+[mermaid]
+....
+graph TD
+    A[Actas] --> B[Narrativa oficial]
+    C[Emails] --> D[Información sensible no siempre formalizada]
+    E[Sprints] --> F[Velocidad, bloqueos y deuda]
+    G[KPIs] --> H[Tendencia cuantitativa]
+    I[Incidencias] --> J[Evidencia técnica y funcional]
+    K[Riesgos] --> L[Priorización y escalado]
+    B --> M[Briefing para Dirección]
+    D --> M
+    F --> M
+    H --> M
+    J --> M
+    L --> M
+....
+
+=== Cadena causal principal
+
+[mermaid]
+....
+flowchart LR
+    A[Supuesto: HIS estándar] --> B[Integración estimada como reutilizable]
+    B --> C[Compromiso de entrega en mayo]
+    C --> D[Respuestas HIS no documentadas]
+    D --> E[Retrabajo del conector]
+    E --> F[Baja velocidad de sprints]
+    F --> G[Retraso en cancelación, SMS y cuadro de mando]
+    G --> H[Piloto de septiembre en riesgo]
+....
+
+=== Evolución de indicadores
+
+[cols="1,1,1,1,2", options="header"]
+|===
+| Indicador | Mayo | Junio | Julio | Lectura
+
+| Cumplimiento planificación
+| 91%
+| 78%
+| 63%
+| Deterioro progresivo y acumulativo.
+
+| Incidencias abiertas
+| 14
+| 27
+| 46
+| El retrabajo técnico supera la capacidad del equipo.
+
+| Defectos críticos
+| 1
+| 3
+| 6
+| El riesgo deja de ser solo planificación y afecta a calidad.
+
+| Disponibilidad entorno
+| 96%
+| 89%
+| 81%
+| Preproducción y pruebas se convierten en cuello de botella.
+
+| Satisfacción usuarios piloto
+| 7,8/10
+| 6,5/10
+| 5,2/10
+| Admision no está validando cómodamente la solución.
+|===
+
+=== Semáforo de temas para comisión
+
+[cols="1,1,3,3", options="header"]
+|===
+| Tema | Estado | Evidencia | Pregunta de dirección
+
+| Integración HIS
+| Rojo
+| Emails 02-03, incidencias de integración, riesgos escalados.
+| ¿Qué fecha verificable tiene el conector estable y con qué alcance?
+
+| Rendimiento
+| Rojo
+| Email 04, Sprint 11, incidencias de rendimiento.
+| ¿Qué cambio técnico se propone y cuándo se valida con carga real?
+
+| Validación funcional
+| Ámbar/Rojo
+| Email 05, incidencias de usuarios, KPI julio.
+| ¿Qué flujo mínimo aceptará Admision para el piloto?
+
+| SMS y notificaciones
+| Ámbar
+| Análisis funcional, sprints, riesgos abiertos.
+| ¿Se mantiene proveedor actual o se activa alternativa?
+
+| Agenda antigua
+| Ámbar/Rojo
+| Sprints, incidencias de integración, decisiones abiertas.
+| ¿Convive con CITAS360 durante el piloto o se congela?
+
+| Piloto septiembre
+| Rojo
+| Estado actual, ACTA_12, riesgos escalados.
+| ¿Será piloto completo o piloto mínimo viable?
+|===
+
+== Temporización de la sesión
+
+=== Versión de 120 minutos
+
+[cols="1,2,4,3", options="header"]
+|===
+| Minuto | Bloque | Actividad | Resultado esperado
+
+| 0-10
+| Contexto
+| Presentar el caso, reglas de privacidad y objetivo de NotebookLM.
+| Los asistentes entienden que se trabaja con documentación ficticia pero realista.
+
+| 10-25
+| Preparación
+| Importar documentos en NotebookLM, excluyendo `INSTRUCTOR_GUIDE.md`.
+| NotebookLM queda listo con fuentes organizadas.
+
+| 25-40
+| Lectura inicial
+| Pedir un resumen del proyecto y contrastarlo con documentos de inicio.
+| Se observa la diferencia entre resumen general y análisis ejecutivo.
+
+| 40-60
+| Evolución
+| Reconstruir cronología enero-agosto con evidencias.
+| Aparece el deterioro gradual del proyecto.
+
+| 60-80
+| Riesgos y contradicciones
+| Preguntar por riesgos actuales, contradicciones y compromisos incumplidos.
+| NotebookLM debe citar fuentes cruzadas.
+
+| 80-100
+| Preparación de reunión
+| Generar briefing para Dirección TIC y lista de preguntas al proveedor.
+| Se obtiene material accionable para comisión.
+
+| 100-115
+| Revisión crítica
+| Comparar la respuesta con la guía del instructor.
+| Se identifican aciertos, omisiones y alucinaciones.
+
+| 115-120
+| Cierre
+| Recoger aprendizajes transferibles al hospital real.
+| Checklist de uso responsable.
+|===
+
+=== Versión compacta de 60 minutos
+
+[cols="1,2,4", options="header"]
+|===
+| Minuto | Bloque | Actividad
+
+| 0-10
+| Contexto
+| Presentación del caso y carga de fuentes.
+
+| 10-25
+| Primer análisis
+| Resumen ejecutivo y estado real del proyecto.
+
+| 25-40
+| Cruce de fuentes
+| Riesgos, contradicciones y decisiones pendientes.
+
+| 40-55
+| Comisión
+| Briefing para Dirección y preguntas al proveedor.
+
+| 55-60
+| Cierre
+| Validación rápida con `INSTRUCTOR_GUIDE.md`.
+|===
+
+== Guion de práctica con NotebookLM
+
+=== Preparación de fuentes
+
+1. Crear un nuevo notebook llamado `CITAS360 - Preparación reunión dirección`.
+2. Importar todos los documentos del caso salvo `INSTRUCTOR_GUIDE.md`.
+3. Esperar a que NotebookLM procese las fuentes.
+4. Revisar que las fuentes quedan reconocibles por carpeta o nombre.
+
+=== Pregunta 1: resumen inicial
+
+.Prompt sugerido
+[source,text]
+----
+Resume el proyecto CITAS360 para una persona de Dirección TIC que no ha leído la documentación. Indica estado general, hitos principales, riesgos y decisiones pendientes. Cita las fuentes que apoyan cada conclusión.
+----
+
+.Qué observar
+* Si la respuesta se limita al estado oficial o detecta deterioro.
+* Si cita documentos de agosto o solo documentos de inicio.
+* Si distingue avance funcional, integración, rendimiento y aceptación de usuarios.
+
+=== Pregunta 2: cronología
+
+.Prompt sugerido
+[source,text]
+----
+Reconstruye una línea temporal de enero a agosto. Para cada mes, indica qué cambia en el proyecto, qué evidencia documental lo demuestra y si el tono del proyecto mejora o empeora.
+----
+
+.Qué observar
+* Si identifica mayo y junio como punto de inflexión.
+* Si usa KPIs, sprints y emails, no solo actas.
+* Si mantiene fechas concretas.
+
+=== Pregunta 3: riesgos actuales
+
+.Prompt sugerido
+[source,text]
+----
+¿Cuáles son los principales riesgos actuales de CITAS360? Ordénalos por gravedad e indica para cada uno: impacto, probabilidad si aparece, responsable, documentos donde se evidencia y acción recomendada para Dirección.
+----
+
+.Qué observar
+* Si aparecen HIS, rendimiento, aceptación funcional, SMS, agenda antigua y pérdida de velocidad.
+* Si confunde riesgos mitigados con resueltos definitivamente.
+* Si detecta que algunos riesgos aparecen primero en emails o incidencias.
+
+=== Pregunta 4: decisiones abiertas
+
+.Prompt sugerido
+[source,text]
+----
+Identifica las decisiones que siguen abiertas y explica qué partes del proyecto dependen de cada una. Distingue decisiones técnicas, funcionales, contractuales y de gobierno.
+----
+
+.Qué observar
+* Autenticación de pacientes.
+* Estrategia de notificaciones.
+* Proveedor SMS alternativo.
+* Despliegue progresivo frente a big-bang.
+* Convivencia con agenda antigua.
+
+=== Pregunta 5: contradicciones documentales
+
+.Prompt sugerido
+[source,text]
+----
+Busca contradicciones o tensiones entre documentos. No te limites a contradicciones literales: incluye diferencias de tono, compromisos que cambian, riesgos suavizados en actas y problemas que aparecen solo en emails o incidencias.
+----
+
+.Qué observar
+* Entrega HIS mayo frente a aplazamiento a julio.
+* APIs estándar frente a desarrollos específicos.
+* "No hay riesgos críticos" frente a riesgos escalados.
+* "Ajustes técnicos" frente a problemas graves de rendimiento.
+* "Comentarios de mejora" frente a rechazo funcional.
+
+=== Pregunta 6: briefing para comisión
+
+.Prompt sugerido
+[source,text]
+----
+Prepara un briefing de una página para la reunión de Dirección TIC. Debe incluir: estado real del proyecto, decisiones que debe tomar Dirección, preguntas al proveedor, riesgos que requieren escalado y recomendación sobre el piloto de septiembre. Usa tono ejecutivo y cita evidencias.
+----
+
+.Qué observar
+* Si produce una salida accionable y no solo descriptiva.
+* Si recomienda piloto reducido o replanteamiento con evidencias.
+* Si plantea preguntas concretas a MedTech Solutions.
+
+=== Pregunta 7: preguntas al proveedor
+
+.Prompt sugerido
+[source,text]
+----
+Actúa como responsable de Dirección TIC. Prepara 10 preguntas exigentes para MedTech Solutions antes de aprobar el siguiente hito. Cada pregunta debe indicar qué documento o contradicción la justifica.
+----
+
+.Qué observar
+* Preguntas sobre fecha real de conector estable.
+* Diferenciación entre alcance contratado y cambio.
+* Plan de rendimiento.
+* Recursos asignados.
+* Reintentos, colas, SMS y agenda antigua.
+
+== Dinámicas de sesión
+
+=== Dinámica A: actas frente a emails
+
+Dividir la clase en dos grupos:
+
+* Grupo 1: solo revisa actas.
+* Grupo 2: revisa emails e incidencias.
+
+Cada grupo prepara en 10 minutos una respuesta a: "¿Está el proyecto controlado?".
+
+[NOTE]
+====
+La discusión posterior permite mostrar por qué una IA con acceso a más fuentes puede mejorar el análisis, pero también por qué necesita prompts que pidan explícitamente contraste y evidencia.
+====
+
+=== Dinámica B: comisión de dirección simulada
+
+Roles sugeridos:
+
+* Ana Beltrán: Dirección TIC.
+* Miguel Serrano: Jefe de Proyecto.
+* Javier Ruiz: Sistemas.
+* Carmen Gil: Admision.
+* David Vega: MedTech Solutions.
+* Pablo Martín: Scrum Master.
+
+Cada persona usa NotebookLM para preparar su posición. Después se simula una reunión de 15 minutos con tres objetivos:
+
+* Decidir si el piloto de septiembre sigue adelante.
+* Acordar qué debe entregar MedTech antes del 26 de agosto.
+* Cerrar o escalar decisiones pendientes.
+
+=== Dinámica C: auditoría de respuesta de IA
+
+Pedir a NotebookLM un briefing y revisar:
+
+* Qué afirmaciones están citadas.
+* Qué afirmaciones parecen inferencias.
+* Qué información importante falta.
+* Qué contradicciones no ha detectado.
+* Qué preguntas adicionales habría que formular.
+
+[IMPORTANT]
+====
+Una buena práctica profesional es no aceptar el primer resumen. La utilidad aparece al iterar: preguntar, pedir evidencias, pedir contradicciones, pedir incertidumbres y pedir acciones.
+====
+
+== Material para asistentes remotos
+
+=== Recorrido autónomo recomendado
+
+1. Leer este documento completo.
+2. Abrir la carpeta link:CITAS360/[CITAS360, window=_blank].
+3. Revisar primero `PROYECTO_INICIO.md`, `ANALISIS_FUNCIONAL.md` y `ARQUITECTURA_SOLUCION.md`.
+4. Revisar las actas en orden, de `ACTA_01.md` a `ACTA_12.md`.
+5. Revisar KPIs y sprints para ver la evolución cuantitativa.
+6. Revisar emails e incidencias para localizar información no formalizada.
+7. Importar las fuentes en NotebookLM.
+8. Ejecutar los prompts del apartado "Guion de práctica".
+9. Comparar los resultados con `INSTRUCTOR_GUIDE.md`.
+
+=== Resultado que debe producir cada asistente
+
+Cada asistente remoto debería terminar con tres artefactos:
+
+* Un resumen ejecutivo de máximo una página.
+* Una tabla de riesgos y decisiones abiertas.
+* Una lista de preguntas para la reunión con el proveedor.
+
+=== Checklist de calidad
+
+[cols="1,4", options="header"]
+|===
+| OK | Criterio
+
+| ☐
+| El resumen diferencia claramente estado oficial y estado real.
+
+| ☐
+| Las conclusiones citan documentos concretos.
+
+| ☐
+| Aparecen al menos cinco decisiones abiertas.
+
+| ☐
+| Aparecen riesgos técnicos, funcionales, contractuales y de gobierno.
+
+| ☐
+| Se identifican contradicciones entre actas, emails, sprints e incidencias.
+
+| ☐
+| La recomendación sobre el piloto de septiembre es explícita.
+
+| ☐
+| Las preguntas al proveedor son verificables y no genéricas.
+|===
+
+== Highlights
+
+[WARNING]
+====
+Esta sección contiene pistas de solución. Puede mostrarse al final de la sesión, no al inicio.
+====
+
+=== Pistas que deberían emerger
+
+* El proyecto no fracasa de golpe: se deteriora por acumulación.
+* La integración HIS es el hilo técnico principal.
+* Las decisiones pendientes no son administrativas; bloquean diseño, app, SMS, piloto y agenda.
+* Los KPIs permiten demostrar deterioro sin depender de impresiones.
+* Las actas suavizan la realidad frente a emails e incidencias.
+* La velocidad de sprints muestra pérdida de capacidad de entrega.
+* El piloto de septiembre solo parece razonable si se reduce alcance y se exige plan de recuperación.
+
+=== Contradicciones que conviene hacer visibles
+
+[cols="2,2,3", options="header"]
+|===
+| Versión oficial | Evidencia alternativa | Lectura
+
+| Entrega HIS en mayo.
+| Email de junio solicita mover entrega estable a julio.
+| El hito comprometido no se cumple.
+
+| APIs HIS estándar.
+| Incidencias muestran códigos y campos no documentados.
+| El supuesto arquitectónico era demasiado optimista.
+
+| No hay riesgos críticos en mayo.
+| En agosto hay riesgos críticos escalados.
+| El riesgo existía antes, pero se formaliza tarde.
+
+| Ajustes técnicos de rendimiento.
+| Prueba con 300 usuarios da 8,7 segundos y errores.
+| El lenguaje de acta suaviza la gravedad.
+
+| Comentarios de mejora de Admision.
+| Email indica rechazo funcional.
+| La validación funcional no está conseguida.
+|===
+
+== Conclusiones
+
+NotebookLM resulta útil en este ejercicio porque permite trabajar con fuentes múltiples y mantener trazabilidad. Sin embargo, el aprendizaje central no es "la IA resume documentos", sino algo más profesional: **la IA ayuda a preparar mejores preguntas**.
+
+En un entorno IT hospitalario, preparar una reunión no consiste solo en saber qué ha pasado. Consiste en saber qué decisiones están bloqueadas, qué riesgos no se han dicho con claridad, qué compromisos deben verificarse y qué fuentes sostienen cada afirmación.
+
+[IMPORTANT]
+====
+La IA puede acelerar el análisis documental, pero la responsabilidad de interpretación, priorización y decisión sigue siendo humana.
+====
+

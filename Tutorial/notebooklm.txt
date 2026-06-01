@@ -1,0 +1,36 @@
+Tipos de fuentes
+Sube PDFs, sitios web, vídeos de YouTube, archivos de audio, Documentos o Presentaciones de Google y más, y NotebookLM los resumirá y establecerá conexiones interesantes entre los temas, todo gracias a las capacidades de comprensión multimodal
+
+---
+
+en un asistente personalizado basado en IA experto en la información que le has dado (p.e. infogmtación corporativa, documentación técnica, investigaciones, etc.). Además, puedes consultar la fuente de cada respuesta, lo que facilita la verificación y el seguimiento de la información. Lo hace mediainte citas, lo que permite entender de dónde proviene cada fragmento de información y cómo se relaciona con otras fuentes.
+ Esto ayuda a ofrecer respuestas e información más precisas basadas en tu material, lo que reduce la probabilidad de que se produzcan errores y alucinaciones de la IA.
+
+---
+
+Eficiencia al sintetizar información:: acelera drásticamente el proceso de entender, sintetizar y extraer información valiosa de grandes volúmenes de texto.
+Confianza y fiabilidad: la transparencia de saber exactamente de dónde procede la información de la IA genera una mayor confianza en sus resultados, lo que es especialmente importante en entornos profesionales.
+
+---
+
+permite ofrecer resúmenes más detallados, identificar conexiones más profundas entre documentos y proporcionar respuestas más precisas a tus preguntas.
+---
+
+Empezar el día revisando documentos: sube tus notas de reuniones, informes y otros archivos para que NotebookLM los analice y te ayude a prepararte para el día.
+
+---
+te ayude a redactar correos, prepare propuestas y reúna información valiosa basada en tus fuentes.
+
+---
+Resumen o planificación del final del día: NotebookLM puede resumir tus notas del día y ayudarte a generar materiales, como listas de tareas pendientes, para prepararte para el día siguiente.
+---
+
+Genera nuevas ideas
+Sube notas de lluvias de ideas, y NotebookLM las conectará con otras fuentes para generar nuevas ideas, perspectivas y conexiones que podrían no ser evidentes a simple vista. Esto es especialmente útil para la innovación, la resolución de problemas y la generación de contenido creativo.
+
+----
+
+tus datos serán privados. Cuando uses NotebookLM como particular, tus datos no se utilizarán para el entrenamiento,
+---
+
+Dependienddo de la suscripciñon, el número de fuentes que puedes subir varía. En la versión gratuita, el límite es de 20 fuentes, mientras que en la versión Pro, el límite se amplía a 100 fuentes.

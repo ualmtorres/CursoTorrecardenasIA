@@ -71,9 +71,25 @@ Al finalizar el curso, las personas participantes deberían ser capaces de:
 | Presentación
 | Presentación resumida sobre este tipo de herramientas, promesas y límites, mapa de plataformas, checklist hospitalaria y taller práctico.
 | link:Tutorial/plaformas-desarrollo-basado-ia-presentacion.html[Abrir presentación, window=_blank]
+
+| Gestión de documentación con NotebookLM
+| Documento completo
+| Tutorial sobre NotebookLM.
+| link:Tutorial/notebooklm.html[Abrir HTML, window=_blank]
+
+| Gestión de documentación con NotebookLM
+| Taller práctico
+| Guion de sesión para usar NotebookLM con un corpus documental ficticio de proyecto hospitalario: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.
+| link:GestionDocumentacion/PreparacionReuniones/preparacion-reuniones-citas360.html[Abrir HTML, window=_blank]
+
+| Gestión de documentación con NotebookLM
+| Taller práctico
+| Guion de sesión para usar NotebookLM con un corpus documental ficticio de seguimiento de ciberseguridad: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.
+| link:GestionDocumentacion/ComisionCiberSeguridad/preparacion-comision-ciberseguridad.html[Abrir HTML, window=_blank]
 |===
 
 == Estructura actual del material
 
 * **Visión general**: marco conceptual para entender qué cambia con la IA generativa, dónde puede aportar valor y qué límites deben respetarse en un entorno hospitalario.
 * **Plataformas de desarrollo asistido por IA**: revisión práctica de herramientas que permiten pasar de una descripción en lenguaje natural a prototipos funcionales, con foco en evaluación, control técnico y salida hacia desarrollo gobernado.
+* **Gestión de documentación con NotebookLM**: guiones para usar NotebookLM en dos escenarios típicos de informática hospitalaria: preparación de reuniones ejecutivas y seguimiento de ciberseguridad. En ambos casos se busca mostrar cómo la IA puede ayudar a organizar información compleja, generar artefactos visuales y mejorar la calidad de las preguntas que se hacen a los documentos.

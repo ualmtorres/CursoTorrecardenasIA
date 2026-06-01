@@ -1,0 +1,807 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+:icons: font
+
+= Mejora de la productividad con NotebookLM
+Uso de IA generativa basada en fuentes para productividad, gestión del conocimiento y trabajo documental en entornos hospitalarios
+
+:numbered!:
+
+[abstract]
+== Resumen
+
+NotebookLM es una herramienta de Google que permite crear cuadernos de trabajo basados en fuentes propias: documentos, PDFs, páginas web, presentaciones, hojas de cálculo, audios, vídeos de YouTube con transcripción, imágenes y otros materiales. A partir de esas fuentes, la herramienta puede resumir, responder preguntas, comparar documentos, generar notas, producir tablas, crear mapas mentales, preparar guías de estudio o ayudar a redactar materiales.
+
+La idea importante es sencilla: **NotebookLM no empieza desde una conversación vacía, sino desde los documentos que le damos**. Por eso resulta especialmente útil cuando trabajamos con información dispersa, larga o difícil de revisar a mano.
+
+En un hospital, esto puede servir para preparar reuniones, revisar protocolos, estudiar documentación técnica, analizar informes, resumir actas, organizar material docente, comparar propuestas de proveedores, preparar comisiones, revisar documentación de calidad o convertir notas de trabajo en planes de acción.
+
+[IMPORTANT]
+====
+Este tutorial no propone cargar datos reales de pacientes ni información sensible sin autorización institucional. En entornos sanitarios, antes de usar cualquier herramienta externa con documentación interna hay que revisar las políticas del centro, los acuerdos de tratamiento de datos y las indicaciones del responsable de seguridad o protección de datos.
+====
+
+.Objetivos de aprendizaje
+Al terminar este tutorial, deberías ser capaz de:
+
+* Explicar qué es NotebookLM y en qué se diferencia de un chatbot genérico.
+* Crear un notebook y añadir fuentes.
+* Formular preguntas útiles basadas en documentos.
+* Usar citas para verificar de dónde sale cada respuesta.
+* Convertir fuentes dispersas en resúmenes, tablas, notas, guías, mapas mentales o materiales ejecutivos.
+* Aplicar NotebookLM a casos reales de trabajo hospitalario sin limitarlo a un único ámbito.
+* Reconocer sus límites: privacidad, calidad de fuentes, sesgos, citas incompletas, límites de uso y necesidad de revisión humana.
+
+:numbered:
+
+== Visión general de NotebookLM
+
+NotebookLM puede entenderse como un **asistente de investigación y análisis documental**. El usuario crea un cuaderno, añade fuentes y después conversa con la herramienta sobre esas fuentes.
+
+La diferencia frente a un chatbot general es que NotebookLM trabaja con un contexto documental definido. Cuando responde, intenta apoyarse en los materiales cargados y muestra citas o referencias que permiten revisar el origen de la información.
+
+Una forma sencilla de explicarlo en clase:
+
+[quote]
+____
+NotebookLM convierte una carpeta de documentos en un asistente experto en esa carpeta.
+____
+
+Esto no significa que sea infalible. Significa que el punto de partida ya no es "lo que la IA sabe del mundo", sino **lo que hemos decidido poner en el cuaderno**.
+
+=== Utilidad de NotebookLM
+
+NotebookLM es útil cuando hay que leer mucho, conectar ideas y producir una salida comprensible. No sustituye el criterio profesional, pero reduce el tiempo necesario para llegar a una primera lectura organizada.
+
+.Usos habituales
+* Resumir documentos largos.
+* Preparar reuniones.
+* Comparar versiones o documentos.
+* Detectar contradicciones.
+* Localizar compromisos, responsables y fechas.
+* Generar preguntas para una comisión.
+* Convertir notas dispersas en una propuesta.
+* Crear materiales docentes.
+* Elaborar tablas de seguimiento.
+* Preparar correos o informes basados en fuentes.
+* Generar ideas a partir de notas de trabajo.
+
+[NOTE]
+====
+La utilidad aumenta cuando se le pide algo más concreto que "resume esto". Las mejores respuestas suelen aparecer al pedir comparación, cronología, riesgos, decisiones pendientes, evidencias o preguntas para una reunión.
+====
+
+=== Tipos de fuentes
+
+NotebookLM permite trabajar con distintos tipos de fuentes. Según la documentación oficial de Google, puede importar documentos de Drive, PDFs, documentos de Word, Markdown, texto, CSV, PowerPoint, páginas web, ePub, imágenes, audio local y vídeos públicos de YouTube con transcripción, entre otros formatos.
+
+.Tipos de fuentes habituales
+[cols="1,3,3", options="header"]
+|===
+| Tipo | Ejemplos en un hospital | Comentario práctico
+
+| PDFs
+| Protocolos, informes, pliegos, memorias, guías clínicas, manuales de proveedor.
+| Conviene que tengan texto seleccionable. Los PDFs escaneados pueden dar peor resultado.
+
+| Documentos de texto
+| Actas, procedimientos, notas de reuniones, planes de trabajo, documentación técnica.
+| Suelen funcionar muy bien si están bien titulados y estructurados.
+
+| Presentaciones
+| Sesiones clínicas, formación interna, comités, propuestas de proyecto.
+| Útiles para convertir diapositivas en resúmenes, guías o preguntas.
+
+| Hojas de cálculo o CSV
+| Listados de incidencias, inventarios, KPIs, seguimiento de acciones.
+| Mejor si las columnas tienen nombres claros y los datos están limpios.
+
+| Web
+| Documentación oficial, páginas de proveedores, normativa pública.
+| NotebookLM importa principalmente el texto de la página, no todo el contenido visual.
+
+| YouTube
+| Seminarios, sesiones grabadas, formaciones públicas con subtítulos.
+| Usa la transcripción. Si el vídeo no tiene voz o subtítulos, puede no funcionar.
+
+| Audio
+| Notas dictadas, grabaciones autorizadas de sesiones, entrevistas internas.
+| El audio se transcribe al importarlo. La calidad de grabación importa mucho.
+
+| Imágenes
+| Capturas, diagramas, esquemas, pósteres.
+| Útiles si contienen información visual clara, aunque no sustituyen un documento bien estructurado.
+|===
+
+[IMPORTANT]
+====
+La regla práctica es: cuanto mejor preparadas estén las fuentes, mejores serán las respuestas. Títulos claros, fechas visibles, estructura por secciones y documentos separados por tema ayudan mucho.
+====
+
+=== Privacidad y límites
+
+NotebookLM trabaja con fuentes que subimos o conectamos. Por eso, en un hospital hay que actuar con especial prudencia.
+
+En cuanto a la privacidad, Google indica en su documentación que los datos subidos a NotebookLM están protegidos y no se usan para entrenar NotebookLM salvo que el usuario envíe feedback; en cuentas Workspace o Education, los archivos, consultas y respuestas no se revisan por humanos ni se usan para entrenar modelos. Aun así, en un hospital no basta con una declaración general del proveedor: hay que aplicar las políticas del centro.
+
+.Reglas prudentes para uso hospitalario
+* No cargar datos reales de pacientes.
+* No cargar historias clínicas, informes clínicos identificables ni listados con datos personales.
+* Usar documentación anonimizada, ficticia o aprobada para formación.
+* Revisar si la cuenta usada es personal, Workspace, Education, corporativa o enterprise.
+* Consultar al responsable de protección de datos antes de usar documentación interna sensible.
+* Evitar subir documentos contractuales confidenciales sin autorización.
+
+[WARNING]
+====
+Para formación, lo más seguro es trabajar con casos ficticios pero realistas. Permiten practicar razonamiento documental sin exponer información real.
+====
+
+En cuanto a los límites de uso, pueden cambiar con el tiempo y dependen del plan. En la documentación oficial consultada, la versión estándar permite hasta 50 fuentes por notebook, con fuentes de hasta 500.000 palabras o 200 MB en cargas locales. Los planes superiores amplían límites de fuentes, chats diarios y generación de artefactos.
+
+[NOTE]
+====
+Antes de una clase o taller conviene comprobar los límites de la cuenta que se usará. También es buena idea tener un notebook preparado por el formador por si alguna persona tiene problemas de acceso o de cuota.
+====
+
+== La lógica de trabajo
+
+Trabajar bien con NotebookLM tiene cuatro pasos:
+
+1. Preparar las fuentes.
+2. Crear el notebook.
+3. Preguntar con intención.
+4. Verificar y reutilizar la respuesta.
+
+=== Paso 1: preparar las fuentes
+
+Antes de subir nada, conviene ordenar la carpeta.
+
+.Buenas prácticas
+* Separar documentos por tema.
+* Usar nombres descriptivos: `ACTA_COMITE_CALIDAD_2026-05-12.pdf` es mejor que `scan_003.pdf`.
+* Evitar duplicados.
+* Mantener versiones finales y retirar borradores innecesarios.
+* Incluir fechas, autores y contexto si el documento no los tiene.
+* Dividir documentos muy grandes si mezclan asuntos distintos.
+
+.Ejemplo hospitalario
+Para preparar una comisión de listas de espera, podríamos organizar:
+
+* Actas del comité.
+* Informes de demora.
+* KPIs mensuales.
+* Planes de choque.
+* Correos de coordinación.
+* Normativa aplicable.
+* Informes de admisión y consultas externas.
+
+=== Paso 2: crear el notebook
+
+Un notebook debe tener un objetivo claro. No es una carpeta infinita donde cabe todo; es un espacio de trabajo para una pregunta o tarea.
+
+.Buenos nombres de notebooks
+* `Comité de Calidad - Infecciones relacionadas con asistencia sanitaria`
+* `Preparación reunión compras - nuevo sistema de turnos`
+* `Revisión protocolo código ictus`
+* `Plan formación residentes - urgencias`
+* `Seguimiento proyecto portal del paciente`
+
+.Malos nombres
+* `Documentos varios`
+* `Hospital`
+* `IA`
+* `Cosas para revisar`
+
+[TIP]
+====
+Un buen notebook tiene una pregunta implícita: "¿Qué necesitamos entender o producir con estas fuentes?".
+====
+
+=== Paso 3: añadir fuentes
+
+Al añadir fuentes, no conviene subir todo de golpe si el caso es complejo. Es mejor empezar con el núcleo documental y ampliar después.
+
+.Estrategia recomendada
+[cols="1,3,3", options="header"]
+|===
+| Momento | Qué subir | Para qué sirve
+
+| Inicio
+| Documentos base, actas principales, informe de situación.
+| Obtener una primera comprensión.
+
+| Análisis
+| KPIs, anexos, incidencias, correos, tablas.
+| Contrastar la narrativa inicial.
+
+| Profundización
+| Normativa, documentación técnica, propuestas de proveedores.
+| Resolver preguntas específicas.
+
+| Cierre
+| Notas generadas, resúmenes validados, tablas consolidadas.
+| Crear una fuente sintética para trabajar mejor.
+|===
+
+=== Paso 4: preguntar con intención
+
+La calidad de la respuesta depende mucho de la pregunta.
+
+.Preguntas débiles
+* Resume esto.
+* Qué dice.
+* Hazme un informe.
+* Analiza los documentos.
+
+.Preguntas mejores
+* Resume el estado actual para una Dirección no técnica, citando fuentes.
+* Identifica decisiones abiertas, responsables y fechas comprometidas.
+* Construye una cronología mensual y señala puntos de inflexión.
+* Detecta contradicciones entre actas, KPIs y correos.
+* Distingue hechos documentados, inferencias razonables e hipótesis.
+* Prepara 10 preguntas para el proveedor, indicando qué documento justifica cada una.
+
+== Un día de trabajo con NotebookLM
+
+Una manera amable de introducir la herramienta es imaginar un día normal de trabajo en un hospital.
+
+=== Al empezar el día
+
+Subimos notas de reuniones, informes pendientes y documentos que tenemos que revisar. NotebookLM puede ayudarnos a saber qué hay dentro antes de dedicar media mañana a leer.
+
+.Prompt
+[source,text]
+----
+Tengo que preparar mi jornada con estas fuentes. Resume los temas principales, separa asuntos urgentes de asuntos informativos y propón una lista de tareas priorizada para hoy.
+----
+
+=== Antes de una reunión
+
+NotebookLM puede preparar un briefing, una agenda y una lista de preguntas.
+
+.Prompt
+[source,text]
+----
+Prepara una agenda de 45 minutos para la reunión. Incluye temas, decisiones que deben tomarse, información que falta y preguntas que conviene plantear. Cita las fuentes.
+----
+
+=== Después de una reunión
+
+Podemos convertir notas sueltas en acta, lista de acciones o correo de seguimiento.
+
+.Prompt
+[source,text]
+----
+A partir de estas notas, genera un resumen de reunión con acuerdos, responsables, fechas compromiso, riesgos y asuntos pendientes. Señala cualquier punto ambiguo que deba confirmarse.
+----
+
+=== Al final del día
+
+Sirve para cerrar el ciclo: qué se ha decidido, qué queda pendiente y qué preparar mañana.
+
+.Prompt
+[source,text]
+----
+Resume las notas del día. Genera una lista de tareas para mañana, separando acciones propias, acciones de terceros y decisiones pendientes.
+----
+
+== Posibles casos de uso
+
+=== Preparación de comités y reuniones
+
+Uso típico: cargar actas anteriores, informes, KPIs y documentos de trabajo.
+
+.Ejemplos
+* Comité de Dirección.
+* Comisión de Calidad.
+* Comisión de Farmacia.
+* Comité de Historias Clínicas.
+* Reunión de seguimiento de proyecto.
+* Mesa de contratación.
+
+.Prompt
+[source,text]
+----
+Prepara un briefing ejecutivo para la próxima reunión. Incluye contexto, temas abiertos, decisiones pendientes, riesgos, responsables y preguntas que debería plantear la presidencia del comité.
+----
+
+=== Revisión de protocolos
+
+Uso típico: cargar el protocolo vigente, una propuesta nueva, normativa relacionada y comentarios de profesionales.
+
+.Preguntas útiles
+* Qué cambia entre el protocolo actual y la nueva versión?
+* Qué pasos pueden generar ambigüedad operativa?
+* Qué roles aparecen y qué responsabilidades tienen?
+* Qué indicadores permitirían evaluar si el protocolo se aplica bien?
+* Qué preguntas haría enfermería, admisión, urgencias o sistemas?
+
+=== Formación y docencia
+
+Uso típico: cargar material docente, guías, presentaciones, artículos y casos ficticios.
+
+.Salidas útiles
+* Guía de estudio.
+* Preguntas de autoevaluación.
+* Flashcards.
+* Glosario.
+* Casos prácticos.
+* Resumen para alumnado que no pudo asistir.
+
+.Prompt
+[source,text]
+----
+Convierte estas fuentes en una guía de estudio para residentes. Incluye objetivos de aprendizaje, conceptos clave, errores frecuentes, preguntas de repaso y un caso práctico.
+----
+
+=== Calidad y seguridad del paciente
+
+Uso típico: cargar informes de eventos, recomendaciones, actas de comisión y planes de mejora, siempre anonimizados.
+
+.Preguntas útiles
+* Qué factores contribuyentes se repiten?
+* Qué acciones correctoras siguen abiertas?
+* Qué indicadores deberían revisarse mensualmente?
+* Qué temas requieren escalado a Dirección?
+* Qué diferencias hay entre lo que dicen las actas y lo que muestran los datos?
+
+=== Gestión de proyectos
+
+Uso típico: cargar documentos de inicio, actas, cronogramas, riesgos, incidencias, sprints y KPIs.
+
+.Prompt
+[source,text]
+----
+Analiza el estado real del proyecto. Distingue avance declarado, avance verificable, riesgos, bloqueos, compromisos incumplidos y decisiones pendientes. Propón una agenda para la próxima reunión de seguimiento.
+----
+
+=== Compras, contratación y relación con proveedores
+
+Uso típico: cargar pliegos, ofertas, actas, informes técnicos, correos y documentación de proveedor.
+
+.Preguntas útiles
+* Qué requisitos son obligatorios y cuáles son valorables?
+* Qué diferencias hay entre las ofertas?
+* Qué preguntas habría que aclarar antes de adjudicar?
+* Qué compromisos del proveedor deben quedar por escrito?
+* Qué riesgos operativos tiene cada alternativa?
+
+[WARNING]
+====
+En contratación real, NotebookLM puede ayudar a ordenar información, pero no sustituye el procedimiento administrativo ni el juicio técnico-jurídico.
+====
+
+=== Investigación y revisión bibliográfica
+
+Uso típico: cargar artículos, guías, revisiones, notas de lectura y criterios de inclusión.
+
+.Salidas útiles
+* Tabla de artículos.
+* Resumen de evidencia.
+* Comparación de resultados.
+* Preguntas de investigación.
+* Limitaciones metodológicas.
+* Borrador de introducción.
+
+.Prompt
+[source,text]
+----
+Crea una tabla de síntesis de los estudios incluidos. Para cada estudio indica objetivo, población, intervención, comparador, resultados principales, limitaciones y relevancia para nuestro hospital.
+----
+
+=== Gestión del conocimiento de un servicio
+
+Uso típico: cargar manuales internos, circuitos, guardias, preguntas frecuentes, protocolos locales y sesiones.
+
+.Ejemplo
+Un servicio puede crear un notebook para ayudar a nuevos profesionales a entender cómo funcionan los circuitos internos.
+
+.Prompt
+[source,text]
+----
+Actúa como guía de acogida para una persona que se incorpora al servicio. Explica cómo está organizada la información, qué documentos debería leer primero y qué dudas frecuentes resuelven las fuentes.
+----
+
+=== Generación de ideas y mejora de procesos
+
+NotebookLM también puede servir como apoyo en fases tempranas de innovación o mejora. Si se cargan notas de lluvia de ideas, incidencias recurrentes, propuestas previas, comentarios de profesionales y documentación del proceso actual, la herramienta puede ayudar a encontrar conexiones que no estaban claras a simple vista.
+
+No se trata de pedirle "ideas brillantes" desde cero. La utilidad aparece cuando las ideas nacen de materiales concretos del hospital: problemas observados, limitaciones, necesidades de usuarios y experiencias anteriores.
+
+.Ejemplos
+* Mejorar el circuito de citación de primeras consultas.
+* Reducir llamadas repetidas a una secretaría.
+* Diseñar una acogida más clara para nuevos residentes.
+* Reorganizar una sesión clínica mensual.
+* Preparar propuestas para un plan de humanización.
+* Identificar mejoras en la comunicación entre Admisión, consultas y pruebas diagnósticas.
+
+.Prompt
+[source,text]
+----
+A partir de estas notas de trabajo y documentos del proceso actual, propón ideas de mejora realistas.
+
+Para cada idea indica:
+- qué problema intenta resolver;
+- en qué fuente se apoya;
+- qué servicio o perfil profesional se vería afectado;
+- qué esfuerzo aproximado tendría;
+- qué riesgo o dependencia habría que revisar antes de ponerla en marcha.
+
+No propongas ideas genéricas: vincula cada propuesta a evidencias de las fuentes.
+----
+
+== Funciones que conviene probar
+
+=== Resúmenes con citas
+
+Pedir un resumen es el primer paso, no el destino final.
+
+.Prompt
+[source,text]
+----
+Resume estas fuentes en diez puntos. Cada punto debe incluir la fuente que lo sostiene y una frase sobre por qué es relevante.
+----
+
+=== Preguntas sobre fuentes concretas
+
+Cuando hay muchas fuentes, conviene seleccionar solo algunas o mencionarlas por nombre.
+
+.Prompt
+[source,text]
+----
+Usa solo el protocolo vigente y la propuesta nueva. Compara ambos documentos y genera una tabla con cambios, impacto operativo y dudas pendientes.
+----
+
+=== Notas
+
+Las notas permiten guardar hallazgos, resúmenes o estructuras que luego pueden reutilizarse. Una técnica muy útil consiste en pedir una síntesis, convertirla en nota y después usar esa nota como nueva fuente de trabajo.
+
+.Ejemplo
+1. Pedir una cronología.
+2. Revisarla.
+3. Convertirla en nota.
+4. Usarla como base para preparar un briefing.
+
+=== Tablas de datos
+
+Las tablas ayudan a pasar de lectura a gestión.
+
+.Prompt
+[source,text]
+----
+Genera una tabla con acciones pendientes. Incluye acción, responsable, fecha compromiso, documento donde aparece, estado y recomendación.
+----
+
+=== Mapas mentales
+
+Sirven para visualizar relaciones entre conceptos, sistemas, servicios o documentos.
+
+.Prompt
+[source,text]
+----
+Genera un mapa mental del circuito asistencial descrito en las fuentes. Separa actores, pasos, sistemas de información, puntos de decisión y posibles cuellos de botella.
+----
+
+=== Infografías
+
+Son útiles para Dirección o para sesiones de devolución.
+
+.Prompt
+[source,text]
+----
+Genera una infografía para explicar este informe a un comité directivo. Debe incluir mensaje principal, tres datos clave, riesgos, decisiones pendientes y próximos pasos.
+----
+
+=== Audio, vídeo, flashcards y cuestionarios
+
+NotebookLM puede generar materiales de estudio o revisión a partir de fuentes. Esto puede ayudar en docencia, acogida de profesionales o repaso de protocolos.
+
+.Usos posibles
+* Audio para repasar una guía durante un desplazamiento.
+* Vídeo-resumen para introducir una sesión.
+* Flashcards para conceptos clave.
+* Cuestionario para comprobar comprensión.
+
+== Método recomendado: preguntar, verificar, iterar
+
+Una buena práctica es trabajar en ciclos.
+
+[cols="1,3,3", options="header"]
+|===
+| Ciclo | Qué hacemos | Ejemplo
+
+| 1. Explorar
+| Pedimos una primera lectura.
+| "Resume el estado general y cita fuentes."
+
+| 2. Contrastar
+| Buscamos tensiones y omisiones.
+| "Detecta contradicciones entre actas e indicadores."
+
+| 3. Profundizar
+| Pedimos responsables, fechas, evidencias.
+| "Lista acciones abiertas con responsable y fecha."
+
+| 4. Producir
+| Generamos un artefacto.
+| "Prepara un briefing de una página."
+
+| 5. Verificar
+| Revisamos citas y fuentes.
+| "Señala qué afirmaciones son inferencias y cuáles hechos documentados."
+|===
+
+[IMPORTANT]
+====
+No aceptes la primera respuesta como producto final. NotebookLM es más útil cuando se conversa con él: pedir precisión, evidencias, límites, contradicciones y reformulaciones mejora mucho la salida.
+====
+
+== Plantillas de prompts
+
+=== Resumen ejecutivo
+
+[source,text]
+----
+Resume estas fuentes para una persona de Dirección que no tiene tiempo de leerlas. Incluye:
+- contexto;
+- situación actual;
+- tres hallazgos principales;
+- decisiones pendientes;
+- riesgos;
+- próximos pasos recomendados;
+- fuentes que justifican cada conclusión.
+----
+
+=== Cronología
+
+[source,text]
+----
+Construye una cronología con fechas. Para cada hito indica:
+- qué ocurrió;
+- qué documento lo demuestra;
+- qué impacto tiene;
+- si mejora o empeora la situación.
+----
+
+=== Comparación de documentos
+
+[source,text]
+----
+Compara estos documentos. Genera una tabla con:
+- coincidencias;
+- diferencias;
+- contradicciones;
+- información que falta;
+- preguntas que habría que resolver antes de tomar una decisión.
+----
+
+=== Preparación de reunión
+
+[source,text]
+----
+Prepara una reunión de 60 minutos basada en estas fuentes. Incluye:
+- objetivo;
+- agenda;
+- temas informativos;
+- decisiones que deben tomarse;
+- preguntas para cada responsable;
+- documentación que conviene revisar antes;
+- resultado esperado.
+----
+
+=== Detección de riesgos
+
+[source,text]
+----
+Identifica riesgos en estas fuentes. Para cada riesgo indica:
+- descripción;
+- evidencia documental;
+- probabilidad;
+- impacto;
+- responsable;
+- acción recomendada;
+- nivel de confianza de la conclusión.
+----
+
+=== Preguntas para un proveedor
+
+[source,text]
+----
+Prepara 10 preguntas para el proveedor. Cada pregunta debe estar vinculada a una fuente, una contradicción, una decisión pendiente o un riesgo identificado.
+----
+
+== Errores frecuentes
+
+=== Subir demasiadas fuentes sin criterio
+
+Más fuentes no siempre significa mejor análisis. Si mezclamos protocolos, correos, presentaciones antiguas, borradores y documentos obsoletos, la herramienta puede responder de forma confusa.
+
+.Solución
+Crear notebooks separados por tarea o seleccionar subconjuntos de fuentes.
+
+=== Preguntar de forma demasiado genérica
+
+"Hazme un informe" suele producir algo correcto pero plano.
+
+.Solución
+Pedir estructura, audiencia, objetivo, tipo de salida, criterios y citas.
+
+=== No revisar las citas
+
+Las citas son una de las grandes ventajas de NotebookLM, pero hay que abrirlas y comprobar que sostienen la afirmación.
+
+.Solución
+Revisar manualmente las conclusiones importantes.
+
+=== Confundir resumen con decisión
+
+NotebookLM puede ordenar información, pero no decide por el equipo.
+
+.Solución
+Usarlo para preparar opciones, riesgos y preguntas. La decisión sigue siendo humana.
+
+=== Cargar información sensible
+
+En sanidad, este es el error más delicado.
+
+.Solución
+Usar datos ficticios, anonimizados o aprobados. Consultar las políticas del hospital.
+
+== Checklist de uso seguro y útil
+
+[cols="1,4", options="header"]
+|===
+| OK | Criterio
+
+| ☐
+| El notebook tiene un objetivo claro.
+
+| ☐
+| Las fuentes están bien nombradas y son relevantes.
+
+| ☐
+| No se han cargado datos reales de pacientes ni información sensible sin autorización.
+
+| ☐
+| Las preguntas piden citas o evidencias.
+
+| ☐
+| Se distinguen hechos, inferencias e hipótesis.
+
+| ☐
+| Las conclusiones importantes se verifican contra las fuentes.
+
+| ☐
+| La salida se adapta a la audiencia: Dirección, equipo técnico, alumnado, comité o proveedor.
+
+| ☐
+| Se revisan límites de la cuenta antes de una sesión formativa.
+|===
+
+== Actividad práctica guiada
+
+=== Objetivo
+
+Crear un notebook útil para preparar una mesa de contratación hospitalaria.
+
+El escenario propuesto es la contratación ficticia de una nueva solución de gestión de citas y portal del paciente. El objetivo no es adjudicar automáticamente, sino usar NotebookLM para ordenar la documentación, detectar dudas, comparar ofertas y preparar una reunión mejor informada.
+
+=== Material sugerido
+
+Usar un conjunto ficticio de documentos:
+
+* Pliego de prescripciones técnicas.
+* Pliego administrativo o resumen de criterios de valoración.
+* Oferta del proveedor A.
+* Oferta del proveedor B.
+* Oferta del proveedor C.
+* Informes técnicos preliminares.
+* Tabla de criterios y puntuaciones preliminares.
+* Preguntas de los licitadores.
+* Informes de aclaraciones.
+* Correos internos.
+* Actas.
+
+=== Ejercicio
+
+1. Crear un notebook llamado `Mesa contratación - sistema de turnos`.
+2. Subir las fuentes.
+3. Pedir un resumen ejecutivo del expediente.
+4. Identificar requisitos obligatorios y criterios valorables.
+5. Comparar las ofertas en una tabla.
+6. Detectar dudas, contradicciones o puntos que requieran aclaración.
+7. Generar una tabla de riesgos por proveedor.
+8. Preparar una agenda para la mesa de contratación.
+9. Revisar citas.
+10. Mejorar la salida con una segunda ronda de preguntas orientadas a evidencias.
+
+.Preguntas que NotebookLM puede ayudar a responder
+****
+* Resume cada oferta en una página.
+* Compara los tres licitadores.
+* ¿Qué riesgos presenta cada propuesta?
+* ¿Qué requisitos del pliego generan más dudas?
+* ¿Existen incumplimientos potenciales?
+* ¿Qué preguntas debería formular la mesa a cada proveedor?
+* ¿Qué aspectos requieren aclaración antes de adjudicar?
+* ¿Qué propuesta parece más sólida técnicamente?
+* ¿Cuál presenta mejor equilibrio entre coste y riesgo?
+* ¿Existen contradicciones entre ofertas y aclaraciones?
+* ¿Qué riesgos podrían afectar al éxito del proyecto?
+* Tengo una reunión en 15 minutos. ¿Qué necesito saber?
+****
+
+.Prompt inicial sugerido
+[source,text]
+----
+Prepara un briefing para una mesa de contratación hospitalaria. Usa las fuentes del expediente y separa:
+- objeto del contrato;
+- requisitos obligatorios;
+- criterios de valoración;
+- diferencias principales entre ofertas;
+- riesgos o dudas por proveedor;
+- información que la mesa debería aclarar antes de continuar.
+
+Cita las fuentes que justifican cada conclusión.
+----
+
+.Prompt para comparación de ofertas
+[source,text]
+----
+Compara las ofertas de los proveedores A, B y C en una tabla. Incluye:
+- cumplimiento de requisitos obligatorios;
+- funcionalidades ofrecidas;
+- integración con sistemas hospitalarios;
+- soporte y mantenimiento;
+- plazo de implantación;
+- coste o modelo económico si aparece en las fuentes;
+- riesgos;
+- dudas que habría que aclarar.
+
+No propongas adjudicación automática. Señala únicamente qué oferta parece mejor documentada y qué información falta.
+----
+
+=== Resultado esperado
+
+Cada participante debería terminar con:
+
+* Un resumen ejecutivo del expediente de contratación.
+* Una tabla comparativa de ofertas.
+* Una lista de requisitos obligatorios y criterios valorables.
+* Una tabla de riesgos y dudas por proveedor.
+* Una agenda para la mesa de contratación.
+* Diez preguntas de aclaración para proveedores o para el equipo técnico.
+
+[NOTE]
+====
+Puedes consultar más casos de uso en:
+
+* link:../GestionDocumentacion/PreparacionReuniones/preparacion-reuniones-citas360.html[Seguimiento de proyectos con NotebookLM, window=_blank].
+* link:../GestionDocumentacion/ComisionCiberseguridad/preparacion-comision-ciberseguridad.html[Análisis de plan de ciberseguridad con NotebookLM, window=_blank].
+====
+
+[WARNING]
+====
+NotebookLM puede ayudar a ordenar y comparar la documentación, pero no sustituye el procedimiento de contratación, los criterios formales del expediente ni la valoración jurídica, económica o técnica de la mesa.
+====
+
+== Conclusiones
+
+NotebookLM es valioso porque ayuda a convertir documentos en conversación, y conversación en trabajo organizado. Su mayor utilidad no está en resumir rápido, aunque eso ya sea útil. Está en permitir que un profesional pregunte mejor: qué cambia, qué falta, qué contradice a qué, quién se comprometió a qué, qué evidencia sostiene una conclusión y qué decisión toca ahora.
+
+En un hospital, donde la información vive repartida entre actas, protocolos, informes, correos, tablas, presentaciones y documentación técnica, esa capacidad puede ahorrar tiempo y mejorar la preparación de reuniones, comités, formación y proyectos.
+
+[IMPORTANT]
+====
+La IA puede acelerar el análisis documental, pero la responsabilidad de interpretar, priorizar y decidir sigue siendo humana.
+====
