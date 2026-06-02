@@ -86,10 +86,18 @@ Al finalizar el curso, las personas participantes deberían ser capaces de:
 | Taller práctico
 | Guion de sesión para usar NotebookLM con un corpus documental ficticio de seguimiento de ciberseguridad: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.
 | link:GestionDocumentacion/ComisionCiberSeguridad/preparacion-comision-ciberseguridad.html[Abrir HTML, window=_blank]
+
+| IA generativa en la migración de aplicaciones Access
+| Documento completo
+| Tutorial sobre cómo la IA generativa puede acelerar y mejorar el proceso de migración de aplicaciones Access hacia servicios modernos: narrativa paulatina, casos de uso, prompts y práctica.
+| link:Tutorial/migracion-access.html[Abrir HTML, window=_blank]
 |===
+
+
 
 == Estructura actual del material
 
 * **Visión general**: marco conceptual para entender qué cambia con la IA generativa, dónde puede aportar valor y qué límites deben respetarse en un entorno hospitalario.
 * **Plataformas de desarrollo asistido por IA**: revisión práctica de herramientas que permiten pasar de una descripción en lenguaje natural a prototipos funcionales, con foco en evaluación, control técnico y salida hacia desarrollo gobernado.
 * **Gestión de documentación con NotebookLM**: guiones para usar NotebookLM en dos escenarios típicos de informática hospitalaria: preparación de reuniones ejecutivas y seguimiento de ciberseguridad. En ambos casos se busca mostrar cómo la IA puede ayudar a organizar información compleja, generar artefactos visuales y mejorar la calidad de las preguntas que se hacen a los documentos.
+* **IA generativa en la migración de aplicaciones Access**: tutorial sobre cómo la IA puede acelerar y mejorar el proceso de migración de aplicaciones Access hacia servicios modernos, con casos de uso, prompts y caso práctico.
