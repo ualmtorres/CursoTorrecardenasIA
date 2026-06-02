@@ -764,7 +764,34 @@ No se trata de que Access sea una mala herramienta. Se trata de que está diseñ
 </div>
 </div>
 <div class="paragraph">
-<p>Nótese algo importante: la arquitectura API First no obliga a deshacerse de Oracle o del HIS. Al contrario, estos sistemas corporativos se convierten en un servicio más del ecosistema. ORDS puede ser la capa REST de Oracle, exactamente igual que FastAPI lo es para un servicio nuevo sobre MySQL. Lo que cambia es que ningún sistema es el único punto de verdad para todo: <strong>cada servicio es el dueño de su dominio</strong>.</p>
+<p>Otra opción puede ser que las APIs de los servicios de farmacia, laboratorio y mantenimiento interactúen directamente con los sistemas corporativos existentes, sin necesidad de un bus de integración. La arquitectura API First no prescribe un patrón de comunicación específico entre servicios, sino que establece el principio de que cada servicio expone su funcionalidad a través de APIs bien definidas. En ese caso, el mapa de servicios podría ser algo así:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-mermaid-md5-7d66aa937956b7dbab5f06141e72ba4c.png" alt="Diagram" width="632" height="350">
+</div>
+</div>
+<div class="paragraph">
+<p>O una opción mixta, donde algunas APIs son constuidas en FastAPI sobre Oracle y otras en ORDS sobre Oracle, dependiendo de la complejidad y necesidades de cada caso:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-mermaid-md5-a05c78f7bccd8737baadeb4a674a6902.png" alt="Diagram" width="784" height="358">
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Nótese algo importante: la arquitectura API First no obliga a deshacerse de Oracle o del HIS. Al contrario, estos sistemas corporativos se convierten en un servicio  más del ecosistema. ORDS puede serla capa REST para unos servicios sobre Oracle, y FastAPI y/o otras tecnologías pueden ser la capa REST para otros servicios combinando fuentes Oracle con otras bases de datos. <strong>El punto clave es que cada servicio expone su funcionalidad a través de APIs estándar, lo que permite la integración y el consumo desde cualquier interfaz o sistema, sin importar qué tecnología use.</strong></p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -1230,7 +1257,7 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-02 21:51:39 +0200
+Last updated 2026-06-02 22:38:21 +0200
 </div>
 </div>
 </body>
