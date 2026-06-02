@@ -600,6 +600,7 @@ La siguiente tabla resume el posicionamiento de las herramientas que usaremos co
 | Replit
 | Desarrollo completo en navegador, prototipos funcionales, demos ejecutables y proyectos con despliegue integrado.
 | El coste y el comportamiento del agente dependen del modo de uso; requiere revisar cambios, consumo y despliegue.
+| Aunque es una de las plataformas más completas, su flexibilidad puede generar resultados muy distintos según el prompt y el seguimiento que se le dé.
 
 | Bolt.new
 | Crear apps web full-stack rápidamente desde prompts, especialmente en ecosistemas JavaScript/TypeScript.

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.22">
+<meta name="generator" content="Asciidoctor 2.0.26">
 <meta name="author" content="Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería">
 <title>IA generativa en la migración de aplicaciones Access</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
@@ -117,7 +117,6 @@ h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title str
 :not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
 pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
 pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
-pre>code{display:block}
 pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
 em em{font-style:normal}
 strong strong{font-weight:400}
@@ -220,6 +219,7 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
 .literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
 .listingblock>.content{position:relative}
+.listingblock pre>code{display:block}
 .listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
 .listingblock:hover code[data-lang]::before{display:block}
 .listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
@@ -729,28 +729,11 @@ No se trata de que Access sea una mala herramienta. Se trata de que está diseñ
 <div class="paragraph">
 <p>En lugar de construir una aplicación monolítica donde la interfaz de usuario, la lógica de negocio y el acceso a datos están entrelazados —como ocurre en Access o en APEX—, una arquitectura API First separa estas responsabilidades:</p>
 </div>
-<pre class='mermaid'>flowchart TD
-
-    subgraph CONSUMIDORES
-        C1[Navegador web]
-        C2[App móvil]
-        C3[Otro servicio]
-        C4[Excel / BI]
-    end
-
-    subgraph API["CAPA DE API"]
-        A1[Servicios REST documentados con OpenAPI / Swagger]
-        A2[Autenticación, autorización y auditoría]
-        A3[Lógica de negocio y validaciones]
-    end
-
-    subgraph DATOS["CAPA DE DATOS"]
-        D1[MySQL / PostgreSQL / Oracle / SQL Server]
-        D2[Esquema limpio, relaciones, índices y copias de seguridad]
-    end
-
-    CONSUMIDORES -->|HTTP / REST / JSON| API
-    API -->|SQL / ORM| DATOS</pre>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-mermaid-md5-44a2a153d227a5da4f561f052cb9ec55.png" alt="Diagram" width="351" height="1328">
+</div>
+</div>
 <div class="paragraph">
 <p>Las ventajas para una organización como un hospital son inmediatas:</p>
 </div>
@@ -775,29 +758,11 @@ No se trata de que Access sea una mala herramienta. Se trata de que está diseñ
 <div class="paragraph">
 <p>Imaginemos cómo quedaría el mapa de servicios de un hospital mediano si cada una de las aplicaciones Access del inventario anterior se migrara a una arquitectura API First:</p>
 </div>
-<pre class='mermaid'>flowchart TD
-
-    P["PORTAL WEB / APP"]
-
-    P --> F
-    P --> L
-    P --> M
-
-    F["Servicio<br/>Farmacia API"]
-    L["Servicio<br/>Laboratorio API"]
-    M["Servicio<br/>Mantenimiento API"]
-
-    F --> DBF["MySQL / PostgreSQL"]
-    L --> DBL["MySQL / PostgreSQL"]
-    M --> DBM["MySQL / PostgreSQL"]
-
-    DBF --> G
-    DBL --> G
-    DBM --> G
-
-    G["Bus de integración /<br/>API Gateway"]
-
-    G --> HIS["HIS / Oracle / ERP<br/>(sistemas corporativos existentes)"]</pre>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-mermaid-md5-1815daee9242a3a38e50fe7658855e67.png" alt="Diagram" width="724" height="582">
+</div>
+</div>
 <div class="paragraph">
 <p>Nótese algo importante: la arquitectura API First no obliga a deshacerse de Oracle o del HIS. Al contrario, estos sistemas corporativos se convierten en un servicio más del ecosistema. ORDS puede ser la capa REST de Oracle, exactamente igual que FastAPI lo es para un servicio nuevo sobre MySQL. Lo que cambia es que ningún sistema es el único punto de verdad para todo: <strong>cada servicio es el dueño de su dominio</strong>.</p>
 </div>
@@ -1064,17 +1029,17 @@ GET  /api/v1/tiempos-respuesta?tipo=troponina      → KPIs de tiempo urgentes</
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/access-relaciones.png" alt="access relaciones">
+<img src="images/images/access-relaciones.png" alt="access relaciones">
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/access-formulario.png" alt="access formulario">
+<img src="images/images/access-formulario.png" alt="access formulario">
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/access-informe.png" alt="access informe">
+<img src="images/images/access-informe.png" alt="access informe">
 </div>
 </div>
 <div class="paragraph">
@@ -1119,7 +1084,7 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/access-openapi.png" alt="access openapi">
+<img src="images/images/access-openapi.png" alt="access openapi">
 </div>
 </div>
 <div class="ulist">
@@ -1131,7 +1096,7 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/access-frontend.png" alt="access frontend">
+<img src="images/images/access-frontend.png" alt="access frontend">
 </div>
 </div>
 <div class="paragraph">
@@ -1265,7 +1230,7 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-02 21:51:42 +0200
+Last updated 2026-06-02 21:51:39 +0200
 </div>
 </div>
 </body>
