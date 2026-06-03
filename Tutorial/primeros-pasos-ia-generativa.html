@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.22">
-<meta name="author" content="Manuel Torres - Universidad de Almería">
-<title>Inteligencia artificial generativa aplicada a productividad IT hospitalaria</title>
+<meta name="generator" content="Asciidoctor 2.0.26">
+<meta name="author" content="Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería">
+<title>Primeros pasos con IA generativa (junio 2026)</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -117,7 +117,6 @@ h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title str
 :not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
 pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
 pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
-pre>code{display:block}
 pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
 em em{font-style:normal}
 strong strong{font-weight:400}
@@ -220,6 +219,7 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
 .literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
 .listingblock>.content{position:relative}
+.listingblock pre>code{display:block}
 .listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
 .listingblock:hover code[data-lang]::before{display:block}
 .listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
@@ -437,16 +437,39 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-right">
 <div id="header">
-<h1>Inteligencia artificial generativa aplicada a productividad IT hospitalaria</h1>
+<h1>Primeros pasos con IA generativa (junio 2026)</h1>
 <div class="details">
-<span id="author" class="author">Manuel Torres - Universidad de Almería</span><br>
+<span id="author" class="author">Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Tabla de contenidos</div>
 <ul class="sectlevel1">
 <li><a href="#_resumen">Resumen</a></li>
-<li><a href="#_material_disponible">1. Material disponible</a></li>
-<li><a href="#_estructura_actual_del_material">2. Estructura actual del material</a></li>
+<li><a href="#_antes_de_empezar_regla_de_oro">1. Antes de empezar: regla de oro</a></li>
+<li><a href="#_mapa_rápido_del_ecosistema_actual">2. Mapa rápido del ecosistema actual</a></li>
+<li><a href="#_personalizar_estilo_tono_y_formato">3. Personalizar estilo, tono y formato</a>
+<ul class="sectlevel2">
+<li><a href="#_plantilla_base_de_prompt_reutilizable">3.1. Plantilla base de prompt reutilizable</a></li>
+<li><a href="#_ejemplo_práctico_1_mismo_contenido_tres_estilos">3.2. Ejemplo práctico 1: mismo contenido, tres estilos</a></li>
+<li><a href="#_ejemplo_práctico_2_salida_estructurada_para_reutilizar">3.3. Ejemplo práctico 2: salida estructurada para reutilizar</a></li>
+</ul>
+</li>
+<li><a href="#_patrón_ia_ia">4. Patrón IA + IA</a>
+<ul class="sectlevel2">
+<li><a href="#_flujo_recomendado">4.1. Flujo recomendado</a></li>
+<li><a href="#_caso_de_uso_representativo_implementación_de_un_módulo_de_conexión_a_api_externa">4.2. Caso de uso representativo: implementación de un módulo de conexión a API externa</a></li>
+<li><a href="#_prompt_de_validación_cruzada">4.3. Prompt de validación cruzada</a></li>
+</ul>
+</li>
+<li><a href="#_chatgpt_en_modo_productivo_funciones_clave">5. ChatGPT en modo productivo: funciones clave</a>
+<ul class="sectlevel2">
+<li><a href="#_personalización">5.1. Personalización</a></li>
+<li><a href="#_proyectos_en_chatgpt">5.2. Proyectos en ChatGPT</a></li>
+<li><a href="#_gpts_para_tareas_repetitivas">5.3. GPTs para tareas repetitivas</a></li>
+</ul>
+</li>
+<li><a href="#_errores_frecuentes_y_cómo_evitarlos">6. Errores frecuentes y cómo evitarlos</a></li>
+<li><a href="#_conclusiones">7. Conclusiones</a></li>
 </ul>
 </div>
 </div>
@@ -455,147 +478,675 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_resumen">Resumen</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Este sitio organiza el material del curso <strong>Inteligencia artificial generativa aplicada a productividad IT hospitalaria</strong>. El curso está orientado a equipos de informática de hospitales que necesitan entender, evaluar y aplicar herramientas de IA generativa con criterio técnico, seguridad, trazabilidad y responsabilidad operativa.</p>
-</div>
-<div class="paragraph">
-<p>El material combina visión conceptual, criterios de adopción, presentaciones para impartir sesiones y documentos de apoyo. La intención no es presentar la IA como una solución mágica, sino como una capacidad de productividad que debe integrarse con buenas prácticas de ingeniería, gobierno del dato, revisión humana y control del ciclo de vida.</p>
-</div>
-<div class="paragraph">
-<p>Desde esta página se accede al material navegable del curso. Por ahora se incluyen documentos, presentaciones y otros recursos de interés.</p>
-</div>
-<div class="paragraph">
-<div class="title">Objetivos</div>
-<p>Al finalizar el curso, las personas participantes deberían ser capaces de:</p>
+<p>Este tutorial ofrece una entrada práctica y ordenada para empezar a trabajar con inteligencia artificial generativa en tareas reales de un departamento IT. Se explica el mapa actual de productos (ChatGPT, Gemini, Claude y herramientas asociadas), cómo personalizar el estilo de respuesta, cómo usar el enfoque IA + IA para mejorar calidad y trazabilidad, y cómo aprovechar funciones concretas de ChatGPT (respuestas predefinidas, proyectos y GPTs). El material incluye escenarios representativos, ejemplos listos para copiar y ejercicios guiados.</p>
 </div>
 <div class="ulist">
+<div class="title">Objetivos</div>
 <ul>
 <li>
-<p>Entender qué aporta la IA generativa al trabajo cotidiano de un departamento IT hospitalario.</p>
+<p>Identificar rápidamente qué producto usar según la tarea.</p>
 </li>
 <li>
-<p>Diferenciar entre usos razonables, usos experimentales y usos que requieren gobierno estricto.</p>
+<p>Aprender a diseñar prompts con estilo, tono y formato consistentes.</p>
 </li>
 <li>
-<p>Reconocer límites, riesgos y líneas rojas en privacidad, seguridad, datos sensibles y automatización.</p>
+<p>Aplicar el patrón IA + IA para validación cruzada de resultados.</p>
 </li>
 <li>
-<p>Evaluar plataformas y asistentes de desarrollo basados en IA antes de introducirlos en flujos reales.</p>
+<p>Configurar un flujo de trabajo organizado en ChatGPT mediante proyectos y automatizaciones.</p>
 </li>
 <li>
-<p>Distinguir entre demo, prototipo, piloto controlado y aplicación preparada para producción.</p>
-</li>
-<li>
-<p>Usar IA como apoyo para análisis, documentación, prototipado, generación de código y revisión crítica.</p>
-</li>
-<li>
-<p>Mantener trazabilidad de fuentes, decisiones, supuestos y validaciones humanas.</p>
+<p>Practicar con escenarios realistas y transferibles al trabajo diario.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_material_disponible">1. Material disponible</h2>
+<h2 id="_antes_de_empezar_regla_de_oro">1. Antes de empezar: regla de oro</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>La IA generativa acelera mucho el trabajo, pero no sustituye el criterio técnico. Para usarla con seguridad y eficacia, ten siempre presente estas reglas de oro:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Nunca compartas datos personales identificables en servicios cloud sin anonimizar. <strong>En los planes gratuitos, tus datos pueden ser usados para entrenar modelos sin control.</strong></p>
+</li>
+<li>
+<p>Verifica siempre hechos, fechas, normativa y números antes de publicar o ejecutar.</p>
+</li>
+<li>
+<p>Revisa el código generado por IA antes de usarlo en producción, especialmente si tiene acceso a sistemas críticos.</p>
+</li>
+<li>
+<p>Trata la respuesta de la IA como borrador de alta calidad, no como salida final automática.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Todo resultado de IA debe pasar por una revisión humana final (human-in-the-loop), especialmente en operaciones críticas.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_mapa_rápido_del_ecosistema_actual">2. Mapa rápido del ecosistema actual</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>En la práctica, no hay una única herramienta perfecta. Lo más eficiente es elegir según la tarea.</p>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 22.2222%;">
-<col style="width: 22.2222%;">
 <col style="width: 33.3333%;">
-<col style="width: 22.2223%;">
+<col style="width: 66.6667%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Sesión</th>
-<th class="tableblock halign-left valign-top">Formato</th>
-<th class="tableblock halign-left valign-top">Descripción</th>
-<th class="tableblock halign-left valign-top">Enlace</th>
+<th class="tableblock halign-left valign-top">Proveedor</th>
+<th class="tableblock halign-left valign-top">Ecosistema</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Visión general de IA generativa aplicada a IT hospitalaria</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Documento completo</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Introducción al impacto de la IA generativa en departamentos de informática hospitalaria: paradigma operativo, tipos de IA, ecosistema de modelos, cloud vs. on-premise, casos de uso y riesgos.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/vision-general.html" target="_blank" rel="noopener">Abrir HTML</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpenAI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">* <strong>ChatGPT</strong>: IA generalista</p>
+<p class="tableblock">* <strong>Codex</strong>: asistente de código</p>
+<p class="tableblock">* <strong>Sora</strong>: Video generado por IA</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Visión general de IA generativa aplicada a IT hospitalaria</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Presentación resumida con ideas clave, comparativas, riesgos, workflows y escenarios ilustrativos.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/vision-general-presentacion.html" target="_blank" rel="noopener">Abrir presentación</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Google</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">* <strong>Gemini</strong>: IA generalista</p>
+<p class="tableblock">* <strong>NotebookLM</strong>: asistente de estudio con tus documentos</p>
+<p class="tableblock">* <strong>Antigravity</strong>: Asistente de desarrollo multimodal (texto, imagen, código)</p>
+<p class="tableblock">* <strong>nano banana</strong>: Multimedia creativa y experimental</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Primeros pasos con IA generativa</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Documento completo</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial sobre cómo empezar a usar IA generativa, consejos en la redacción de prompts, gestión de contexto, uso de adjuntos, proyectos y GPTs personalizados, con ejemplos prácticos.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/primeros-pasos-ia-generativa.html" target="_blank" rel="noopener">Abrir HTML</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Anthropic</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Claude</strong>: IA generalista con enfoque en seguridad y control de datos</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Plataformas de desarrollo asistido por IA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Documento completo</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial sobre herramientas tipo Firebase Studio, Google AI Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44, con criterios de evaluación para uso responsable.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/plaformas-desarrollo-basado-ia.html" target="_blank" rel="noopener">Abrir HTML</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Plataformas de desarrollo asistido por IA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Presentación resumida sobre este tipo de herramientas, promesas y límites, mapa de plataformas, checklist hospitalaria y taller práctico.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/plaformas-desarrollo-basado-ia-presentacion.html" target="_blank" rel="noopener">Abrir presentación</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Gestión de documentación con NotebookLM</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Documento completo</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial sobre NotebookLM.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/notebooklm.html" target="_blank" rel="noopener">Abrir HTML</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Gestión de documentación con NotebookLM</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Taller práctico</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Guion de sesión para usar NotebookLM con un corpus documental ficticio de proyecto hospitalario: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="GestionDocumentacion/PreparacionReuniones/preparacion-reuniones-citas360.html" target="_blank" rel="noopener">Abrir HTML</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Gestión de documentación con NotebookLM</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Taller práctico</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Guion de sesión para usar NotebookLM con un corpus documental ficticio de seguimiento de ciberseguridad: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="GestionDocumentacion/ComisionCiberSeguridad/preparacion-comision-ciberseguridad.html" target="_blank" rel="noopener">Abrir HTML</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IA generativa en la migración de aplicaciones Access</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Documento completo</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial sobre cómo la IA generativa puede acelerar y mejorar el proceso de migración de aplicaciones Access hacia servicios modernos: narrativa paulatina, casos de uso, prompts y práctica.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/migracion-access.html" target="_blank" rel="noopener">Abrir HTML</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Microsoft</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">* <strong>GitHub Copilot</strong>: asistente de código integrado en IDEs</p>
+<p class="tableblock">* <strong>Power BI Copilot</strong>: IA para análisis de datos y generación de informes</p>
+<p class="tableblock">* <strong>Microsoft Copilot</strong>: integración de IA en herramientas Microsoft (Word, Excel, PowerPoint, Teams, etc.)</p></td>
 </tr>
 </tbody>
 </table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Una estrategia útil es trabajar con 2 herramientas principales y 1 herramienta de contraste. Evitas dispersión y mantienes calidad.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_estructura_actual_del_material">2. Estructura actual del material</h2>
+<h2 id="_personalizar_estilo_tono_y_formato">3. Personalizar estilo, tono y formato</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Una de las mayores mejoras de productividad aparece cuando dejas de pedir "respuestas generales" y defines un estilo estable.</p>
+</div>
+<div class="sect2">
+<h3 id="_plantilla_base_de_prompt_reutilizable">3.1. Plantilla base de prompt reutilizable</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Actúa como [rol concreto].
+Contexto: [proyecto/situación].
+Objetivo: [resultado esperado].
+Audiencia: [quién lo leerá].
+Tono: [formal, cercano, ejecutivo, didáctico].
+Formato de salida: [tabla, lista, JSON, pasos, email].
+Restricciones: [longitud, normativa, no inventar datos].
+Criterios de calidad: [claridad, accionable, verificable].
+Si faltan datos, pregúntame antes de asumir.</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ejemplo_práctico_1_mismo_contenido_tres_estilos">3.2. Ejemplo práctico 1: mismo contenido, tres estilos</h3>
+<div class="paragraph">
+<p>Situación: hay que comunicar una interrupción planificada del sistema de tickets.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Redacta un aviso de mantenimiento para una parada de 30 minutos del sistema de tickets
+el jueves a las 18:00. Genera tres versiones:
+1) estilo técnico para IT,
+2) estilo ejecutivo para dirección,
+3) estilo cercano para usuarios finales.
+No inventes impacto clínico. Máximo 120 palabras por versión.</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_ejemplo_práctico_2_salida_estructurada_para_reutilizar">3.3. Ejemplo práctico 2: salida estructurada para reutilizar</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Convierte este procedimiento en JSON con campos:
+"titulo", "precondiciones", "pasos", "riesgos", "rollback", "validacion_final".
+Usa español técnico claro y no inventes pasos no descritos.
+[pega aquí el procedimiento]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_patrón_ia_ia">4. Patrón IA + IA</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Un unso interesante para mejorar calidad y trazabilidad es usar dos IAs en secuencia: una para pedir el contenido y otra para ejecutarlo. No obstante, se pueden involucrar más IAs si el proceso tiene más etapas. Así, podemos usar una IA para darle las ideas de un prompt inicial, que nos lo genere, y pasar ese prompt a otra IA para que lo ejecute. Luego, podemos usar la primera IA para revisar el resultado de la segunda, buscando huecos, ambigüedades o riesgos, y pedirle que sugiera mejoras. De esta forma, se crea un ciclo de validación cruzada entre IAs muy potente antes de pasar a la revisión humana final. En cada iteración, la IA de validación puede detectar aspectos que la IA generadora no ha contemplado, y aplicar mejoras iterativas para elevar la calidad del resultado antes de que un humano lo revise y apruebe. En entornos profesionales puede llamarse validación cruzada entre modelos.</p>
+</div>
+<div class="sect2">
+<h3 id="_flujo_recomendado">4.1. Flujo recomendado</h3>
+<div class="imageblock">
+<div class="content">
+<img src="images/diag-mermaid-md5-541000a675d2f1057f0cfd704f1a96eb.png" alt="Diagram" width="784" height="53">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_caso_de_uso_representativo_implementación_de_un_módulo_de_conexión_a_api_externa">4.2. Caso de uso representativo: implementación de un módulo de conexión a API externa</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>IA 1: "Actúa como arquitecto de software. Diseña un módulo de conexión a la API de [servicio] con autenticación OAuth2, manejo de errores y logging. Devuelve un esquema de clases y pseudocódigo."</p>
+</li>
+<li>
+<p>IA 2: Realiza la implementación en el lenguaje elegido, siguiendo el esquema y pseudocódigo.</p>
+</li>
+<li>
+<p>IA 1: Revisa los resultados generados por la IA 2, y detecta posibles fallos de seguridad o casos de error no contemplados. Sugiere mejoras concretas.</p>
+</li>
+<li>
+<p>IA 2: Aplica las mejoras sugeridas por la IA 1 y genera una versión corregida.</p>
+</li>
+<li>
+<p>Revisión humana final:Revisión del código final, verificación de requisitos de seguridad y funcionales, y aprobación para producción.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prompt_de_validación_cruzada">4.3. Prompt de validación cruzada</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Vas a actuar como auditor técnico. Revisa este documento y devuelve:
+1) afirmaciones no verificadas,
+2) pasos ambiguos,
+3) riesgos no cubiertos,
+4) mejoras concretas priorizadas (alto/medio/bajo),
+5) una versión corregida.
+No añadas normativa no citada. Si falta contexto, indícalo explícitamente.
+[pega aquí el borrador]</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_chatgpt_en_modo_productivo_funciones_clave">5. ChatGPT en modo productivo: funciones clave</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_personalización">5.1. Personalización</h3>
+<div class="paragraph">
+<p>Hay varios aspectos de personalización que pueden marcar la diferencia en la calidad y consistencia de las respuestas. Se pueden configigurar en Personalización:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Controles de datos - Mejorar el modelo para todos: permite que tus interacciones se usen para entrenar el modelo general.</p>
+</li>
+<li>
+<p>Personalización - Estilo y tono base: define el estilo que ChatGPT usa para responder: profesional, amigable, sincera, peculiar, eficiente y cínica.</p>
+</li>
+<li>
+<p>Personalización - Características: Define el grado de calidez, entusiasmo, redacción vs listas, y emojis.</p>
+</li>
+<li>
+<p>Personalización - Instrucciones personalizadas: puedes guardar instrucciones específicas para que se apliquen en cada respuesta, como "usa siempre español técnico claro" o "incluye un resumen inicial".</p>
+</li>
+</ul>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Ejemplos de instrucciones personalizadas útiles</div>
+<div class="paragraph">
+<p><strong>Estilo profesional y directo</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Responde de forma profesional y concisa.
+
+Prioriza:
+- claridad
+- precisión
+- utilidad práctica
+
+Evita:
+- introducciones largas
+- explicaciones redundantes
+- frases motivacionales innecesarias
+
+Si existen varias opciones, compáralas brevemente y recomienda una.
+
+Nunca te inventes nada que no esté basado en datos o hechos confirmados. Si no tienes información suficiente, indícalo y pregunta.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Perfil técnico senior</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Asume que tengo conocimientos técnicos avanzados.
+
+No expliques conceptos básicos salvo que lo solicite.
+
+Cuando propongas una solución:
+- justifica las decisiones
+- indica ventajas e inconvenientes
+- menciona riesgos técnicos
+- sugiere buenas prácticas</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Arquitecto de software</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Cuando respondas sobre desarrollo:
+
+- piensa primero en arquitectura
+- después en implementación
+
+Incluye siempre:
+- mantenibilidad
+- escalabilidad
+- seguridad
+- observabilidad
+
+Evita soluciones rápidas que generen deuda técnica.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Revisor implacable</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Nunca aceptes una propuesta sin criticarla.
+
+Busca:
+- riesgos
+- dependencias
+- costes ocultos
+- deuda técnica
+
+Sé extremadamente exigente</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_proyectos_en_chatgpt">5.2. Proyectos en ChatGPT</h3>
+<div class="paragraph">
+<p>Los proyectos en ChatGPT son una función que permite organizar conversaciones por temas o áreas de trabajo, manteniendo el contexto específico de cada proyecto. Esto es especialmente útil para equipos que trabajan en múltiples iniciativas o para individuos que quieren separar diferentes tipos de tareas.</p>
+</div>
+<div class="paragraph">
+<p>Estructura sugerida de proyectos:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Proyecto 1: Citas UAP.</p>
+</li>
+<li>
+<p>Proyecto 2: Documentación de procesos internos.</p>
+</li>
+<li>
+<p>Proyecto 3: Automatizaciones y scripts.</p>
+</li>
+<li>
+<p>Proyecto 4: Cuadro de mando de urgencias.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Buenas prácticas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Un proyecto por dominio funcional.</p>
+</li>
+<li>
+<p>Nombres de conversación orientados a tarea (ejemplo: "Acta comisión ciberseguridad mayo").</p>
+</li>
+<li>
+<p>Cierre de cada chat con "decisiones tomadas" y "pendientes".</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Cada proyecto puede tener su propio estilo de prompt personalizado para mantener consistencia en ese ámbito.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Trabajo habitualmente con:
+
+- SQL Server
+- Power BI
+- DAX
+- ETL
+- Reporting
+
+Cuando propongas consultas SQL:
+- optimiza rendimiento
+- evita patrones ineficientes
+- explica posibles índices
+
+Cuando propongas medidas DAX:
+- prioriza claridad
+- documenta la lógica
+- advierte sobre problemas de contexto de filtro</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Cada proyecto además puede incorporar archivos de referencia, como documentos, manuales o datos de ejemplo, que la IA puede usar para generar respuestas más precisas y contextualizadas. Esto es especialmente útil para tareas como redacción de procedimiento y generación de informes, donde el contexto específico es clave para la calidad del resultado.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>El número de archivos adjuntos por proyecto puede estar limitado según el plan de ChatGPT, así que es importante seleccionar cuidadosamente los documentos más relevantes para cada proyecto. Actualmente son 5 en el plan gratuito, 25 en los planes Plus y Go y hasta 40 en los planes Pro, Enterprise, y demás.</p>
+</div>
+<div class="paragraph">
+<p>Siempre se puede combinar el contenido de varios documentos en un solo archivo de referencia para maximizar la información disponible dentro de las limitaciones de adjuntos.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_gpts_para_tareas_repetitivas">5.3. GPTs para tareas repetitivas</h3>
+<div class="paragraph">
+<p>Los GPTs son una función que permite crear modelos personalizados de IA para tareas específicas, entrenados con ejemplos concretos. Esto es especialmente útil para tareas repetitivas o con formato muy definido, como generación de informes, redacción de procedimientos o análisis de datos. Para crear un GPT, basta con asignarle un nombre, descripción y definir las instrucciones de cómo se tiene que comportar. Opcionalmente, se puede incorporar conocimiento espedífico y acciones personalizadas.</p>
+</div>
+<div class="paragraph">
+<p>A continuación se muestra un ejemplo de GPT personalizado (<em>Analista de incidencias</em>) para analizar incidencias.</p>
+</div>
+<div class="paragraph">
+<p>En la descripción añadiríamos algo así como: <em>Analiza incidencias de soporte TI y genera clasificación, prioridad, impacto y acciones recomendadas.</em></p>
+</div>
+<div class="paragraph">
+<p>Las instucciones de este GPT son:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Eres un analista de soporte TI especializado en entornos hospitalarios.
+
+Tu función es analizar incidencias recibidas por correo electrónico, ticket o descripción libre.
+
+Debes clasificar la incidencia y generar una respuesta estructurada.
+
+Siempre debes devolver:
+
+# Categoría
+
+Una única categoría:
+
+* Hardware
+* Software
+* Red
+* Correo electrónico
+* Impresión
+* Aplicación corporativa
+* Base de datos
+* Seguridad
+* Accesos y permisos
+* Infraestructura
+* Otro
+
+# Prioridad
+
+Asignar:
+
+* Crítica
+* Alta
+* Media
+* Baja
+
+Justificar brevemente la prioridad.
+
+# Servicio afectado
+
+Indicar el servicio principal afectado.
+
+Ejemplos:
+
+* Estación clínica
+* Citas
+* Laboratorio
+* Farmacia
+* Correo corporativo
+* Directorio activo
+* Red corporativa
+* Impresión
+* Power BI
+* SQL Server
+
+# Resumen ejecutivo
+
+Generar un resumen de máximo 5 líneas.
+
+# Acciones sugeridas
+
+Generar una lista numerada de acciones recomendadas.
+
+# Riesgos detectados
+
+Indicar posibles impactos operativos.
+
+# Confianza
+
+Indicar:
+
+* Alta
+* Media
+* Baja
+
+según la claridad de la información recibida.
+
+Si faltan datos, indicarlo explícitamente.
+
+No inventes información.
+No asumas detalles no proporcionados.
+Marca cualquier incertidumbre.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>El conocimiento se puede incorporar mediante archivos en la sección "Conocimiento" de la pestaña "Configurar" del GPT. Por ejemplo, añadir el markdown siguiente para mejorar añadir contexto y mejorar las respuestas:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-markdown" data-lang="markdown"># Sistemas corporativos
+
+## SIGCIT
+
+Sistema de gestión de citas de Atención Primaria.
+
+Criticidad: Alta
+
+Responsable:
+Unidad de Admisión
+
+---
+
+## LABSYS
+
+Sistema de laboratorio.
+
+Criticidad: Crítica
+
+Responsable:
+Servicio de Laboratorio
+
+---
+
+## BI360
+
+Plataforma Power BI corporativa.
+
+Criticidad: Media
+
+Responsable:
+Unidad BI</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ejemplo_de_uso">5.3.1. Ejemplo de uso</h4>
+<div class="paragraph">
+<p>Un ejemplo de uso de este GPT sería pegar la descripción de una incidencia recibida por correo electrónico, como la siguiente:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Buenos días.
+
+Desde las 08:00 varios usuarios del centro de salud de El Zapillo indican que no pueden acceder a la aplicación de citas.
+
+La aplicación muestra error de conexión.
+
+El resto de aplicaciones funcionan correctamente.
+
+Un saludo.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Si ahora pegamos ese texto en el GPT personalizado, obtendremos una respuesta estructurada con la clasificación, prioridad, servicio afectado, resumen ejecutivo, acciones sugeridas, riesgos detectados y nivel de confianza, todo adaptado a la información proporcionada. Esto permite agilizar el análisis de incidencias y estandarizar la respuesta, mejorando la eficiencia del equipo de soporte TI. A continuación se muestra un ejemplo de respuesta generada por el GPT personalizado.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-markdown" data-lang="markdown"># Categoría
+
+**Aplicación corporativa**
+
+# Prioridad
+
+**Alta**
+
+**Justificación:** El servicio de citas presenta una incidencia que afecta a varios usuarios de un centro de salud e impide el acceso a una aplicación asistencial. Aunque el resto de aplicaciones continúan operativas, existe impacto directo en la gestión de citas.
+
+# Servicio afectado
+
+**Sistema de citas (SIGCIT)**
+
+# Resumen ejecutivo
+
+Desde las 08:00, varios usuarios del centro de salud de El Zapillo reportan imposibilidad de acceso al sistema de citas. La aplicación muestra un mensaje de error de conexión. No se han reportado incidencias en otras aplicaciones corporativas, por lo que el problema parece estar aislado al servicio de citas. Se requiere verificar la disponibilidad y conectividad del sistema afectado.
+
+# Acciones sugeridas
+
+1. Verificar el estado operativo del servicio SIGCIT y sus componentes asociados.
+2. Revisar registros de errores de la aplicación desde las 08:00.
+3. Comprobar la conectividad entre los puestos afectados y los servidores de SIGCIT.
+4. Validar que no existan incidencias en los servicios de autenticación o dependencias específicas de la aplicación.
+5. Confirmar si la incidencia afecta únicamente al centro de salud de El Zapillo o a otros centros.
+6. Escalar al equipo responsable de la aplicación si se detecta caída o degradación del servicio.
+
+# Riesgos detectados
+
+* Imposibilidad de gestionar citas de pacientes.
+* Retrasos en la atención administrativa.
+* Acumulación de trabajo manual y aumento de tiempos de espera.
+* Impacto operativo en la actividad asistencial del centro.
+
+# Confianza
+
+**Alta**
+
+La descripción identifica claramente el servicio afectado, el alcance inicial (varios usuarios) y el síntoma principal (error de conexión). Falta información técnica adicional (captura de error, alcance global y resultados de pruebas de conectividad), pero es suficiente para una clasificación fiable.</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_errores_frecuentes_y_cómo_evitarlos">6. Errores frecuentes y cómo evitarlos</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Visión general</strong>: marco conceptual para entender qué cambia con la IA generativa, dónde puede aportar valor y qué límites deben respetarse en un entorno hospitalario.</p>
+<p>Error: prompt demasiado vago.
+Solución: definir rol, objetivo, audiencia, formato y restricciones.</p>
 </li>
 <li>
-<p><strong>Plataformas de desarrollo asistido por IA</strong>: revisión práctica de herramientas que permiten pasar de una descripción en lenguaje natural a prototipos funcionales, con foco en evaluación, control técnico y salida hacia desarrollo gobernado.</p>
+<p>Error: aceptar la primera respuesta como final.
+Solución: iterar con "mejora 1, mejora 2" y validación cruzada.</p>
 </li>
 <li>
-<p><strong>Gestión de documentación con NotebookLM</strong>: guiones para usar NotebookLM en dos escenarios típicos de informática hospitalaria: preparación de reuniones ejecutivas y seguimiento de ciberseguridad. En ambos casos se busca mostrar cómo la IA puede ayudar a organizar información compleja, generar artefactos visuales y mejorar la calidad de las preguntas que se hacen a los documentos.</p>
+<p>Error: mezclar datos sensibles en prompts cloud.
+Solución: anonimizar, resumir o usar entorno local cuando aplique.</p>
 </li>
 <li>
-<p><strong>IA generativa en la migración de aplicaciones Access</strong>: tutorial sobre cómo la IA puede acelerar y mejorar el proceso de migración de aplicaciones Access hacia servicios modernos, con casos de uso, prompts y caso práctico.</p>
+<p>Error: cambiar de herramienta en cada paso.
+Solución: flujo estable: herramienta principal + herramienta de contraste.</p>
+</li>
+<li>
+<p>Error: crear conversaciones mezclando temas provoca fácilmente la generación de alucinaciones o respuestas incoherentes.
+Solución: usar conversaciones cortas y específicas. Para conversaciones largas, usar proyectos para mantener contexto organizado.</p>
 </li>
 </ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusiones">7. Conclusiones</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>La IA generativa es una herramienta poderosa que puede transformar la productividad en departamentos IT, pero su eficacia depende de cómo se use. Personalizar el estilo de respuesta, aplicar el patrón IA + IA para validación cruzada, y organizar el trabajo mediante proyectos y GPTs son estrategias clave para maximizar su potencial. Con un enfoque disciplinado y consciente de sus limitaciones, la IA puede pasar de ser una curiosidad a una capacidad operativa real que produce mejores resultados, más rápido y con mayor calidad.</p>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-03 23:00:57 +0200
+Last updated 2026-06-03 21:24:58 +0200
 </div>
 </div>
 </body>

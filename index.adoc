@@ -62,6 +62,11 @@ Al finalizar el curso, las personas participantes deberían ser capaces de:
 | Presentación resumida con ideas clave, comparativas, riesgos, workflows y escenarios ilustrativos.
 | link:Tutorial/vision-general-presentacion.html[Abrir presentación, window=_blank]
 
+| Primeros pasos con IA generativa
+| Documento completo
+| Tutorial sobre cómo empezar a usar IA generativa, consejos en la redacción de prompts, gestión de contexto, uso de adjuntos, proyectos y GPTs personalizados, con ejemplos prácticos.
+| link:Tutorial/primeros-pasos-ia-generativa.html[Abrir HTML, window=_blank]
+
 | Plataformas de desarrollo asistido por IA
 | Documento completo
 | Tutorial sobre herramientas tipo Firebase Studio, Google AI Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44, con criterios de evaluación para uso responsable.
