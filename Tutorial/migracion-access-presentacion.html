@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Access a Servicios: API First en el Hospital</title>
+<style>
+  :root {
+    --blue-dark:   #0d2c4e;
+    --blue-mid:    #1a5276;
+    --blue-light:  #2e86c1;
+    --teal:        #1a9e8f;
+    --green:       #27ae60;
+    --amber:       #e67e22;
+    --red:         #c0392b;
+    --grey-light:  #ecf0f1;
+    --grey-mid:    #bdc3c7;
+    --white:       #ffffff;
+    --text-dark:   #1a1a2e;
+    --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-main);
+    background: #0a1628;
+    color: var(--white);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── Slideshow container ── */
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 6rem;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity .45s ease, transform .45s ease;
+    pointer-events: none;
+    text-align: center;
+  }
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── Backgrounds ── */
+  .bg-hero    { background: linear-gradient(135deg, #0d2c4e 0%, #1a5276 50%, #1a9e8f 100%); }
+  .bg-dark    { background: linear-gradient(160deg, #0d1b2a 0%, #1a2744 100%); }
+  .bg-problem { background: linear-gradient(160deg, #2c0d0d 0%, #4a1a1a 100%); }
+  .bg-arch    { background: linear-gradient(160deg, #0d2c1a 0%, #1a4433 100%); }
+  .bg-process { background: linear-gradient(160deg, #0d1f4a 0%, #1a3266 100%); }
+  .bg-ai      { background: linear-gradient(160deg, #1a0d4a 0%, #2e1a66 100%); }
+  .bg-result  { background: linear-gradient(160deg, #0d2c1a 0%, #1a5c33 100%); }
+  .bg-close   { background: linear-gradient(135deg, #0d2c4e 0%, #0d4e2c 100%); }
+
+  /* ── Typography ── */
+  h1 { font-size: clamp(2rem, 4.5vw, 3.6rem); font-weight: 700; line-height: 1.15; margin-bottom: .6rem; }
+  h2 { font-size: clamp(1.5rem, 3vw, 2.4rem); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+  h3 { font-size: clamp(1.1rem, 2vw, 1.6rem); font-weight: 600; margin-bottom: .6rem; color: var(--teal); }
+  p, li { font-size: clamp(.9rem, 1.5vw, 1.15rem); line-height: 1.65; }
+  .subtitle { font-size: clamp(1rem, 2vw, 1.4rem); opacity: .85; margin-top: .4rem; }
+  .eyebrow { font-size: .85rem; text-transform: uppercase; letter-spacing: .15em; opacity: .6; margin-bottom: .8rem; }
+  .accent { color: var(--teal); }
+  .amber  { color: var(--amber); }
+  .green  { color: #2ecc71; }
+  .red    { color: #e74c3c; }
+
+  /* ── Card grid ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; width: 100%; max-width: 1100px; text-align: left; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; width: 100%; max-width: 1100px; text-align: left; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; width: 100%; max-width: 1200px; text-align: left; }
+
+  .card {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    padding: 1.4rem;
+    transition: transform .2s, border-color .2s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: rgba(26,158,143,.5); }
+  .card .icon { font-size: 2rem; margin-bottom: .5rem; }
+  .card h3 { font-size: 1rem; color: var(--white); margin-bottom: .4rem; }
+  .card p  { font-size: .88rem; opacity: .8; line-height: 1.5; }
+
+  .card-danger  { border-left: 4px solid var(--red); }
+  .card-warn    { border-left: 4px solid var(--amber); }
+  .card-ok      { border-left: 4px solid var(--green); }
+  .card-teal    { border-left: 4px solid var(--teal); }
+  .card-blue    { border-left: 4px solid var(--blue-light); }
+
+  /* ── Step list ── */
+  .steps { list-style: none; width: 100%; max-width: 900px; text-align: left; }
+  .steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    background: rgba(255,255,255,.06);
+    margin-bottom: .7rem;
+    border-left: 4px solid var(--teal);
+    font-size: clamp(.85rem, 1.4vw, 1.05rem);
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 2rem; height: 2rem;
+    border-radius: 50%;
+    background: var(--teal);
+    color: var(--white);
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .9rem;
+  }
+  .steps li strong { color: #7ee8e0; }
+
+  /* ── Architecture diagram ── */
+  .arch-diagram {
+    width: 100%; max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    font-size: clamp(.75rem, 1.2vw, .95rem);
+  }
+  .arch-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    width: 100%;
+  }
+  .arch-box {
+    border-radius: 10px;
+    padding: .7rem 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    min-width: 130px;
+  }
+  .arch-consumer { background: rgba(46,134,193,.25); border: 1px solid var(--blue-light); }
+  .arch-api      { background: rgba(26,158,143,.25); border: 1px solid var(--teal); }
+  .arch-data     { background: rgba(39,174,96,.2);   border: 1px solid var(--green); }
+  .arch-arrow    { font-size: 1.4rem; opacity: .6; }
+  .arch-label    {
+    font-size: .75rem; text-transform: uppercase; letter-spacing: .12em;
+    opacity: .5; margin: .2rem 0 .4rem;
+  }
+
+  /* ── Code block ── */
+  .code-block {
+    background: rgba(0,0,0,.45);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    padding: 1.2rem 1.6rem;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: clamp(.75rem, 1.15vw, .92rem);
+    line-height: 1.7;
+    width: 100%;
+    max-width: 860px;
+    overflow-x: auto;
+  }
+  .code-block .method  { color: #79c0ff; font-weight: 700; }
+  .code-block .path    { color: #a8d8a8; }
+  .code-block .comment { color: #8b949e; font-style: italic; }
+
+  /* ── Tag pills ── */
+  .tags { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-top: 1rem; }
+  .tag {
+    padding: .3rem .8rem;
+    border-radius: 20px;
+    font-size: .8rem;
+    font-weight: 600;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+  }
+  .tag-teal  { background: rgba(26,158,143,.25); border-color: var(--teal); color: #7ee8e0; }
+  .tag-amber { background: rgba(230,126,34,.2);  border-color: var(--amber); color: #f0a761; }
+  .tag-red   { background: rgba(192,57,43,.2);   border-color: var(--red); color: #e8716a; }
+  .tag-green { background: rgba(39,174,96,.2);   border-color: var(--green); color: #7de0a4; }
+
+  /* ── Divider ── */
+  .divider {
+    width: 60px; height: 4px;
+    background: var(--teal);
+    border-radius: 2px;
+    margin: .8rem auto 1.4rem;
+  }
+
+  /* ── Quote ── */
+  .quote {
+    border-left: 4px solid var(--teal);
+    padding: 1rem 1.5rem;
+    background: rgba(26,158,143,.1);
+    border-radius: 0 10px 10px 0;
+    font-style: italic;
+    font-size: clamp(.95rem, 1.6vw, 1.2rem);
+    max-width: 800px;
+    text-align: left;
+    line-height: 1.7;
+  }
+
+  /* ── Big stat ── */
+  .big-stat {
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--teal);
+  }
+
+  /* ── Comparison table ── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%; max-width: 1000px;
+    text-align: left;
+  }
+  .compare-col { border-radius: 12px; overflow: hidden; }
+  .compare-col .col-head {
+    padding: .8rem 1.2rem;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .col-bad  .col-head { background: rgba(192,57,43,.4); }
+  .col-good .col-head { background: rgba(26,158,143,.4); }
+  .compare-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    padding: .7rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.04);
+    font-size: clamp(.8rem, 1.3vw, .95rem);
+    line-height: 1.45;
+  }
+  .compare-item:last-child { border-bottom: none; }
+  .compare-item .ico { flex-shrink: 0; }
+
+  /* ── Progress bar ── */
+  #progress {
+    position: fixed;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: var(--teal);
+    transition: width .4s ease;
+    z-index: 100;
+  }
+
+  /* ── Navigation ── */
+  #nav {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 100;
+    background: rgba(0,0,0,.5);
+    backdrop-filter: blur(8px);
+    border-radius: 30px;
+    padding: .5rem 1.2rem;
+    border: 1px solid rgba(255,255,255,.1);
+  }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: .3rem .7rem;
+    border-radius: 6px;
+    transition: background .2s, opacity .2s;
+    opacity: .7;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,.15); opacity: 1; }
+  .nav-btn:disabled { opacity: .25; cursor: default; }
+  #slide-counter { font-size: .85rem; opacity: .7; min-width: 60px; text-align: center; }
+
+  /* ── Slide numbers (dots) ── */
+  #dots {
+    position: fixed;
+    top: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: .4rem;
+    z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    transition: background .3s, transform .3s;
+    cursor: pointer;
+  }
+  .dot.active { background: var(--teal); transform: scale(1.4); }
+
+  /* Responsive tweaks */
+  @media (max-width: 768px) {
+    .slide { padding: 2rem 2rem 5rem; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .compare { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ─────────────────────────────── SLIDE 1: PORTADA ─── -->
+  <section class="slide bg-hero active">
+    <div class="eyebrow">Transformación digital en entornos hospitalarios</div>
+    <h1>De Access a<br><span class="accent">Arquitectura de Servicios</span></h1>
+    <div class="divider"></div>
+    <p class="subtitle">Cómo construir una capa de servicios que integra, reutiliza y escala</p>
+    <div class="tags" style="margin-top:2rem">
+      <span class="tag tag-teal">API First</span>
+      <span class="tag tag-teal">FastAPI</span>
+      <span class="tag tag-teal">REST / OpenAPI</span>
+      <span class="tag tag-amber">IA Generativa</span>
+      <span class="tag tag-green">MySQL · PostgreSQL</span>
+      <span class="tag">Docker</span>
+    </div>
+    <p style="margin-top:2.5rem; font-size:.85rem; opacity:.45;">Manuel Torres · Universidad de Almería · junio 2026</p>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 2: EL DIAGNÓSTICO ─── -->
+  <section class="slide bg-problem">
+    <div class="eyebrow">El punto de partida</div>
+    <h2>La conversación que se repite<br>en todos los hospitales</h2>
+    <div class="divider"></div>
+    <div class="quote" style="margin:1.2rem auto 1.6rem">
+      <p><strong>— ¿Dónde están los datos del almacén de farmacia?</strong></p>
+      <p>— En el Excel del turno de noche… o puede que en el Access que hizo Juan antes de jubilarse.</p>
+      <br>
+      <p><strong>— ¿Y el de mantenimiento de equipos?</strong></p>
+      <p>— Eso lo lleva otro Access. Creo que solo Marta sabe abrirlo.</p>
+    </div>
+    <p style="max-width:750px; opacity:.9;">
+      Este intercambio resume uno de los problemas de gobernanza más extendidos en organizaciones grandes:<br>
+      <strong>la proliferación de soluciones en silos</strong>.
+    </p>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 3: INVENTARIO ─── -->
+  <section class="slide bg-dark">
+    <div class="eyebrow">El problema</div>
+    <h2>El inventario <span class="accent">invisible</span></h2>
+    <div class="divider"></div>
+    <div class="grid-4" style="max-width:1100px;">
+      <div class="card card-danger">
+        <div class="icon">💊</div>
+        <h3>Farmacia</h3>
+        <p>Caducidades y lotes de medicamentos</p>
+        <span class="tag tag-red" style="font-size:.75rem">Crítico</span>
+      </div>
+      <div class="card card-danger">
+        <div class="icon">🧪</div>
+        <h3>Laboratorio</h3>
+        <p>Muestras pendientes y alertas de valores</p>
+        <span class="tag tag-red" style="font-size:.75rem">Crítico</span>
+      </div>
+      <div class="card card-danger">
+        <div class="icon">🦠</div>
+        <h3>Infección</h3>
+        <p>Vigilancia epidemiológica y brotes</p>
+        <span class="tag tag-red" style="font-size:.75rem">Crítico</span>
+      </div>
+      <div class="card card-warn">
+        <div class="icon">🔧</div>
+        <h3>Mantenimiento</h3>
+        <p>Parque de equipos y revisiones</p>
+        <span class="tag tag-amber" style="font-size:.75rem">Alto</span>
+      </div>
+      <div class="card card-warn">
+        <div class="icon">👩‍⚕️</div>
+        <h3>RRHH</h3>
+        <p>Turnos, guardias y vacaciones</p>
+        <span class="tag tag-amber" style="font-size:.75rem">Alto</span>
+      </div>
+      <div class="card card-warn">
+        <div class="icon">♻️</div>
+        <h3>Esterilización</h3>
+        <p>Trazabilidad de material estéril</p>
+        <span class="tag tag-amber" style="font-size:.75rem">Alto</span>
+      </div>
+      <div class="card">
+        <div class="icon">🍽️</div>
+        <h3>Dietética</h3>
+        <p>Dietas especiales por planta</p>
+        <span class="tag" style="font-size:.75rem">Medio</span>
+      </div>
+      <div class="card">
+        <div class="icon">📋</div>
+        <h3>Calidad</h3>
+        <p>Incidencias y no conformidades</p>
+        <span class="tag tag-amber" style="font-size:.75rem">Alto</span>
+      </div>
+    </div>
+    <p style="margin-top:1.2rem; font-size:.9rem; opacity:.65;">Ninguna nació por capricho. Cada una resolvió una necesidad real que el HIS no cubría.</p>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 4: SÍNTOMAS ─── -->
+  <section class="slide bg-problem">
+    <div class="eyebrow">Los síntomas</div>
+    <h2>Lo que ocurre cuando el parque<br><span class="red">crece sin control</span></h2>
+    <div class="divider"></div>
+    <div class="grid-2" style="max-width:950px;">
+      <div class="card card-danger">
+        <div class="icon">🚫</div>
+        <h3>Datos que no se hablan</h3>
+        <p>Farmacia no sabe que el frigorífico de mantenimiento tiene revisión pendiente. Nadie los conecta.</p>
+      </div>
+      <div class="card card-danger">
+        <div class="icon">💾</div>
+        <h3>Conocimiento en ficheros</h3>
+        <p>Un <code>.accdb</code> en el escritorio. Si ese PC falla, los datos desaparecen con él.</p>
+      </div>
+      <div class="card card-warn">
+        <div class="icon">🧑‍💼</div>
+        <h3>"Eso lo sabe María"</h3>
+        <p>Dependencia de personas, no de sistemas. La organización es frágil cuando María no está.</p>
+      </div>
+      <div class="card card-warn">
+        <div class="icon">🔌</div>
+        <h3>Integración imposible</h3>
+        <p>Ningún Access tiene una API. Cada integración requiere exportar ficheros o construir puentes frágiles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 5: LA LECCIÓN ─── -->
+  <section class="slide bg-dark">
+    <div class="eyebrow">La lección clave</div>
+    <h2>La arquitectura <span class="accent">importa más</span><br>que la herramienta</h2>
+    <div class="divider"></div>
+    <div class="compare" style="margin-top:1rem;">
+      <div class="compare-col col-bad">
+        <div class="col-head">❌ El patrón problemático</div>
+        <div class="compare-item"><span class="ico">🗃️</span>Datos encerrados en ficheros .accdb</div>
+        <div class="compare-item"><span class="ico">🔒</span>Lógica de negocio atrapada en VBA</div>
+        <div class="compare-item"><span class="ico">👤</span>Acceso solo desde el PC local</div>
+        <div class="compare-item"><span class="ico">❓</span>Sin auditoría, sin versiones, sin backups</div>
+        <div class="compare-item"><span class="ico">🔗</span>Integración manual vía Excel / ODBC</div>
+      </div>
+      <div class="compare-col col-good">
+        <div class="col-head">✅ El patrón objetivo</div>
+        <div class="compare-item"><span class="ico">🌐</span>Datos en BD relacional con backups</div>
+        <div class="compare-item"><span class="ico">📋</span>Lógica expuesta como servicio REST</div>
+        <div class="compare-item"><span class="ico">🌍</span>Accesible desde web, móvil, BI, otros servicios</div>
+        <div class="compare-item"><span class="ico">📝</span>Auditoría completa: quién, qué, cuándo</div>
+        <div class="compare-item"><span class="ico">🔄</span>Integración automática vía API estándar</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 6: API FIRST ─── -->
+  <section class="slide bg-arch">
+    <div class="eyebrow">La solución</div>
+    <h2>Arquitectura <span class="accent">API First</span></h2>
+    <div class="divider"></div>
+    <p style="max-width:700px; margin-bottom:1.8rem; opacity:.9;">
+      Los datos y la lógica de negocio son accesibles a través de servicios bien definidos,<br>
+      <strong>independientemente de quién los consume</strong>.
+    </p>
+    <div class="arch-diagram">
+      <div class="arch-label">CONSUMIDORES</div>
+      <div class="arch-row">
+        <div class="arch-box arch-consumer">🌐 Navegador</div>
+        <div class="arch-box arch-consumer">📱 App móvil</div>
+        <div class="arch-box arch-consumer">🔗 Otro servicio</div>
+        <div class="arch-box arch-consumer">📊 Excel / BI</div>
+      </div>
+      <div class="arch-arrow">↕ HTTP / REST / JSON</div>
+      <div class="arch-label" style="color:#7ee8e0;">CAPA DE SERVICIOS (API)</div>
+      <div class="arch-row">
+        <div class="arch-box arch-api" style="min-width:220px;">📄 REST documentado con OpenAPI</div>
+        <div class="arch-box arch-api" style="min-width:180px;">🔐 Auth · Autorización · Auditoría</div>
+        <div class="arch-box arch-api" style="min-width:180px;">⚙️ Lógica de negocio · Validaciones</div>
+      </div>
+      <div class="arch-arrow">↕ SQL / ORM</div>
+      <div class="arch-label">CAPA DE DATOS</div>
+      <div class="arch-row">
+        <div class="arch-box arch-data" style="min-width:280px;">🗄️ MySQL · PostgreSQL · Oracle · SQL Server</div>
+        <div class="arch-box arch-data" style="min-width:260px;">🔒 Esquema limpio · Índices · Backups</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 7: MAPA HOSPITAL ─── -->
+  <section class="slide bg-arch">
+    <div class="eyebrow">El resultado</div>
+    <h2>El mapa de servicios<br>del <span class="accent">hospital</span></h2>
+    <div class="divider"></div>
+    <div style="width:100%;max-width:900px;text-align:left;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.6rem;font-size:.95rem;">
+        <!-- Portal -->
+        <div style="background:rgba(46,134,193,.3);border:2px solid var(--blue-light);border-radius:10px;padding:.7rem 2.5rem;font-weight:700;">
+          🖥️ PORTAL WEB / APP MÓVIL
+        </div>
+        <div style="opacity:.5;font-size:1.4rem;">↓ HTTP REST</div>
+        <!-- Services row -->
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;">
+          <div class="arch-box arch-api" style="text-align:center;">💊 Farmacia API</div>
+          <div class="arch-box arch-api" style="text-align:center;">🧪 Laboratorio API</div>
+          <div class="arch-box arch-api" style="text-align:center;">🔧 Mantenimiento API</div>
+          <div class="arch-box arch-api" style="text-align:center;">🦠 Infección API</div>
+          <div class="arch-box arch-api" style="text-align:center;">👩‍⚕️ RRHH API</div>
+        </div>
+        <div style="opacity:.5;font-size:1.4rem;">↓ SQL / ORDS</div>
+        <!-- Data layer -->
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;">
+          <div class="arch-box arch-data" style="text-align:center;">🗄️ MySQL / PostgreSQL<br><small style="opacity:.7;">nuevos servicios</small></div>
+          <div class="arch-box arch-data" style="text-align:center;background:rgba(230,126,34,.2);border-color:var(--amber);">🏛️ Oracle / HIS / ERP<br><small style="opacity:.7;">sistemas existentes</small></div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:1.2rem;font-size:.88rem;opacity:.65;">La arquitectura API First no obliga a desechar Oracle. Lo integra como un servicio más.</p>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 8: EL ROL DE LA IA ─── -->
+  <section class="slide bg-ai">
+    <div class="eyebrow">El acelerador</div>
+    <h2>La IA generativa <span class="accent">redistribuye</span><br>el trabajo técnico</h2>
+    <div class="divider"></div>
+    <p style="max-width:720px;margin-bottom:1.6rem;opacity:.9;">
+      El trabajo ya no consiste en <em>escribir</em> código,<br>sino en <strong>diseñar, dirigir y validar</strong>.
+    </p>
+    <div class="grid-3" style="max-width:950px;">
+      <div class="card card-teal">
+        <div class="icon">🔍</div>
+        <h3>Analizar</h3>
+        <p>Extraer el esquema, consultas, formularios y lógica VBA de la aplicación Access existente.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="icon">🏗️</div>
+        <h3>Diseñar</h3>
+        <p>Definir qué servicios existen, qué datos gestionan y cómo se relacionan entre sí.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="icon">💬</div>
+        <h3>Formular</h3>
+        <p>Redactar instrucciones precisas (prompts) para que el agente IA genere el código correcto.</p>
+      </div>
+      <div class="card card-blue">
+        <div class="icon">✅</div>
+        <h3>Validar</h3>
+        <p>Comprobar que lo generado cumple los requisitos funcionales y de calidad esperados.</p>
+      </div>
+      <div class="card card-blue">
+        <div class="icon">🔄</div>
+        <h3>Iterar</h3>
+        <p>Refinar con nuevos prompts hasta que el sistema se comporta exactamente como se espera.</p>
+      </div>
+      <div class="card card-blue">
+        <div class="icon">🚀</div>
+        <h3>Desplegar</h3>
+        <p>Poner en producción con Docker Compose o la infraestructura corporativa existente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 9: EL PROCESO ─── -->
+  <section class="slide bg-process">
+    <div class="eyebrow">El proceso de migración</div>
+    <h2>De Access a servicio:<br><span class="accent">6 etapas</span></h2>
+    <div class="divider"></div>
+    <ul class="steps">
+      <li>
+        <span class="step-num">1</span>
+        <div><strong>Análisis y extracción</strong> — Inventariar tablas, consultas, formularios, informes y módulos VBA. Validar que el inventario es completo.</div>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <div><strong>Diseño del esquema (opcional)</strong> — Rediseñar la estructura de datos si es necesario para aprovechar las capacidades del nuevo motor.</div>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <div><strong>Implementación del backend</strong> — Crear los endpoints REST con FastAPI, definir reglas de negocio y documentar con OpenAPI.</div>
+      </li>
+      <li>
+        <span class="step-num">4</span>
+        <div><strong>Implementación del frontend</strong> — Crear la SPA en React que consume el backend. Migrar formularios e informes existentes.</div>
+      </li>
+      <li>
+        <span class="step-num">5</span>
+        <div><strong>Entorno de desarrollo</strong> — Configurar Docker Compose con BD, backend y frontend para pruebas y validación local.</div>
+      </li>
+      <li>
+        <span class="step-num">6</span>
+        <div><strong>Migración de datos</strong> — Diseñar e implementar el proceso de traspaso desde Access, garantizando integridad y consistencia.</div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 10: PROMPT 1 ─── -->
+  <section class="slide bg-ai">
+    <div class="eyebrow">Etapa 1 · En la práctica</div>
+    <h2>Prompt de <span class="accent">análisis</span></h2>
+    <div class="divider"></div>
+    <div class="code-block">
+<span class="comment">// Se proporciona al agente la base de datos Access (fichero .accdb)</span>
+
+<span class="method">Rol:</span> <span class="path">Experto en Microsoft Access y desarrollo de sistemas de información,
+      backend y frontend</span>
+
+<span class="method">Contexto:</span> <span class="path">Aplicación corporativa en Access para gestión de pacientes.</span>
+
+<span class="method">Objetivo:</span> <span class="path">Migrar a arquitectura de servicios, con backend en MySQL,
+         servicios REST y frontend aparte.</span>
+
+<span class="method">Extrae:</span> <span class="path">La estructura de la base de datos, código SQL de las consultas,
+        la lógica de los formularios y de los informes.</span>
+    </div>
+    <p style="margin-top:1.2rem;max-width:750px;font-size:.9rem;opacity:.8;">
+      El agente IA genera scripts para interactuar con Access, extrae tablas, consultas, formularios
+      e informes y produce un <strong>inventario completo</strong> listo para la siguiente etapa.
+    </p>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 11: PROMPT 2 ─── -->
+  <section class="slide bg-ai">
+    <div class="eyebrow">Etapas 3-5 · En la práctica</div>
+    <h2>Prompt de <span class="accent">implementación</span></h2>
+    <div class="divider"></div>
+    <div class="code-block">
+<span class="comment">// Partiendo del inventario generado en la etapa anterior</span>
+
+<span class="method">Adapta</span> <span class="path">el plan de migración para crear un despliegue de desarrollo
+con Docker Compose.</span>
+
+<span class="path">- Base de datos: MySQL
+- Backend: FastAPI (con soporte OpenAPI)
+- Frontend: SPA en React</span>
+
+<span class="method">Una vez adaptado,</span> <span class="path">implementa el plan de migración
+y comprueba que funcione todo.</span>
+    </div>
+    <p style="margin-top:1.2rem;max-width:750px;font-size:.9rem;opacity:.8;">
+      El agente crea el <code>docker-compose.yml</code>, el esquema MySQL con datos migrados,
+      los endpoints FastAPI y la interfaz React. El profesional <strong>valida, no programa</strong>.
+    </p>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 12: RESULTADO ─── -->
+  <section class="slide bg-result">
+    <div class="eyebrow">El resultado</div>
+    <h2>Sistema completo,<br>listo para <span class="accent">consumir</span></h2>
+    <div class="divider"></div>
+    <div class="grid-3" style="max-width:950px;">
+      <div class="card card-teal">
+        <div class="icon">📄</div>
+        <h3>API documentada (OpenAPI)</h3>
+        <p>Swagger UI generado automáticamente. Cualquier consumidor puede explorar y probar los endpoints.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="icon">⚛️</div>
+        <h3>Frontend React operativo</h3>
+        <p>Interfaz web con los datos migrados desde Access. Formularios, listados e informes funcionales.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="icon">🐳</div>
+        <h3>Entorno Docker Compose</h3>
+        <p>BD MySQL + FastAPI + React levantados con un solo comando. Reproducible en cualquier máquina.</p>
+      </div>
+    </div>
+    <div class="code-block" style="margin-top:1.4rem;max-width:860px;">
+<span class="comment"># Arrancar todo el entorno en local</span>
+<span class="method">$</span> <span class="path">docker compose up</span>
+
+<span class="comment"># Explorar la API</span>
+<span class="method">🌐</span> <span class="path">http://localhost:8000/docs   → Swagger UI (OpenAPI)</span>
+
+<span class="comment"># Usar la aplicación</span>
+<span class="method">🌐</span> <span class="path">http://localhost:3000        → Frontend React</span>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 13: ENDPOINTS EJEMPLO ─── -->
+  <section class="slide bg-process">
+    <div class="eyebrow">Ejemplo · Caso real</div>
+    <h2>De fichero Access a<br><span class="accent">API de Farmacia</span></h2>
+    <div class="divider"></div>
+    <div class="code-block">
+<span class="comment">// Lo que antes era un formulario Access con un solo usuario</span>
+<span class="comment">// ahora es un servicio consumible por cualquier sistema</span>
+
+<span class="method">GET</span>  <span class="path">/api/v1/medicamentos</span>                  <span class="comment">→ Catálogo con stock actual</span>
+<span class="method">GET</span>  <span class="path">/api/v1/lotes?caduca_antes=2026-07-01</span> <span class="comment">→ Alertas de caducidad</span>
+<span class="method">POST</span> <span class="path">/api/v1/lotes/{id}/asignar-planta</span>     <span class="comment">→ Asignar lote a unidad</span>
+<span class="method">GET</span>  <span class="path">/api/v1/lotes/{id}/trazabilidad</span>       <span class="comment">→ Historial completo del lote</span>
+<span class="method">GET</span>  <span class="path">/api/v1/reports/caducidades/pdf</span>        <span class="comment">→ Informe semanal, ahora automatizable</span>
+    </div>
+    <div class="grid-3" style="margin-top:1.4rem;max-width:950px;">
+      <div class="card card-ok">
+        <div class="icon">🔄</div>
+        <h3>Consume el sistema de pedidos</h3>
+        <p>Consulta caducidades antes de generar una orden de compra. Automático.</p>
+      </div>
+      <div class="card card-ok">
+        <div class="icon">📊</div>
+        <h3>Alimenta el cuadro de mando</h3>
+        <p>Stock próximo a caducar visible en tiempo real para dirección.</p>
+      </div>
+      <div class="card card-ok">
+        <div class="icon">🔔</div>
+        <h3>Notificaciones automáticas</h3>
+        <p>Alertas enviadas por correo o al sistema de mensajería sin intervención manual.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 14: SEGURIDAD ─── -->
+  <section class="slide bg-dark">
+    <div class="eyebrow">Consideraciones críticas</div>
+    <h2>Seguridad y <span class="accent">cumplimiento</span><br>desde el diseño</h2>
+    <div class="divider"></div>
+    <div class="grid-2" style="max-width:950px;">
+      <div class="card card-teal">
+        <div class="icon">📝</div>
+        <h3>Auditoría completa</h3>
+        <p>Cada operación queda registrada con usuario, fecha y hora. Trazabilidad total, algo imposible en Access.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="icon">🔐</div>
+        <h3>Control de acceso granular</h3>
+        <p>La API implementa autenticación y autorización: quién puede ver qué dato y realizar qué operación.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="icon">🔒</div>
+        <h3>Cifrado en tránsito</h3>
+        <p>Todas las comunicaciones por HTTPS, a diferencia de las conexiones ODBC en red local sin cifrar.</p>
+      </div>
+      <div class="card card-teal">
+        <div class="icon">💾</div>
+        <h3>Backups automatizados</h3>
+        <p>La BD tiene políticas de backup gestionadas, no un fichero .accdb en un disco sin replicar.</p>
+      </div>
+    </div>
+    <div style="margin-top:1.2rem;padding:.8rem 1.4rem;background:rgba(192,57,43,.15);border-radius:8px;border:1px solid rgba(192,57,43,.3);max-width:860px;font-size:.9rem;">
+      ⚠️ <strong>Regla de oro:</strong> ningún servicio de datos sanitarios debe desplegarse en producción sin revisión de seguridad que incluya autenticación, HTTPS y política de backups verificada.
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 15: GESTIÓN DEL CAMBIO ─── -->
+  <section class="slide bg-dark">
+    <div class="eyebrow">El obstáculo real</div>
+    <h2>La gestión del cambio:<br><span class="amber">el reto humano</span></h2>
+    <div class="divider"></div>
+    <p style="max-width:700px;margin-bottom:1.6rem;opacity:.9;">
+      El obstáculo más difícil en una migración no suele ser técnico. Es humano.<br>
+      El profesional que lleva diez años usando Access tiene un flujo de trabajo construido alrededor de él.
+    </p>
+    <ul class="steps" style="max-width:820px;">
+      <li>
+        <span class="step-num">✓</span>
+        <div>Involucrar a los <strong>usuarios clave</strong> en la definición de la nueva interfaz, no solo en la validación final.</div>
+      </li>
+      <li>
+        <span class="step-num">✓</span>
+        <div>Mantener Access en <strong>modo solo lectura</strong> durante un período como red de seguridad mientras los usuarios se adaptan.</div>
+      </li>
+      <li>
+        <span class="step-num">✓</span>
+        <div>Documentar los cambios en términos de <strong>flujo de trabajo</strong>, no de tecnología. El usuario no necesita saber qué es FastAPI.</div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ─────────────────────────────── SLIDE 16: CONCLUSIÓN ─── -->
+  <section class="slide bg-close">
+    <div class="eyebrow">Conclusión</div>
+    <h2>Una oportunidad<br><span class="accent">estratégica</span></h2>
+    <div class="divider"></div>
+    <p style="max-width:780px;font-size:clamp(1rem,1.6vw,1.2rem);line-height:1.75;margin-bottom:1.6rem;opacity:.95;">
+      La diferencia entre el parque de Access de hoy y la arquitectura de servicios de mañana
+      no es que los usuarios dejen de tener herramientas a medida.<br>
+      Es que esas herramientas estén construidas sobre <strong>cimientos sólidos</strong>:
+      datos accesibles, auditables, integrables y seguros.
+    </p>
+    <div class="quote" style="margin-bottom:1.6rem;">
+      La IA hace que un profesional técnico con capacidad analítica y conocimiento del negocio
+      pueda construir en días lo que antes requería semanas de programación.
+    </div>
+    <div class="tags">
+      <span class="tag tag-teal">Datos gobernados</span>
+      <span class="tag tag-teal">Servicios interoperables</span>
+      <span class="tag tag-teal">Integración real</span>
+      <span class="tag tag-green">El conocimiento no depende de que Marta esté disponible</span>
+    </div>
+  </section>
+
+</div><!-- /deck -->
+
+<!-- Progress bar -->
+<div id="progress"></div>
+
+<!-- Navigation -->
+<div id="nav">
+  <button class="nav-btn" id="btn-prev" title="Anterior (←)">&#8592;</button>
+  <span id="slide-counter">1 / 16</span>
+  <button class="nav-btn" id="btn-next" title="Siguiente (→)">&#8594;</button>
+</div>
+
+<!-- Dots -->
+<div id="dots"></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let current  = 0;
+
+  const btnPrev    = document.getElementById('btn-prev');
+  const btnNext    = document.getElementById('btn-next');
+  const counter    = document.getElementById('slide-counter');
+  const progressEl = document.getElementById('progress');
+  const dotsEl     = document.getElementById('dots');
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 450);
+
+    current = n;
+    slides[current].classList.add('active');
+
+    // Dots
+    dotsEl.querySelectorAll('.dot').forEach((d, i) =>
+      d.classList.toggle('active', i === current));
+
+    // Counter
+    counter.textContent = `${current + 1} / ${total}`;
+
+    // Progress bar
+    progressEl.style.width = `${((current + 1) / total) * 100}%`;
+
+    // Buttons
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === total - 1;
+  }
+
+  btnPrev.addEventListener('click', () => goTo(current - 1));
+  btnNext.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); goTo(current - 1);
+    } else if (e.key === 'Home') {
+      e.preventDefault(); goTo(0);
+    } else if (e.key === 'End') {
+      e.preventDefault(); goTo(total - 1);
+    }
+  });
+
+  // Touch / swipe
+  let touchStartX = 0;
+  document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+  });
+
+  // Init
+  goTo(0);
+</script>
+</body>
+</html>

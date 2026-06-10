@@ -53,50 +53,41 @@ Al finalizar el curso, las personas participantes deberían ser capaces de:
 | Enlace
 
 | Visión general de IA generativa aplicada a IT hospitalaria
-| Documento completo
+| Tutorial y presentación
 | Introducción al impacto de la IA generativa en departamentos de informática hospitalaria: paradigma operativo, tipos de IA, ecosistema de modelos, cloud vs. on-premise, casos de uso y riesgos.
-| link:Tutorial/vision-general.html[Abrir HTML, window=_blank]
-
-| Visión general de IA generativa aplicada a IT hospitalaria
-| Presentación
-| Presentación resumida con ideas clave, comparativas, riesgos, workflows y escenarios ilustrativos.
-| link:Tutorial/vision-general-presentacion.html[Abrir presentación, window=_blank]
+| link:Tutorial/vision-general.html[Tutorial, window=_blank] - link:Tutorial/vision-general-presentacion.html[Presentación, window=_blank]
 
 | Primeros pasos con IA generativa
-| Documento completo
+| Tutorial
 | Tutorial sobre cómo empezar a usar IA generativa, consejos en la redacción de prompts, gestión de contexto, uso de adjuntos, proyectos y GPTs personalizados, con ejemplos prácticos.
-| link:Tutorial/primeros-pasos-ia-generativa.html[Abrir HTML, window=_blank]
+| link:Tutorial/primeros-pasos-ia-generativa.html[Tutorial, window=_blank]
 
 | Plataformas de desarrollo asistido por IA
-| Documento completo
+| Tutorial y presentación
 | Tutorial sobre herramientas tipo Firebase Studio, Google AI Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44, con criterios de evaluación para uso responsable.
-| link:Tutorial/plaformas-desarrollo-basado-ia.html[Abrir HTML, window=_blank]
-
-| Plataformas de desarrollo asistido por IA
-| Presentación
-| Presentación resumida sobre este tipo de herramientas, promesas y límites, mapa de plataformas, checklist hospitalaria y taller práctico.
-| link:Tutorial/plaformas-desarrollo-basado-ia-presentacion.html[Abrir presentación, window=_blank]
+| link:Tutorial/plaformas-desarrollo-basado-ia.html[Tutorial, window=_blank] - link:Tutorial/plaformas-desarrollo-basado-ia-presentacion.html[Presentación, window=_blank]
 
 | Gestión de documentación con NotebookLM
-| Documento completo
-| Tutorial sobre NotebookLM.
-| link:Tutorial/notebooklm.html[Abrir HTML, window=_blank]
+| Tutorial y taller práctico
+| 
+- Tutorial sobre NotebookLM.
 
-| Gestión de documentación con NotebookLM
-| Taller práctico
-| Guion de sesión para usar NotebookLM con un corpus documental ficticio de proyecto hospitalario: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.
-| link:GestionDocumentacion/PreparacionReuniones/preparacion-reuniones-citas360.html[Abrir HTML, window=_blank]
+- Guiones prácticos para usar NotebookLM en un escenario de seguimimento de un proyecto y otro de análisis de ciberseguridad: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.
+| link:Tutorial/notebooklm.html[Tutorial, window=_blank] - link:https://drive.google.com/file/d/1M9dVQfgLoPX_jY-9v0O9gsUS6GQNWbqv/view?usp=sharing[Presentación, window=_blank] -
+link:GestionDocumentacion/PreparacionReuniones/preparacion-reuniones-citas360.html[Taller de seguimiento de Citas360, window=_blank] - link:GestionDocumentacion/ComisionCiberseguridad/preparacion-comision-ciberseguridad.html[Taller de análisis de ciberseguridad, window=_blank]
 
-| Gestión de documentación con NotebookLM
-| Taller práctico
-| Guion de sesión para usar NotebookLM con un corpus documental ficticio de seguimiento de ciberseguridad: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.
-| link:GestionDocumentacion/ComisionCiberseguridad/preparacion-comision-ciberseguridad.html[Abrir HTML, window=_blank]
+| Primeros pasos en la migración de aplicaciones con IA generativa
+| Tutorial y presentación 
+| Cómo la IA generativa puede acelerar y mejorar el proceso de migración de aplicaciones hacia servicios modernos: narrativa paulatina, casos de uso, prompts y práctica.
+| link:Tutorial/migracion-access.html[Tutorial, window=_blank] - link:https://drive.google.com/file/d/1nBcmQf3ir1J25lEntkCp2UOZ4DPRBPk-/view?usp=sharing[Presentación NotebookLM, window=_blank] - link:Tutorial/migracion-access-presentacion.html[Presentación Claude, window=_blank]
 
-| IA generativa en la migración de aplicaciones Access
-| Documento completo
-| Tutorial sobre cómo la IA generativa puede acelerar y mejorar el proceso de migración de aplicaciones Access hacia servicios modernos: narrativa paulatina, casos de uso, prompts y práctica.
-| link:Tutorial/migracion-access.html[Abrir HTML, window=_blank]
+| Adentrándonos en el proceso de desarrollo con IA generativa con Claude Code
+| Tutorial y presentación
+| Protocolos de trabajo con GenIA para proyectos de desarrollo: narrativa paulatina, casos de uso, prompts y práctica.
+| link:Tutorial/migracion-access-con-claude.html[Tutorial, window=_blank] - link:https://drive.google.com/file/d/1_13RZJrvBxxLWeTSgP3m7a9UYlDZDp3y/view?usp=sharing[Presentación NotebookLM, window=_blank]
+link:Tutorial/migracion-access-con-claude-presentacion.html[Presentación Claude, window=_blank]
 |===
+
 
 
 

@@ -1,0 +1,66 @@
+**** CONTEXT ****
+
+The "context window" represents a "working memory" for the model. It refers to all the text a language model can reference when generating a response, including the response itself. This is different from the large corpus of data the language model was trained on.
+
+
+
+**** SKILLS **** 
+
+Agent Skills: Skills are organized packages of instructions, executable code, and resources that give Claude specialized capabilities for specific tasks.  Skills are organized as folders in .claude/skills/. Skills extend Claude’s capabilities by packaging your expertise into composable resources for Claude, transforming general-purpose agents into specialized agents that fit your needs.
+
+
+
+Skills load on-demand and eliminate the need to repeatedly provide the same guidance across multiple conversations.
+---------
+Key benefits:
+
+* Specialize Claude: Tailor capabilities for domain-specific tasks
+* Reduce repetition: Create once, use automatically
+* On demand loading: Load only when needed, optimizing performance
+* Compose capabilities: Combine Skills to build complex workflows. Instead of creatina a big skill with all capabilities, create smaller focused skills and combine them as needed.
+---------
+Custom Skills: Create Skills as directories with SKILL.md files. Claude discovers and uses them automatically. Directories are included in .claude/skills/ folder.
+---------
+Skill structure
+Every Skill requires a SKILL.md file with YAML frontmatter:
+
+---
+name: your-skill-name
+description: Brief description of what this Skill does and when to use it
+---
+
+# Your Skill Name
+
+## Instructions
+[Clear, step-by-step guidance for Claude to follow]
+
+## Examples
+[Concrete examples of using this Skill]
+---------
+Field requirements:
+
+name:
+
+Maximum 64 characters
+Must contain only lowercase letters, numbers, and hyphens
+Cannot contain XML tags
+Cannot contain reserved words: "anthropic", "claude"
+description:
+
+Must be non-empty
+Maximum 1024 characters
+Cannot contain XML tags
+The description should include both what the Skill does and when Claude should use it. For complete authoring guidance, see the best practices guide.
+---------
+The complete Skill directory structure might look like this:
+
+
+pdf/
+├── SKILL.md              # Main instructions (loaded when triggered)
+├── FORMS.md              # Form-filling guide (loaded as needed)
+├── reference.md          # API reference (loaded as needed)
+├── examples.md           # Usage examples (loaded as needed)
+└── scripts/
+    ├── analyze_form.py   # Utility script (executed, not loaded)
+    ├── fill_form.py      # Form filling script
+    └── validate.py       # Validation script

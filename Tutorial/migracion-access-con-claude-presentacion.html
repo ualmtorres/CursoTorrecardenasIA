@@ -1,0 +1,2441 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Desarrollo con IA Generativa — Claude Code</title>
+    <style>
+      /* ===== RESET & BASE ===== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --blue: #3b82f6;
+        --blue-d: #1d4ed8;
+        --cyan: #06b6d4;
+        --green: #10b981;
+        --purple: #8b5cf6;
+        --orange: #f59e0b;
+        --red: #ef4444;
+        --bg: #0f172a;
+        --bg2: #1e293b;
+        --bg3: #334155;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #334155;
+        --slide-w: 1200px;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+
+      /* ===== DECK ===== */
+      #deck {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 60px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(60px);
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
+        overflow: hidden;
+      }
+      .slide.active {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateX(0);
+      }
+      .slide.exit {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+
+      /* ===== SLIDE VARIANTS ===== */
+      .slide-cover {
+        background: radial-gradient(
+          ellipse at 30% 50%,
+          #1e3a5f 0%,
+          #0f172a 60%
+        );
+      }
+      .slide-dark {
+        background: var(--bg);
+      }
+      .slide-code {
+        background: #0d1117;
+      }
+      .slide-accent {
+        background: linear-gradient(135deg, #1e3a5f 0%, #1e1b4b 100%);
+      }
+      .slide-diagram {
+        background: var(--bg2);
+      }
+
+      /* ===== PROGRESS ===== */
+      #progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: var(--blue);
+        transition: width 0.3s ease;
+        z-index: 100;
+      }
+
+      /* ===== NAV ===== */
+      #nav {
+        position: fixed;
+        bottom: 24px;
+        right: 32px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        z-index: 100;
+      }
+      #nav button {
+        background: var(--bg3);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 18px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+      }
+      #nav button:hover {
+        background: var(--blue-d);
+      }
+      #slide-counter {
+        color: var(--muted);
+        font-size: 0.8rem;
+        min-width: 70px;
+        text-align: center;
+      }
+
+      /* ===== TYPOGRAPHY ===== */
+      .tag {
+        display: inline-block;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+      }
+      .tag-blue {
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--blue);
+        border: 1px solid rgba(59, 130, 246, 0.4);
+      }
+      .tag-green {
+        background: rgba(16, 185, 129, 0.2);
+        color: var(--green);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+      }
+      .tag-purple {
+        background: rgba(139, 92, 246, 0.2);
+        color: var(--purple);
+        border: 1px solid rgba(139, 92, 246, 0.4);
+      }
+      .tag-cyan {
+        background: rgba(6, 182, 212, 0.2);
+        color: var(--cyan);
+        border: 1px solid rgba(6, 182, 212, 0.4);
+      }
+      .tag-orange {
+        background: rgba(245, 158, 11, 0.2);
+        color: var(--orange);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+      }
+
+      h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+      }
+      h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 16px;
+      }
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--blue);
+        margin-bottom: 8px;
+      }
+      p {
+        line-height: 1.7;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .lead {
+        font-size: 1.15rem;
+        color: var(--text);
+        line-height: 1.6;
+      }
+      .accent {
+        color: var(--blue);
+      }
+      code {
+        font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+        font-size: 0.9em;
+      }
+
+      /* ===== LAYOUTS ===== */
+      .cols-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        width: 100%;
+        max-width: var(--slide-w);
+      }
+      .cols-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 20px;
+        width: 100%;
+        max-width: var(--slide-w);
+      }
+      .center {
+        text-align: center;
+      }
+      .content {
+        width: 100%;
+        max-width: var(--slide-w);
+      }
+
+      /* ===== CARDS ===== */
+      .card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        transition: border-color 0.2s;
+      }
+      .card:hover {
+        border-color: var(--blue);
+      }
+      .card-blue {
+        border-left: 3px solid var(--blue);
+      }
+      .card-green {
+        border-left: 3px solid var(--green);
+      }
+      .card-purple {
+        border-left: 3px solid var(--purple);
+      }
+      .card-cyan {
+        border-left: 3px solid var(--cyan);
+      }
+      .card-orange {
+        border-left: 3px solid var(--orange);
+      }
+
+      /* ===== CODE ===== */
+      .code-block {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 10px;
+        padding: 18px 22px;
+        font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+        font-size: 0.8rem;
+        line-height: 1.75;
+        overflow: auto;
+        max-height: 320px;
+        width: 100%;
+        color: #c9d1d9;
+      }
+      .code-block .kw {
+        color: #ff7b72;
+      }
+      .code-block .str {
+        color: #a5d6ff;
+      }
+      .code-block .cmt {
+        color: #6e7681;
+        font-style: italic;
+      }
+      .code-block .fn {
+        color: #d2a8ff;
+      }
+      .code-block .num {
+        color: #f2cc60;
+      }
+      .code-block .hl {
+        color: #79c0ff;
+      }
+      .code-block .h1 {
+        color: #ffa657;
+        font-weight: 700;
+      }
+      .code-block .h2 {
+        color: #e3b341;
+        font-weight: 600;
+      }
+      .code-block .bullet {
+        color: #56d364;
+      }
+      .code-block .dash {
+        color: var(--muted);
+      }
+
+      .filename {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-bottom: none;
+        border-radius: 10px 10px 0 0;
+        padding: 7px 16px;
+        font-family: monospace;
+        font-size: 0.76rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .filename + .code-block {
+        border-radius: 0 0 10px 10px;
+        border-top: none;
+      }
+      .file-icon {
+        color: var(--cyan);
+      }
+
+      /* ===== LISTS ===== */
+      .list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        color: var(--text);
+        font-size: 0.88rem;
+        line-height: 1.5;
+      }
+      .list li::before {
+        content: "▸";
+        color: var(--blue);
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .list.green li::before {
+        color: var(--green);
+      }
+      .list.purple li::before {
+        color: var(--purple);
+      }
+      .list.orange li::before {
+        color: var(--orange);
+      }
+      .list.cyan li::before {
+        color: var(--cyan);
+      }
+
+      /* ===== PIPELINE ===== */
+      .pipeline {
+        display: flex;
+        align-items: center;
+        gap: 0;
+        width: 100%;
+        max-width: var(--slide-w);
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .pipe-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        min-width: 120px;
+        text-align: center;
+      }
+      .pipe-step .step-num {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .pipe-step .step-cmd {
+        font-family: monospace;
+        font-size: 0.82rem;
+        color: var(--cyan);
+        font-weight: 700;
+      }
+      .pipe-step .step-label {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+      .pipe-gate {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 4px 10px;
+      }
+      .pipe-gate .gate-icon {
+        font-size: 1.1rem;
+      }
+      .pipe-gate .gate-label {
+        font-size: 0.62rem;
+        color: var(--orange);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      /* ===== BADGES ===== */
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border: 1px solid;
+      }
+      .badge-blue {
+        background: rgba(59, 130, 246, 0.15);
+        color: #60a5fa;
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+      .badge-green {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+      .badge-purple {
+        background: rgba(139, 92, 246, 0.15);
+        color: #a78bfa;
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+      .badge-orange {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.3);
+      }
+      .badge-red {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+
+      /* ===== DIAGRAM BOXES ===== */
+      .flow-box {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 16px;
+        font-size: 0.82rem;
+        text-align: center;
+        color: var(--text);
+        min-width: 130px;
+      }
+      .flow-box.highlight {
+        border-color: var(--blue);
+        background: rgba(59, 130, 246, 0.1);
+      }
+      .flow-arrow-v {
+        text-align: center;
+        color: var(--blue);
+        font-size: 1.2rem;
+        line-height: 1.2;
+      }
+
+      /* ===== TABLE ===== */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+      th {
+        background: var(--bg3);
+        color: var(--text);
+        padding: 9px 13px;
+        text-align: left;
+        font-weight: 600;
+      }
+      td {
+        padding: 8px 13px;
+        border-bottom: 1px solid var(--border);
+        color: var(--muted);
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      /* ===== COVER ===== */
+      .cover-glow {
+        position: absolute;
+        top: -200px;
+        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(59, 130, 246, 0.15) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .cover-glow2 {
+        position: absolute;
+        bottom: -200px;
+        right: -100px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(139, 92, 246, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      /* ===== MISC ===== */
+      .divider {
+        width: 56px;
+        height: 3px;
+        background: var(--blue);
+        border-radius: 2px;
+        margin: 14px 0;
+      }
+      .file-tree {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 10px;
+        padding: 18px 22px;
+        font-family: monospace;
+        font-size: 0.82rem;
+        line-height: 1.9;
+      }
+      .file-tree .dir {
+        color: #79c0ff;
+      }
+      .file-tree .file {
+        color: #c9d1d9;
+      }
+      .file-tree .note {
+        color: #6e7681;
+        font-style: italic;
+        font-size: 0.74rem;
+      }
+      .quote {
+        border-left: 3px solid var(--blue);
+        padding: 14px 22px;
+        background: rgba(59, 130, 246, 0.06);
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: var(--text);
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+      .tip {
+        background: rgba(245, 158, 11, 0.08);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-radius: 8px;
+        padding: 11px 16px;
+        font-size: 0.83rem;
+        color: #fcd34d;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .tip .tip-icon {
+        flex-shrink: 0;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="progress"></div>
+
+    <div id="deck">
+      <!-- ================================================================ S01: COVER -->
+      <div class="slide slide-cover active" id="s1">
+        <div class="cover-glow"></div>
+        <div class="cover-glow2"></div>
+        <div class="content center">
+          <div class="tag tag-blue">Claude Code · IA Generativa</div>
+          <h1>Desarrollo con<br /><span class="accent">IA Generativa</span></h1>
+          <p style="font-size: 1.15rem; color: var(--muted); margin-top: 12px">
+            Protocolo de trabajo colaborativo con Claude Code<br />para
+            migración de aplicaciones legadas
+          </p>
+          <div class="divider" style="margin: 26px auto"></div>
+          <div
+            style="
+              display: flex;
+              gap: 12px;
+              flex-wrap: wrap;
+              justify-content: center;
+              margin-top: 8px;
+            "
+          >
+            <span class="badge badge-blue">📄 CLAUDE.md</span>
+            <span class="badge badge-green">🧠 Memoria estructurada</span>
+            <span class="badge badge-purple">⚡ Comandos personalizados</span>
+            <span class="badge badge-orange">🔄 Flujo iterativo</span>
+            <span class="badge badge-red">🛑 Gates de calidad</span>
+          </div>
+          <p style="margin-top: 40px; font-size: 0.82rem; color: var(--muted)">
+            Manuel Torres · Universidad de Almería · IA aplicada a productividad
+            IT hospitalaria
+          </p>
+        </div>
+      </div>
+
+      <!-- ================================================================ S02: EL RETO -->
+      <div class="slide slide-dark" id="s2">
+        <div class="content">
+          <div class="tag tag-orange">El punto de partida</div>
+          <h2>El reto: migrar una aplicación legada</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 24px">
+            <div class="card card-orange">
+              <h3 style="color: var(--orange)">⚠️ Sistema actual</h3>
+              <ul class="list orange" style="margin-top: 10px">
+                <li>Microsoft Access 2007 + VBA</li>
+                <li>Reglas de validación CMBD hospitalarias</li>
+                <li>Ficheros de texto delimitados por <code>|</code></li>
+                <li>Lógica de negocio embebida en macros</li>
+                <li>Sin API, sin tests, sin CI/CD</li>
+              </ul>
+            </div>
+            <div class="card card-green">
+              <h3 style="color: var(--green)">✅ Arquitectura objetivo</h3>
+              <ul class="list green" style="margin-top: 10px">
+                <li>Backend REST API con <strong>FastAPI</strong></li>
+                <li>Base de datos <strong>MySQL</strong></li>
+                <li>Frontend <strong>React</strong></li>
+                <li>Contenedores con <strong>Docker Compose</strong></li>
+                <li>Desarrollo asistido por <strong>Claude Code</strong></li>
+              </ul>
+            </div>
+          </div>
+          <div class="tip" style="margin-top: 24px">
+            <span class="tip-icon">💡</span>
+            <span
+              >El objetivo <strong>no es mantener</strong> la aplicación Access.
+              El objetivo es <strong>ingeniería inversa + migración</strong> a
+              una plataforma web moderna.</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S03: MÁS QUE PROMPTS -->
+      <div class="slide slide-accent" id="s3">
+        <div class="content center">
+          <div class="tag tag-purple">Paradigma de colaboración</div>
+          <h2 style="font-size: 2.3rem">
+            Claude no es solo un generador de código
+          </h2>
+          <div class="divider" style="margin: 18px auto"></div>
+          <div class="cols-3" style="margin-top: 28px">
+            <div class="card">
+              <div style="font-size: 2rem; margin-bottom: 10px">🏛️</div>
+              <h3>Arquitecto</h3>
+              <p>
+                Diseña la arquitectura, evalúa riesgos, propone patrones y toma
+                decisiones técnicas fundadas.
+              </p>
+            </div>
+            <div class="card">
+              <div style="font-size: 2rem; margin-bottom: 10px">👨‍💻</div>
+              <h3>Desarrollador Senior</h3>
+              <p>
+                Implementa con calidad, revisa su propio trabajo, identifica
+                deuda técnica y aprende de errores.
+              </p>
+            </div>
+            <div class="card">
+              <div style="font-size: 2rem; margin-bottom: 10px">📚</div>
+              <h3>Documentalista</h3>
+              <p>
+                Genera y mantiene documentación estructurada, registra
+                decisiones y lecciones aprendidas.
+              </p>
+            </div>
+          </div>
+          <div
+            class="quote"
+            style="margin-top: 28px; text-align: left; max-width: 780px"
+          >
+            Interactuar con una IA va más allá de crear prompts iniciales. Es
+            necesario establecer un <strong>protocolo de trabajo</strong> que
+            permita mantener contexto, seguir instrucciones y mejorar
+            continuamente.
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S04: CLAUDE.MD -->
+      <div class="slide slide-code" id="s4">
+        <div class="content">
+          <div class="tag tag-blue">Paso 1 · Inicialización</div>
+          <h2>
+            Configuración de <code style="color: var(--cyan)">CLAUDE.md</code>
+          </h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 14px">
+                El archivo <code style="color: var(--cyan)">CLAUDE.md</code> es
+                el <strong>contexto persistente</strong> del repositorio. Claude
+                Code lo lee en cada sesión. Se genera con
+                <code style="color: var(--purple)">/init</code>.
+              </p>
+              <ul class="list" style="margin-top: 14px">
+                <li>Descripción del proyecto y arquitectura actual</li>
+                <li>Objetivos de migración</li>
+                <li>Prioridades de trabajo de Claude</li>
+                <li>Protocolo de inicio de sesión</li>
+                <li>Reglas de estilo y convenciones</li>
+              </ul>
+              <div class="tip" style="margin-top: 18px">
+                <span class="tip-icon">⚙️</span>
+                <span
+                  >En proyectos existentes: <code>/init</code> genera el
+                  CLAUDE.md inicial analizando el código fuente
+                  automáticamente.</span
+                >
+              </div>
+            </div>
+            <div>
+              <div class="filename">
+                <span class="file-icon">📄</span> CLAUDE.md — sección Project
+                Goal
+              </div>
+              <div class="code-block">
+                <span class="h2">## Project Goal</span>
+
+                The goal is <span class="kw">NOT</span> to maintain Access. The
+                goal is to <span class="hl">reverse engineer</span> the Access
+                database and VBA logic and migrate to a modern web platform.<br />
+
+                <span class="h2">Migration strategy:</span><br />
+                <span class="num">1.</span> Discover Access structures.<br />
+                <span class="num">2.</span> Document business rules.<br />
+                <span class="num">3.</span> Extract validation logic.<br />
+                <span class="num">4.</span> Design REST APIs.<br />
+                <span class="num">5.</span> Build equivalent backend
+                services.<br />
+                <span class="num">6.</span> Build web frontend.<br />
+                <span class="num">7.</span> Decommission Access.<br />
+
+                <span class="h2">Claude must always prioritize:</span><br />
+                <span class="bullet">- </span
+                ><span class="str">Documentation first</span>
+                <span class="bullet">- </span
+                ><span class="str">Architecture before coding</span>
+                <span class="bullet">- </span
+                ><span class="str">Incremental delivery</span>
+                <span class="bullet">- </span
+                ><span class="str">Testability</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S05: WORKING PROTOCOL -->
+      <div class="slide slide-code" id="s5">
+        <div class="content">
+          <div class="tag tag-cyan">CLAUDE.md · Protocolo</div>
+          <h2>
+            Working Protocol en
+            <code style="color: var(--cyan)">CLAUDE.md</code>
+          </h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 14px">
+                Se añade al final de <code>CLAUDE.md</code>. Claude lo sigue
+                <strong>al iniciar cada nueva sesión</strong>. Garantiza que
+                siempre trabaja con contexto actualizado.
+              </p>
+              <ul class="list cyan" style="margin-top: 14px">
+                <li>Lee los documentos clave antes de empezar</li>
+                <li>Produce un resumen del estado actual</li>
+                <li>Espera aprobación explícita antes de actuar</li>
+                <li>No genera código sin validación previa</li>
+              </ul>
+              <div class="card card-cyan" style="margin-top: 18px">
+                <h3>¿Por qué es importante?</h3>
+                <p style="margin-top: 6px; font-size: 0.83rem">
+                  Convierte cada nueva sesión en un
+                  <strong>check-in estructurado</strong>. Claude no empieza
+                  desde cero — empieza desde el estado real del proyecto.
+                </p>
+              </div>
+            </div>
+            <div>
+              <div class="filename">
+                <span class="file-icon">📄</span> CLAUDE.md — Working Protocol
+              </div>
+              <div class="code-block">
+                <span class="h2">## Working Protocol</span>
+
+                At the start of every new task session:
+
+                <span class="num">1.</span> Read <span class="bullet">* </span
+                ><span class="hl">docs/decisions.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/lessons-learned.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/architecture-v1.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/roadmap.md</span>
+
+                <span class="num">2.</span> Produce a concise summary:
+                <span class="bullet">* </span>architecture blocks
+                <span class="bullet">* </span>key decisions
+                <span class="bullet">* </span>assumptions
+                <span class="bullet">* </span>risks &amp; open questions
+
+                <span class="num">3.</span> Wait for explicit user approval
+                before starting any implementation.
+
+                <span class="num">4.</span> Do not generate code or documents
+                until context summary is validated.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S06: MEMORIA ESTRUCTURADA -->
+      <div class="slide slide-dark" id="s6">
+        <div class="content">
+          <div class="tag tag-green">Paso 2 · Memoria</div>
+          <h2>Memoria estructurada del proyecto</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 16px">
+                Claude funciona mejor con
+                <strong>documentación estructurada</strong> que persiste entre
+                sesiones. Se organiza en
+                <code style="color: var(--cyan)">/docs</code>.
+              </p>
+              <div class="file-tree">
+                <span class="dir">/docs/</span>
+                <span class="file">├── project-context.md</span>
+                <span class="note"># Contexto general</span>
+                <span class="file">├── architecture-v1.md</span>
+                <span class="note"># Arquitectura provisional</span>
+                <span class="file">├── business-rules.md</span>
+                <span class="note"># Reglas de negocio</span>
+                <span class="file">├── database-analysis.md</span>
+                <span class="note"># Análisis BD Access</span>
+                <span class="file">├── decisions.md</span>
+                <span class="note"># Decisiones tomadas</span>
+                <span class="file">├── lessons-learned.md</span>
+                <span class="note"># Lecciones aprendidas</span>
+                <span class="file">├── migration-readiness.md</span
+                ><span class="note"># Evaluación riesgos</span>
+                <span class="file">├── roadmap.md</span>
+                <span class="note"># Plan de migración</span>
+                <span class="file">├── mvp-backlog.md</span>
+                <span class="note"># Backlog del MVP</span>
+                <span class="dir">└── stories/</span>
+                <span class="note"># Un dir por US</span>
+              </div>
+              <div
+                class="code-block"
+                style="margin-top: 14px; font-size: 0.76rem"
+              >
+                <span class="cmt"># Crear estructura de una vez</span>
+                mkdir -p docs && touch docs/{project-context,
+                architecture,business-rules, database-analysis,decisions}.md
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-orange">
+                <h3 style="color: var(--orange)">⚖️ decisions.md</h3>
+                <p style="margin-top: 6px; font-size: 0.83rem">
+                  Registro cronológico de decisiones arquitectónicas con fecha,
+                  razón y estado. Se actualiza continuamente a lo largo del
+                  proyecto.
+                </p>
+              </div>
+              <div class="card card-purple">
+                <h3 style="color: var(--purple)">🎓 lessons-learned.md</h3>
+                <p style="margin-top: 6px; font-size: 0.83rem">
+                  Errores cometidos, correcciones aplicadas y patrones
+                  detectados para no repetirlos en futuras historias.
+                </p>
+              </div>
+              <div class="card card-green">
+                <h3>🗺️ roadmap.md</h3>
+                <p style="margin-top: 6px; font-size: 0.83rem">
+                  Plan de migración por fases con entregables, riesgos,
+                  dependencias y estimación en puntos de historia.
+                </p>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">💡</span>
+                <span
+                  >Estos archivos son la <strong>fuente de verdad</strong> del
+                  proyecto. Claude los lee, no los «recuerda».</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S07: ANÁLISIS ACCESS -->
+      <div class="slide slide-code" id="s7">
+        <div class="content">
+          <div class="tag tag-orange">Paso 3 · Descubrimiento</div>
+          <h2>Análisis del sistema existente</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 14px">
+                Primera tarea real: descubrir y documentar la base de datos
+                Access y las reglas de negocio VBA. Todo queda en
+                <code>/docs</code>.
+              </p>
+              <div class="filename">
+                <span class="file-icon">💬</span> Prompt de descubrimiento
+              </div>
+              <div class="code-block">
+                Analyze the Access application and create:
+
+                <span class="num">1.</span> System overview
+                <span class="num">2.</span> Table inventory
+                <span class="num">3.</span> Query inventory
+                <span class="num">4.</span> VBA inventory
+                <span class="num">5.</span> Forms inventory
+                <span class="num">6.</span> Reports inventory
+                <span class="num">7.</span> Business rules inventory
+
+                <span class="str">Store everything under docs/</span>
+              </div>
+            </div>
+            <div>
+              <div class="card card-orange" style="margin-bottom: 14px">
+                <h3 style="color: var(--orange)">
+                  Clasificación de errores CMBD
+                </h3>
+                <table style="margin-top: 10px">
+                  <tr>
+                    <th>Código</th>
+                    <th>Severidad</th>
+                    <th>Efecto</th>
+                  </tr>
+                  <tr>
+                    <td><code style="color: #f87171">E-</code></td>
+                    <td>Eliminatorio</td>
+                    <td>Registro rechazado</td>
+                  </tr>
+                  <tr>
+                    <td><code style="color: var(--orange)">X-</code></td>
+                    <td>Error</td>
+                    <td>Campo inválido, retenido</td>
+                  </tr>
+                  <tr>
+                    <td><code style="color: var(--cyan)">W-</code></td>
+                    <td>Aviso</td>
+                    <td>Posible problema calidad</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="card card-blue">
+                <h3>Ficheros de salida</h3>
+                <ul class="list" style="margin-top: 8px; font-size: 0.82rem">
+                  <li><code>(VALIDOS).log</code> — registros correctos</li>
+                  <li><code>(DETALLES).log</code> — errores por registro</li>
+                  <li><code>(RESUMEN).LOG</code> — estadísticas</li>
+                  <li><code>(RECHAZADOS).LOG</code> — eliminados</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S08: COMANDOS PERSONALIZADOS -->
+      <div class="slide slide-accent" id="s8">
+        <div class="content">
+          <div class="tag tag-purple">Paso 4 · Automatización</div>
+          <h2>Comandos personalizados</h2>
+          <div class="divider"></div>
+          <p style="margin-bottom: 22px">
+            Los <strong>slash commands</strong> codifican el protocolo de
+            trabajo. Se crean como archivos <code>.md</code> en
+            <code>.claude/commands/</code> y se invocan con
+            <code style="color: var(--purple)">/nombre</code>.
+          </p>
+          <div class="cols-3">
+            <div class="card card-purple">
+              <div style="font-size: 1.7rem; margin-bottom: 8px">🔁</div>
+              <h3 style="color: var(--purple); font-family: monospace">
+                /retrospective
+              </h3>
+              <ul
+                class="list purple"
+                style="margin-top: 8px; font-size: 0.82rem"
+              >
+                <li>Revisa trabajo reciente</li>
+                <li>Identifica errores cometidos</li>
+                <li>Actualiza MEMORY.md</li>
+                <li>Propone mejoras a CLAUDE.md</li>
+              </ul>
+              <p
+                style="
+                  margin-top: 10px;
+                  font-size: 0.75rem;
+                  color: var(--muted);
+                "
+              >
+                Usar al finalizar tarea completa, antes de commit, tras varias
+                correcciones.
+              </p>
+            </div>
+            <div class="card card-cyan">
+              <div style="font-size: 1.7rem; margin-bottom: 8px">📍</div>
+              <h3 style="color: var(--cyan); font-family: monospace">
+                /checkpoint
+              </h3>
+              <ul class="list cyan" style="margin-top: 8px; font-size: 0.82rem">
+                <li>Resume el progreso actual</li>
+                <li>Lista hallazgos recientes</li>
+                <li>Identifica tareas pendientes</li>
+                <li>No modifica decisiones permanentes</li>
+              </ul>
+              <p
+                style="
+                  margin-top: 10px;
+                  font-size: 0.75rem;
+                  color: var(--muted);
+                "
+              >
+                Usar con frecuencia durante el desarrollo incremental.
+              </p>
+            </div>
+            <div class="card card-green">
+              <div style="font-size: 1.7rem; margin-bottom: 8px">🔄</div>
+              <h3 style="color: var(--green); font-family: monospace">
+                /run-story
+              </h3>
+              <ul
+                class="list green"
+                style="margin-top: 8px; font-size: 0.82rem"
+              >
+                <li>Orquesta el flujo completo</li>
+                <li>Ejecuta las 5 fases en secuencia</li>
+                <li>Hace pausa en cada Gate</li>
+                <li>Guarda informes de cada fase</li>
+              </ul>
+              <p
+                style="
+                  margin-top: 10px;
+                  font-size: 0.75rem;
+                  color: var(--muted);
+                "
+              >
+                Usar para cada historia de usuario del sprint.
+              </p>
+            </div>
+          </div>
+          <div
+            class="file-tree"
+            style="
+              margin-top: 20px;
+              font-size: 0.78rem;
+              padding: 10px 18px;
+              line-height: 1.75;
+            "
+          >
+            <span class="dir">.claude/commands/ </span>
+            <span class="file"
+              >retrospective.md checkpoint.md run-story.md analyze-story.md
+              review-design.md implement-story.md validate-story.md
+              reconstruct-story.md</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S09: ARQUITECTURA -->
+      <div class="slide slide-dark" id="s9">
+        <div class="content">
+          <div class="tag tag-blue">Paso 5 · Arquitectura</div>
+          <h2>Diseño de la nueva arquitectura</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 14px">
+                Antes de diseñar, se abre un <strong>nuevo hilo</strong>. Claude
+                lee <code>/docs</code> y produce un resumen para validar que ha
+                entendido correctamente el contexto.
+              </p>
+              <div class="filename">
+                <span class="file-icon">💬</span> Inicio de sesión de
+                arquitectura
+              </div>
+              <div class="code-block" style="font-size: 0.78rem">
+                Read and analyze all documentation under
+                <span class="hl">/docs</span>. Create a concise summary:
+
+                <span class="num">1.</span> Purpose of the Access application
+                <span class="num">2.</span> Main business processes
+                <span class="num">3.</span> Key validation rules
+                <span class="num">4.</span> Main entities
+                <span class="num">5.</span> Main risks for migration
+                <span class="num">6.</span> Unknown areas
+
+                <span class="kw">Do not design architecture yet.</span>
+                <span class="kw">Wait for approval.</span>
+              </div>
+              <div class="tip" style="margin-top: 14px">
+                <span class="tip-icon">💡</span>
+                <span
+                  >El resumen previo detecta malentendidos
+                  <strong>antes</strong> de que afecten al diseño.</span
+                >
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-orange">
+                <h3 style="color: var(--orange)">
+                  📊 Migration Readiness Assessment
+                </h3>
+                <p style="margin-top: 6px; font-size: 0.83rem">
+                  Si hay riesgos significativos, se genera un informe
+                  clasificando cada riesgo:
+                  <strong>Blocker / Critical / High / Medium / Low</strong> con
+                  impacto, probabilidad y acciones.
+                </p>
+              </div>
+              <div class="card card-blue">
+                <h3>🏗️ architecture-v1.md</h3>
+                <ul class="list" style="margin-top: 6px; font-size: 0.82rem">
+                  <li>Diagrama de contexto</li>
+                  <li>Módulos principales y límites de servicio</li>
+                  <li>Estrategia de autenticación</li>
+                  <li>Arquitectura de despliegue</li>
+                  <li>Supuestos explícitos con impacto si fallan</li>
+                </ul>
+              </div>
+              <div class="card card-green">
+                <h3>Enfoque ágil (provisional)</h3>
+                <p style="font-size: 0.83rem; margin-top: 6px">
+                  Se puede diseñar una arquitectura provisional que avance la
+                  migración mientras se resuelven las incógnitas restantes.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S10: ROADMAP + BACKLOG -->
+      <div class="slide slide-code" id="s10">
+        <div class="content">
+          <div class="tag tag-cyan">Paso 6 · Plan</div>
+          <h2>Roadmap y backlog del MVP</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <p style="margin-bottom: 12px">
+                Nueva sesión. Claude vuelve a leer <code>/docs</code> y produce
+                resumen antes de generar el roadmap.
+              </p>
+              <div class="filename">
+                <span class="file-icon">💬</span> Prompt de roadmap
+              </div>
+              <div class="code-block" style="font-size: 0.76rem">
+                Create a migration roadmap.
+
+                <span class="hl">Phase 1</span>: Discovery
+                <span class="hl">Phase 2</span>: Documentation
+                <span class="hl">Phase 3</span>: Database design
+                <span class="hl">Phase 4</span>: API design
+                <span class="hl">Phase 5</span>: Backend implementation
+                <span class="hl">Phase 6</span>: Frontend implementation
+                <span class="hl">Phase 7</span>: Testing
+                <span class="hl">Phase 8</span>: Deployment For each phase:
+                <span class="bullet">- </span>Deliverables
+                <span class="bullet">- </span>Risks
+                <span class="bullet">- </span>Dependencies
+                <span class="bullet">- </span>Story points Store in:
+                <span class="str">docs/roadmap.md</span>
+              </div>
+            </div>
+            <div>
+              <div class="card card-blue" style="margin-bottom: 12px">
+                <h3>Sprint 1 — Foundation (25 SP)</h3>
+                <table style="margin-top: 8px; font-size: 0.78rem">
+                  <tr>
+                    <th>Story</th>
+                    <th>SP</th>
+                    <th>Entregable</th>
+                  </tr>
+                  <tr>
+                    <td>US-001</td>
+                    <td>5</td>
+                    <td>Docker Compose stack</td>
+                  </tr>
+                  <tr>
+                    <td>US-002</td>
+                    <td>2</td>
+                    <td>Alembic migrations</td>
+                  </tr>
+                  <tr>
+                    <td>US-004</td>
+                    <td>5</td>
+                    <td>Core tables DDL</td>
+                  </tr>
+                  <tr>
+                    <td>US-005</td>
+                    <td>3</td>
+                    <td>Reference tables + seed</td>
+                  </tr>
+                  <tr>
+                    <td>US-006</td>
+                    <td>3</td>
+                    <td>Error catalog seed</td>
+                  </tr>
+                  <tr>
+                    <td>US-008</td>
+                    <td>2</td>
+                    <td>Extract import spec</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">⚡</span>
+                <span
+                  >Nunca «implementa la fase 3». Siempre
+                  <strong>una historia de usuario a la vez</strong> mediante el
+                  flujo iterativo.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S11: FLUJO ITERATIVO OVERVIEW -->
+      <div class="slide slide-accent" id="s11">
+        <div class="content center">
+          <div class="tag tag-green">Flujo de trabajo</div>
+          <h2 style="font-size: 2.2rem">El pipeline por historia de usuario</h2>
+          <div class="divider" style="margin: 18px auto"></div>
+          <p style="margin-bottom: 28px">
+            Cada historia de usuario pasa por <strong>5 fases</strong> antes de
+            considerarse completada. Cada fase tiene su comando y genera un
+            informe persistente.
+          </p>
+          <div class="pipeline">
+            <div class="pipe-step" style="border-color: var(--blue)">
+              <span class="step-num">Fase 1</span>
+              <span class="step-cmd">/analyze-story</span>
+              <span class="step-label">Análisis</span>
+            </div>
+            <div class="pipe-gate">
+              <span class="gate-icon">🛑</span
+              ><span class="gate-label">Gate</span>
+            </div>
+            <div class="pipe-step" style="border-color: var(--cyan)">
+              <span class="step-num">Fase 2</span>
+              <span class="step-cmd">/review-design</span>
+              <span class="step-label">Revisión</span>
+            </div>
+            <div class="pipe-gate">
+              <span class="gate-icon">🛑</span
+              ><span class="gate-label">Gate</span>
+            </div>
+            <div class="pipe-step" style="border-color: var(--green)">
+              <span class="step-num">Fase 3</span>
+              <span class="step-cmd">/implement-story</span>
+              <span class="step-label">Implementación</span>
+            </div>
+            <div class="pipe-gate">
+              <span class="gate-icon">🛑</span
+              ><span class="gate-label">Gate</span>
+            </div>
+            <div class="pipe-step" style="border-color: var(--orange)">
+              <span class="step-num">Fase 4</span>
+              <span class="step-cmd">/validate-story</span>
+              <span class="step-label">Validación</span>
+            </div>
+            <div class="pipe-gate">
+              <span class="gate-icon">🛑</span
+              ><span class="gate-label">Gate</span>
+            </div>
+            <div class="pipe-step" style="border-color: var(--purple)">
+              <span class="step-num">Fase 5</span>
+              <span class="step-cmd">/retrospective</span>
+              <span class="step-label">Retrospectiva</span>
+            </div>
+          </div>
+          <div
+            class="tip"
+            style="margin-top: 28px; text-align: left; max-width: 700px"
+          >
+            <span class="tip-icon">⚡</span>
+            <span
+              ><code style="color: var(--cyan)">/run-story US-XXX</code>
+              <strong>orquesta automáticamente</strong> las 5 fases, haciendo
+              pausa en cada Gate para esperar aprobación explícita del
+              equipo.</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S12: FASE 1 ANÁLISIS -->
+      <div class="slide slide-code" id="s12">
+        <div class="content">
+          <div class="tag tag-blue">Fase 1</div>
+          <h2><code style="color: var(--blue)">/analyze-story</code></h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="filename">
+                <span class="file-icon">⚙️</span>
+                .claude/commands/analyze-story.md
+              </div>
+              <div class="code-block" style="font-size: 0.78rem">
+                Analyze user story: <span class="kw">$ARGUMENTS</span>
+
+                Read:
+                <span class="bullet">* </span
+                ><span class="hl">docs/architecture-v1.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/decisions.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/mvp-backlog.md</span>
+
+                Focus only on: <span class="kw">$ARGUMENTS</span>
+
+                Analyze:
+                <span class="num">1.</span> Goal of the user story
+                <span class="num">2.</span> Acceptance criteria
+                <span class="num">3.</span> Technical approach
+                <span class="num">4.</span> Required files and folders
+                <span class="num">5.</span> Dependencies
+                <span class="num">6.</span> Risks
+                <span class="num">7.</span> Open questions
+
+                <span class="h2">## Output files</span>
+                <span class="str">docs/stories/$ARGUMENTS/analysis.md</span>
+                <span class="str">docs/stories/$ARGUMENTS/design.md</span>
+
+                <span class="kw">Do not generate code yet.</span>
+                <span class="kw">Wait for explicit user approval.</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-blue">
+                <h3>📝 analysis.md</h3>
+                <ul class="list" style="margin-top: 8px; font-size: 0.82rem">
+                  <li>Objetivo de la historia</li>
+                  <li>Criterios de aceptación</li>
+                  <li>Dependencias</li>
+                  <li>Riesgos identificados</li>
+                  <li>Definición de Done</li>
+                </ul>
+              </div>
+              <div class="card card-cyan">
+                <h3>🏗️ design.md</h3>
+                <ul
+                  class="list cyan"
+                  style="margin-top: 8px; font-size: 0.82rem"
+                >
+                  <li>Enfoque de implementación propuesto</li>
+                  <li>Componentes involucrados</li>
+                  <li>Ficheros a crear o modificar</li>
+                  <li>Trade-offs y alternativas descartadas</li>
+                </ul>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">🛑</span>
+                <span
+                  >Al final: <strong>Gate</strong>. El equipo revisa el análisis
+                  antes de continuar.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S13: FASE 2 REVIEW -->
+      <div class="slide slide-code" id="s13">
+        <div class="content">
+          <div class="tag tag-cyan">Fase 2</div>
+          <h2><code style="color: var(--cyan)">/review-design</code></h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="filename">
+                <span class="file-icon">⚙️</span>
+                .claude/commands/review-design.md
+              </div>
+              <div class="code-block" style="font-size: 0.78rem">
+                Review implementation approach for:
+                <span class="kw">$ARGUMENTS</span>
+
+                Act as a <span class="hl">senior architect</span>. Read
+                <span class="str">docs/stories/$ARGUMENTS/design.md</span>
+
+                Verify:
+                <span class="bullet">* </span>Acceptance criteria coverage
+                <span class="bullet">* </span>Simplicity — simpler path?
+                <span class="bullet">* </span>Maintainability — easy in 6
+                months? <span class="bullet">* </span>Security — secrets,
+                unvalidated inputs? <span class="bullet">* </span>Docker best
+                practices <span class="bullet">* </span>Development experience
+                Identify: <span class="bullet">* </span>Overengineering
+                <span class="bullet">* </span>Missing components
+                <span class="bullet">* </span>Unnecessary complexity
+                <span class="bullet">* </span>Delivery risks
+
+                <span class="h2">## Output file</span>
+                <span class="str"
+                  >docs/stories/$ARGUMENTS/design-review.md</span
+                >
+
+                <span class="kw">Do not redesign. Only review.</span>
+                <span class="kw">Wait for explicit user approval.</span>
+              </div>
+            </div>
+            <div>
+              <div class="card card-cyan" style="margin-bottom: 12px">
+                <h3>🔍 design-review.md</h3>
+                <div
+                  class="code-block"
+                  style="
+                    margin-top: 10px;
+                    font-size: 0.76rem;
+                    padding: 10px 14px;
+                    max-height: 150px;
+                  "
+                >
+                  <span class="h2"># Problemas detectados</span>
+                  1. &lt;issue encontrado&gt;
+
+                  <span class="h2"># Recomendaciones</span>
+                  1. &lt;recomendación concreta&gt;
+
+                  <span class="h2"># Aprobación</span>
+                  [ ] Approved [ ] Approved with conditions [ ] Rejected
+                </div>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">🏛️</span>
+                <span
+                  >Claude actúa como <strong>arquitecto senior</strong> que
+                  revisa el trabajo de otro desarrollador — de forma objetiva e
+                  imparcial.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S14: FASE 3 IMPLEMENT -->
+      <div class="slide slide-code" id="s14">
+        <div class="content">
+          <div class="tag tag-green">Fase 3</div>
+          <h2><code style="color: var(--green)">/implement-story</code></h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="filename">
+                <span class="file-icon">⚙️</span>
+                .claude/commands/implement-story.md
+              </div>
+              <div class="code-block" style="font-size: 0.78rem">
+                Implement user story: <span class="kw">$ARGUMENTS</span>
+
+                Read:
+                <span class="bullet">* </span
+                ><span class="str">docs/stories/$ARGUMENTS/analysis.md</span>
+                <span class="bullet">* </span
+                ><span class="str">docs/stories/$ARGUMENTS/design.md</span>
+                <span class="bullet">* </span
+                ><span class="str"
+                  >docs/stories/$ARGUMENTS/design-review.md</span
+                >
+
+                Requirements:
+                <span class="bullet">* </span>Satisfy all acceptance criteria.
+                <span class="bullet">* </span>Follow the approved approach
+                exactly. <span class="bullet">* </span>Apply conditions from
+                design review. <span class="bullet">* </span>Create only files
+                for this story. <span class="bullet">* </span
+                ><span class="kw">Do NOT implement future stories.</span>
+                <span class="bullet">* </span>Keep the solution simple.
+
+                <span class="h2">## Output file</span>
+                <span class="str"
+                  >docs/stories/$ARGUMENTS/implementation.md</span
+                >
+
+                Provide manual verification steps in the chat for the team to
+                test.
+              </div>
+            </div>
+            <div>
+              <div class="card card-green" style="margin-bottom: 12px">
+                <h3>⚡ implementation.md</h3>
+                <div
+                  class="code-block"
+                  style="
+                    margin-top: 10px;
+                    font-size: 0.76rem;
+                    padding: 10px 14px;
+                    max-height: 140px;
+                  "
+                >
+                  <span class="h2"># Ficheros creados</span>
+                  | Path | Purpose | | backend/main.py | FastAPI entry |
+
+                  <span class="h2"># Ficheros modificados</span>
+                  | Path | Summary | | docker-compose.yml | Added svc |
+
+                  <span class="h2"># Cambios realizados</span>
+                  &lt;narrativa de lo construido&gt;
+                </div>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">💡</span>
+                <span
+                  >Los <strong>pasos de verificación manual</strong> se entregan
+                  en el chat para que el equipo compruebe antes de continuar al
+                  Gate.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S15: FASE 4 VALIDATE -->
+      <div class="slide slide-code" id="s15">
+        <div class="content">
+          <div class="tag tag-orange">Fase 4</div>
+          <h2><code style="color: var(--orange)">/validate-story</code></h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="filename">
+                <span class="file-icon">⚙️</span>
+                .claude/commands/validate-story.md
+              </div>
+              <div class="code-block" style="font-size: 0.78rem">
+                Validate user story: <span class="kw">$ARGUMENTS</span>
+
+                Read
+                <span class="str">docs/stories/$ARGUMENTS/analysis.md</span>
+                to extract acceptance criteria. Start the application:
+                <span class="hl">docker compose up -d</span>
+
+                For each criterion, verify by:
+                <span class="bullet">* </span>calling the relevant API endpoint
+                <span class="bullet">* </span>observing UI behavior
+                <span class="bullet">* </span>inspecting database state Check
+                for regressions in prior stories.
+
+                <span class="h2">## Output file</span>
+                <span class="str">docs/stories/$ARGUMENTS/validation.md</span>
+
+                <span class="kw">Do not fix issues inline.</span>
+                <span class="kw"
+                  >Validation and implementation are separate.</span
+                >
+              </div>
+            </div>
+            <div>
+              <div class="card card-orange" style="margin-bottom: 12px">
+                <h3>✅ validation.md</h3>
+                <div
+                  class="code-block"
+                  style="
+                    margin-top: 10px;
+                    font-size: 0.76rem;
+                    padding: 10px 14px;
+                    max-height: 160px;
+                  "
+                >
+                  <span class="h2"># Acceptance Criteria</span>
+
+                  | # | Criterion | Result | |---|-----------|--------| | 1 |
+                  /health → 200 | <span class="bullet">PASS</span> | | 2 | DB
+                  auto-migrate | <span class="bullet">PASS</span> | | 3 | Port
+                  3306 exposed | <span class="bullet">PASS</span> |
+
+                  <span class="h2"># Regressions</span>
+                  None detected.
+
+                  <span class="h2"># Verdict</span>
+                  <span class="bullet">DONE</span> — all criteria pass
+                </div>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">🎯</span>
+                <span
+                  >Si algún criterio falla, se lista el fallo con detalle
+                  suficiente para abrir una tarea de fix.
+                  <strong>No se repara en la misma sesión.</strong></span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S16: FASE 5 RETROSPECTIVE -->
+      <div class="slide slide-code" id="s16">
+        <div class="content">
+          <div class="tag tag-purple">Fase 5</div>
+          <h2><code style="color: var(--purple)">/retrospective</code></h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="filename">
+                <span class="file-icon">⚙️</span>
+                .claude/commands/retrospective.md
+              </div>
+              <div class="code-block" style="font-size: 0.78rem">
+                Perform a project retrospective. Review:
+                <span class="bullet">* </span>recent work
+                <span class="bullet">* </span>errors encountered
+                <span class="bullet">* </span>user corrections
+                <span class="bullet">* </span>failed assumptions
+                <span class="bullet">* </span>architectural deviations Update:
+                <span class="bullet">* </span><span class="hl">MEMORY.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/decisions.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/lessons-learned.md</span>
+
+                If needed:
+                <span class="bullet">* </span>propose new project rules
+                <span class="bullet">* </span>propose CLAUDE.md improvements
+
+                <span class="h2">## Story artifact (si $ARGUMENTS)</span>
+                <span class="str"
+                  >docs/stories/$ARGUMENTS/retrospective.md</span
+                >
+                <span class="cmt"># Lecciones aprendidas</span>
+                <span class="cmt"># Problemas encontrados</span>
+                <span class="cmt"># Actualizaciones de memoria</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-purple">
+                <h3 style="color: var(--purple)">🧠 Ciclo de aprendizaje</h3>
+                <p style="margin-top: 6px; font-size: 0.83rem">
+                  Cada retrospectiva alimenta <code>lessons-learned.md</code> y
+                  <code>decisions.md</code>. Con el tiempo, Claude comete
+                  <strong>menos errores recurrentes</strong> en ese proyecto.
+                </p>
+              </div>
+              <div class="card card-blue">
+                <h3>¿Cuándo usar /retrospective?</h3>
+                <ul class="list" style="margin-top: 8px; font-size: 0.82rem">
+                  <li>Al finalizar una historia completa</li>
+                  <li>Al terminar un sprint</li>
+                  <li>Antes de hacer un commit importante</li>
+                  <li>Cuando Claude se haya corregido varias veces</li>
+                </ul>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">🔄</span>
+                <span
+                  >A diferencia de <code>/checkpoint</code>, la retrospectiva
+                  <strong>actualiza documentos permanentes</strong>.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S17: RUN-STORY ORQUESTADOR -->
+      <div class="slide slide-code" id="s17">
+        <div class="content">
+          <div class="tag tag-green">Orquestador</div>
+          <h2>
+            El comando <code style="color: var(--green)">/run-story</code>
+          </h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="filename">
+                <span class="file-icon">⚙️</span> .claude/commands/run-story.md
+              </div>
+              <div
+                class="code-block"
+                style="font-size: 0.76rem; max-height: 310px"
+              >
+                Orchestrate the complete story workflow for:
+                <span class="kw">$ARGUMENTS</span>
+
+                Treat every <span class="kw">$ARGUMENTS</span> in subcommands
+                as: <span class="kw">$ARGUMENTS</span>
+
+                <span class="h2">## Phase 1 — Analysis</span>
+                Read
+                <span class="hl">.claude/commands/analyze-story.md</span>
+                Execute for story <span class="kw">$ARGUMENTS</span>. Save:
+                analysis.md, design.md
+                <span class="kw">GATE — Wait for explicit approval.</span>
+
+                <span class="h2">## Phase 2 — Design Review</span>
+                Read <span class="hl">.claude/commands/review-design.md</span>
+                Save: design-review.md
+                <span class="kw">GATE — Wait for explicit approval.</span>
+
+                <span class="h2">## Phase 3 — Implementation</span>
+                Read <span class="hl">.claude/commands/implement-story.md</span>
+                Save: implementation.md
+                <span class="kw">GATE — Wait for explicit approval.</span>
+
+                <span class="h2">## Phase 4 — Validation</span>
+                Read <span class="hl">.claude/commands/validate-story.md</span>
+                Save: validation.md
+                <span class="kw">GATE — Wait for explicit approval.</span>
+
+                <span class="h2">## Phase 5 — Retrospective</span>
+                Read <span class="hl">.claude/commands/retrospective.md</span>
+                Save: retrospective.md
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-green">
+                <h3>Una fuente de verdad</h3>
+                <p style="font-size: 0.83rem; margin-top: 6px">
+                  El orquestador <strong>lee los subcomandos</strong>; no
+                  duplica lógica. Cambiar un subcomando actualiza
+                  automáticamente el flujo completo.
+                </p>
+              </div>
+              <div class="card card-blue">
+                <h3>Uso</h3>
+                <div
+                  class="code-block"
+                  style="
+                    margin-top: 8px;
+                    font-size: 0.82rem;
+                    padding: 10px 14px;
+                  "
+                >
+                  <span class="cmt"># Flujo completo:</span>
+                  <span class="fn">/run-story</span>
+                  <span class="str">US-001</span>
+
+                  <span class="cmt"># Solo análisis:</span>
+                  <span class="fn">/analyze-story</span>
+                  <span class="str">US-002</span>
+
+                  <span class="cmt"># Solo revisión:</span>
+                  <span class="fn">/review-design</span>
+                  <span class="str">US-002</span>
+
+                  <span class="cmt"># Solo implementación:</span>
+                  <span class="fn">/implement-story</span>
+                  <span class="str">US-002</span>
+                </div>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">⚡</span>
+                <span
+                  >Los subcomandos son
+                  <strong>reutilizables independientemente</strong> para máxima
+                  flexibilidad.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S18: ALMACENAMIENTO -->
+      <div class="slide slide-dark" id="s18">
+        <div class="content">
+          <div class="tag tag-cyan">Memoria del proyecto</div>
+          <h2>Almacenamiento de informes por historia</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 14px">
+                Cada historia genera <strong>6 artefactos</strong> estructurados
+                que forman la memoria permanente del proyecto.
+              </p>
+              <div class="file-tree">
+                <span class="dir">docs/stories/</span>
+                <span class="dir">├── US-001/</span>
+                <span class="file">│ ├── analysis.md</span>
+                <span class="note"> # Objetivo + AC + Deps</span>
+                <span class="file">│ ├── design.md</span>
+                <span class="note"> # Enfoque + Trade-offs</span>
+                <span class="file">│ ├── design-review.md</span
+                ><span class="note"> # Issues + Aprobación</span>
+                <span class="file">│ ├── implementation.md</span
+                ><span class="note"> # Ficheros + Cambios</span>
+                <span class="file">│ ├── validation.md</span>
+                <span class="note"> # PASS/FAIL/DONE</span>
+                <span class="file">│ └── retrospective.md</span>
+                <span class="note"> # Lecciones</span>
+                <span class="dir">├── US-002/</span>
+                <span class="file">│ └── ...</span>
+                <span class="dir">└── US-003/</span>
+                <span class="file">└── ...</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-cyan">
+                <h3>¿Para qué sirve?</h3>
+                <ul
+                  class="list cyan"
+                  style="margin-top: 8px; font-size: 0.83rem"
+                >
+                  <li>Consultar decisiones pasadas sin leer el chat</li>
+                  <li>Identificar riesgos recurrentes entre historias</li>
+                  <li>Onboarding de nuevos miembros del equipo</li>
+                  <li>Auditoría y trazabilidad completa del proyecto</li>
+                  <li>Alimentar retrospectivas de sprint</li>
+                </ul>
+              </div>
+              <div class="card card-purple">
+                <h3 style="color: var(--purple)">🔄 /reconstruct-story</h3>
+                <p style="font-size: 0.83rem; margin-top: 6px">
+                  Para historias ya implementadas sin documentación
+                  estructurada, este comando
+                  <strong>reconstruye los 6 artefactos</strong> a partir de git
+                  log, commits y docs existentes.
+                </p>
+                <div
+                  class="code-block"
+                  style="
+                    margin-top: 10px;
+                    font-size: 0.82rem;
+                    padding: 8px 12px;
+                  "
+                >
+                  <span class="fn">/reconstruct-story</span>
+                  <span class="str">US-001</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S19: RECONSTRUCT -->
+      <div class="slide slide-code" id="s19">
+        <div class="content">
+          <div class="tag tag-purple">Recuperación de memoria</div>
+          <h2><code style="color: var(--purple)">/reconstruct-story</code></h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="filename">
+                <span class="file-icon">⚙️</span>
+                .claude/commands/reconstruct-story.md (resumen)
+              </div>
+              <div
+                class="code-block"
+                style="font-size: 0.77rem; max-height: 290px"
+              >
+                Reconstruct documentation for a completed story:
+                <span class="kw">$ARGUMENTS</span>
+
+                <span class="h2">## Step 1 — Gather evidence</span>
+
+                Read for mentions of <span class="kw">$ARGUMENTS</span>:
+                <span class="bullet">* </span
+                ><span class="hl">docs/mvp-backlog.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/sprint-tracker.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/decisions.md</span>
+                <span class="bullet">* </span
+                ><span class="hl">docs/lessons-learned.md</span>
+
+                Then run:
+                <span class="hl">git log --oneline --all -- .</span>
+
+                Filter commits mentioning <span class="kw">$ARGUMENTS</span>.
+                For each relevant commit:
+                <span class="hl">git show &lt;hash&gt; --stat</span>
+
+                <span class="h2">## Step 2 — Reconstruct 6 artifacts</span>
+
+                Write under
+                <span class="str">docs/stories/$ARGUMENTS/</span> For unknown
+                fields → <span class="orange">[TO VERIFY]</span>
+
+                <span class="h2">## Step 3 — Summary report</span>
+                List sources used, fields [TO VERIFY], and recommended next
+                action:
+                <span class="hl">/validate-story $ARGUMENTS</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-purple">
+                <h3>Fuentes de datos usadas</h3>
+                <ul
+                  class="list purple"
+                  style="margin-top: 8px; font-size: 0.83rem"
+                >
+                  <li>Documentos existentes en <code>/docs</code></li>
+                  <li>Historia original en <code>mvp-backlog.md</code></li>
+                  <li>Git log y diffs de commits relacionados</li>
+                  <li>Decisiones y lecciones registradas</li>
+                </ul>
+              </div>
+              <div class="card card-orange">
+                <h3>Output del reporte</h3>
+                <ul
+                  class="list orange"
+                  style="margin-top: 8px; font-size: 0.83rem"
+                >
+                  <li>Fuentes consultadas ✓/✗</li>
+                  <li>Campos que necesitan verificación manual</li>
+                  <li>Acción recomendada: <code>/validate-story</code></li>
+                </ul>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">💡</span>
+                <span
+                  >Útil cuando el proceso de documentación se introduce
+                  <strong>a mitad del proyecto</strong>.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S20: FLUJO GLOBAL -->
+      <div class="slide slide-diagram" id="s20">
+        <div class="content">
+          <div class="tag tag-blue">Vista global</div>
+          <h2>El protocolo completo de trabajo</h2>
+          <div class="divider"></div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 14px;
+              margin-top: 20px;
+              width: 100%;
+              max-width: var(--slide-w);
+            "
+          >
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+              "
+            >
+              <div
+                class="tag tag-orange"
+                style="width: 100%; text-align: center; margin-bottom: 4px"
+              >
+                Inicialización
+              </div>
+              <div class="flow-box highlight">/init → CLAUDE.md</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">Project Goal</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">Working Protocol</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">/docs estructura</div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+              "
+            >
+              <div
+                class="tag tag-green"
+                style="width: 100%; text-align: center; margin-bottom: 4px"
+              >
+                Descubrimiento
+              </div>
+              <div class="flow-box">Nueva sesión</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box highlight">Análisis Access</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">business-rules.md</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">/retrospective</div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+              "
+            >
+              <div
+                class="tag tag-blue"
+                style="width: 100%; text-align: center; margin-bottom: 4px"
+              >
+                Diseño
+              </div>
+              <div class="flow-box">Nueva sesión</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box highlight">architecture-v1.md</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">roadmap.md</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">mvp-backlog.md</div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+              "
+            >
+              <div
+                class="tag tag-purple"
+                style="width: 100%; text-align: center; margin-bottom: 4px"
+              >
+                Desarrollo
+              </div>
+              <div class="flow-box">/run-story US-XXX</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box highlight">5 fases + Gates</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">stories/US-XXX/</div>
+              <div class="flow-arrow-v">↓</div>
+              <div class="flow-box">/retrospective</div>
+            </div>
+          </div>
+          <div
+            style="
+              margin-top: 18px;
+              display: flex;
+              gap: 10px;
+              justify-content: center;
+              flex-wrap: wrap;
+            "
+          >
+            <span class="badge badge-orange">📄 CLAUDE.md</span>
+            <span class="badge badge-green">🗂️ /docs</span>
+            <span class="badge badge-blue">⚙️ /commands</span>
+            <span class="badge badge-purple">📁 stories/US-XXX</span>
+            <span class="badge badge-red">🛑 Gates de aprobación</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S21: GESTIÓN DE SESIONES -->
+      <div class="slide slide-dark" id="s21">
+        <div class="content">
+          <div class="tag tag-orange">Gestión de sesiones</div>
+          <h2>Nuevos hilos de conversación</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 14px">
+                Claude no retiene memoria entre sesiones. El protocolo garantiza
+                que
+                <strong>cada nueva sesión arranca con contexto completo</strong
+                >.
+              </p>
+              <div class="filename">
+                <span class="file-icon">💬</span> Patrón de inicio de sesión
+              </div>
+              <div class="code-block" style="font-size: 0.78rem">
+                This is a new session.
+
+                <span class="num">1.</span> Read the
+                <span class="hl">/docs</span> folder
+                <span class="num">2.</span> Analyze the documentation
+                <span class="num">3.</span> Produce a concise summary:
+                <span class="bullet">- </span>Main architecture blocks
+                <span class="bullet">- </span>Key architectural decisions
+                <span class="bullet">- </span>Assumptions made
+                <span class="bullet">- </span>Main migration risks
+                <span class="bullet">- </span>Open questions unresolved
+                <span class="num">4.</span> Highlight assumptions that could
+                significantly impact the roadmap.
+
+                <span class="kw">Do not generate anything yet.</span>
+                <span class="kw">Wait for approval before proceeding.</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px">
+              <div class="card card-blue">
+                <h3>¿Cuándo abrir nueva sesión?</h3>
+                <ul class="list" style="margin-top: 8px; font-size: 0.83rem">
+                  <li>Al cambiar de fase del proyecto</li>
+                  <li>Al iniciar una nueva historia de usuario</li>
+                  <li>Cuando el contexto de la sesión crece demasiado</li>
+                  <li>Al retomar trabajo días después</li>
+                </ul>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">💡</span>
+                <span
+                  >El resumen previo tiene <strong>doble función</strong>:
+                  detectar malentendidos Y darle a Claude un contexto comprimido
+                  y estructurado para la tarea siguiente.</span
+                >
+              </div>
+              <div class="card card-green">
+                <h3>Ventajas</h3>
+                <ul
+                  class="list green"
+                  style="margin-top: 8px; font-size: 0.83rem"
+                >
+                  <li>Contexto limpio y enfocado</li>
+                  <li>Sin interferencias de tareas anteriores</li>
+                  <li>El Working Protocol garantiza continuidad</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S22: MVP BACKLOG -->
+      <div class="slide slide-dark" id="s22">
+        <div class="content">
+          <div class="tag tag-green">MVP</div>
+          <h2>De roadmap a backlog ejecutable</h2>
+          <div class="divider"></div>
+          <div class="cols-2" style="margin-top: 20px; align-items: start">
+            <div>
+              <p style="margin-bottom: 12px">
+                El backlog se genera <strong>antes de codificar</strong>. No se
+                implementa una fase entera: se trabaja historia por historia.
+              </p>
+              <div class="card card-blue" style="margin-bottom: 12px">
+                <h3>Ejemplo — Sprint 1 (25 SP)</h3>
+                <table style="margin-top: 8px; font-size: 0.78rem">
+                  <tr>
+                    <th>Story</th>
+                    <th>SP</th>
+                    <th>Orden</th>
+                  </tr>
+                  <tr>
+                    <td>US-008</td>
+                    <td>2</td>
+                    <td>Día 1–2 · Bloquea US-011</td>
+                  </tr>
+                  <tr>
+                    <td>US-001</td>
+                    <td>5</td>
+                    <td>Paralelo con US-008</td>
+                  </tr>
+                  <tr>
+                    <td>US-002</td>
+                    <td>2</td>
+                    <td>Después de US-001</td>
+                  </tr>
+                  <tr>
+                    <td>US-004</td>
+                    <td>5</td>
+                    <td>Después de US-010</td>
+                  </tr>
+                  <tr>
+                    <td>US-005</td>
+                    <td>3</td>
+                    <td>Paralelo con US-004</td>
+                  </tr>
+                  <tr>
+                    <td>US-006</td>
+                    <td>3</td>
+                    <td>Paralelo con US-004</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="tip">
+                <span class="tip-icon">⚡</span>
+                <span
+                  >Tras el Sprint 1, los tracks de <strong>Backend</strong> y
+                  <strong>Frontend</strong> pueden avanzar en paralelo.</span
+                >
+              </div>
+            </div>
+            <div>
+              <div class="card card-green" style="margin-bottom: 12px">
+                <h3>Contenido de mvp-backlog.md</h3>
+                <ul
+                  class="list green"
+                  style="margin-top: 8px; font-size: 0.83rem"
+                >
+                  <li>Epics del MVP</li>
+                  <li>Features por epic</li>
+                  <li>
+                    User Stories con ID, descripción, AC, deps, prioridad y SP
+                  </li>
+                  <li>Línea de corte del MVP</li>
+                  <li>Primer sprint definido</li>
+                </ul>
+              </div>
+              <div class="card card-orange">
+                <h3>Scope del MVP</h3>
+                <ul
+                  class="list orange"
+                  style="margin-top: 8px; font-size: 0.83rem"
+                >
+                  <li>Subir ficheros CMBD</li>
+                  <li>Almacenar cargas</li>
+                  <li>Navegar registros y errores</li>
+                  <li>Filtrar registros</li>
+                  <li>Ver detalle de registro</li>
+                </ul>
+                <p
+                  style="
+                    margin-top: 8px;
+                    font-size: 0.75rem;
+                    color: var(--muted);
+                  "
+                >
+                  Excluye: reporting avanzado, analytics histórico,
+                  multi-hospital.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S23: PRINCIPIOS CLAVE -->
+      <div class="slide slide-accent" id="s23">
+        <div class="content center">
+          <div class="tag tag-blue">Principios clave</div>
+          <h2 style="font-size: 2.1rem">Lo que hace funcionar el protocolo</h2>
+          <div class="divider" style="margin: 16px auto"></div>
+          <div class="cols-3" style="margin-top: 20px">
+            <div class="card">
+              <div style="font-size: 1.8rem; margin-bottom: 8px">📚</div>
+              <h3>Documentación primero</h3>
+              <p style="font-size: 0.85rem">
+                Cada decisión, arquitectura y lección queda registrada en
+                archivos. Claude trabaja con documentos, no con conversaciones
+                pasadas.
+              </p>
+            </div>
+            <div class="card">
+              <div style="font-size: 1.8rem; margin-bottom: 8px">🛑</div>
+              <h3>Gates de aprobación</h3>
+              <p style="font-size: 0.85rem">
+                El equipo aprueba cada fase antes de continuar. Evita que Claude
+                avance con supuestos erróneos.
+              </p>
+            </div>
+            <div class="card">
+              <div style="font-size: 1.8rem; margin-bottom: 8px">🔄</div>
+              <h3>Mejora continua</h3>
+              <p style="font-size: 0.85rem">
+                Cada retrospectiva actualiza lecciones aprendidas. Con el tiempo
+                Claude comete menos errores en ese proyecto.
+              </p>
+            </div>
+            <div class="card">
+              <div style="font-size: 1.8rem; margin-bottom: 8px">⚡</div>
+              <h3>Comandos como protocolo</h3>
+              <p style="font-size: 0.85rem">
+                Los slash commands codifican el proceso. Garantizan que se sigue
+                correctamente sin depender de la memoria del equipo.
+              </p>
+            </div>
+            <div class="card">
+              <div style="font-size: 1.8rem; margin-bottom: 8px">📦</div>
+              <h3>Historias pequeñas</h3>
+              <p style="font-size: 0.85rem">
+                Nunca «implementa la fase 3». Siempre una historia a la vez.
+                Menor riesgo, mayor calidad, feedback más rápido.
+              </p>
+            </div>
+            <div class="card">
+              <div style="font-size: 1.8rem; margin-bottom: 8px">🧵</div>
+              <h3>Sesiones frescas</h3>
+              <p style="font-size: 0.85rem">
+                Nuevas fases = nuevos hilos. El Working Protocol garantiza que
+                Claude recupera contexto sin ruido acumulado.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================ S24: CONCLUSIONES -->
+      <div class="slide slide-cover" id="s24">
+        <div class="cover-glow"></div>
+        <div class="cover-glow2"></div>
+        <div class="content center">
+          <div class="tag tag-green">Conclusiones</div>
+          <h2 style="font-size: 2.5rem; max-width: 720px; margin: 0 auto">
+            La IA como <span class="accent">socio técnico</span>, no como
+            generador de código
+          </h2>
+          <div class="divider" style="margin: 22px auto"></div>
+          <div
+            class="quote"
+            style="max-width: 700px; margin: 0 auto; text-align: left"
+          >
+            El valor real no está en generar código rápido. Está en
+            <strong>mantener contexto, calidad y aprendizaje</strong> a lo largo
+            de un proyecto complejo y de larga duración.
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 12px;
+              margin-top: 24px;
+              max-width: 900px;
+            "
+          >
+            <div class="card" style="padding: 14px">
+              <h3 style="font-size: 0.85rem">📄 CLAUDE.md</h3>
+              <p style="font-size: 0.78rem; margin-top: 4px">
+                Contexto persistente + instrucciones + protocolo de sesión
+              </p>
+            </div>
+            <div class="card" style="padding: 14px">
+              <h3 style="font-size: 0.85rem; color: var(--green)">🗂️ /docs</h3>
+              <p style="font-size: 0.78rem; margin-top: 4px">
+                Memoria viva del proyecto, siempre actualizada
+              </p>
+            </div>
+            <div class="card" style="padding: 14px">
+              <h3 style="font-size: 0.85rem; color: var(--purple)">
+                ⚡ Comandos
+              </h3>
+              <p style="font-size: 0.78rem; margin-top: 4px">
+                Flujo codificado, reproducible, sin improvisación
+              </p>
+            </div>
+            <div class="card" style="padding: 14px">
+              <h3 style="font-size: 0.85rem; color: var(--cyan)">
+                📁 stories/
+              </h3>
+              <p style="font-size: 0.78rem; margin-top: 4px">
+                Trazabilidad completa de cada decisión tomada
+              </p>
+            </div>
+          </div>
+          <p style="margin-top: 32px; font-size: 0.82rem; color: var(--muted)">
+            Manuel Torres · Universidad de Almería · Curso IA Generativa · 2026
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- /deck -->
+
+    <div id="nav">
+      <button onclick="prev()">← Anterior</button>
+      <span id="slide-counter">1 / 24</span>
+      <button onclick="next()">Siguiente →</button>
+    </div>
+
+    <script>
+      const slides = document.querySelectorAll(".slide");
+      const total = slides.length;
+      let curr = 0;
+
+      function go(n) {
+        if (n < 0 || n >= total) return;
+        slides[curr].classList.remove("active");
+        slides[curr].classList.add("exit");
+        const prev = curr;
+        setTimeout(() => slides[prev].classList.remove("exit"), 400);
+        curr = n;
+        slides[curr].classList.add("active");
+        document.getElementById("slide-counter").textContent =
+          curr + 1 + " / " + total;
+        document.getElementById("progress").style.width =
+          ((curr + 1) / total) * 100 + "%";
+      }
+
+      function next() {
+        go(curr + 1);
+      }
+      function prev() {
+        go(curr - 1);
+      }
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " ") {
+          e.preventDefault();
+          next();
+        }
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault();
+          prev();
+        }
+        if (e.key === "Home") go(0);
+        if (e.key === "End") go(total - 1);
+      });
+
+      let touchX = 0;
+      document.addEventListener("touchstart", function (e) {
+        touchX = e.touches[0].clientX;
+      });
+      document.addEventListener("touchend", function (e) {
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (dx < -50) next();
+        if (dx > 50) prev();
+      });
+
+      document.getElementById("progress").style.width = (1 / total) * 100 + "%";
+    </script>
+  </body>
+</html>

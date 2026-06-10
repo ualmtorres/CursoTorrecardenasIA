@@ -13,7 +13,7 @@ Codificación, idioma, tabla de contenidos, tipo de documento
 Nombre y título del trabajo
 ////
 
-= IA generativa en la migración de aplicaciones Access
+= Primeros pasos en la migración de aplicaciones con IA generativa
 Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería
 
 // NO CAMBIAR!! (Entrar en modo no numerado de apartados)
@@ -21,7 +21,7 @@ Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Ma
 
 [abstract]
 == Resumen
-A medida que las orgsnizaciones se hacen grandes y cuentan con servicios corporativos complekos es habitual que se desarrollen serviicos a medida para cubrir necesidades específicas. Microsoft Access ha sido durante décadas la herramienta de referencia para este tipo de soluciones rápidas y a medida, pero su proliferación sin control genera riesgos operativos significativos. Este capítulo aborda cómo la inteligencia artificial generativa puede ser un aliado estratégico en la migración de aplicaciones Access hacia una arquitectura de servicios moderna, permitiendo a los equipos de TI hospitalarios transformar sus sistemas críticos con mayor agilidad, control y alineación con las necesidades reales del negocio. Se presentan casos de uso concretos, un proceso estructurado de migración y consideraciones específicas para el entorno hospitalario. Se presenta un enfoque estructurado para analizar las aplicaciones existentes, diseñar la arquitectura objetivo, formular prompts efectivos para la generación de código y validar los resultados. Además, se discuten consideraciones específicas para organizaciones  donde la proliferación de soluciones Access es común y representa un riesgo operativo significativo. El objetivo es mostrar cómo la IA puede ser un aliado estratégico en la transformación digital, permitiendo a los equipos de TI migrar sus sistemas críticos con mayor agilidad y control.
+A medida que las organizaciones se hacen grandes y cuentan con servicios corporativos complejos es habitual que se desarrollen servicios a medida para cubrir necesidades específicas. Microsoft Access ha sido durante décadas la herramienta de referencia para este tipo de soluciones rápidas y a medida, pero su proliferación sin control genera riesgos operativos significativos. Este capítulo aborda cómo la inteligencia artificial generativa puede ser un aliado estratégico en la migración de aplicaciones Access hacia una arquitectura de servicios moderna, permitiendo a los equipos de TI hospitalarios transformar sus sistemas críticos con mayor agilidad, control y alineación con las necesidades reales del negocio. Se presentan casos de uso concretos, un proceso estructurado de migración y consideraciones específicas para el entorno hospitalario. Se presenta un enfoque estructurado para analizar las aplicaciones existentes, diseñar la arquitectura objetivo, formular prompts efectivos para la generación de código y validar los resultados. Además, se discuten consideraciones específicas para organizaciones  donde la proliferación de soluciones Access es común y representa un riesgo operativo significativo. El objetivo es mostrar cómo la IA puede ser un aliado estratégico en la transformación digital, permitiendo a los equipos de TI migrar sus sistemas críticos con mayor agilidad y control.
 
 
 ////
@@ -420,11 +420,11 @@ El servicio puede enviar una notificación push al médico responsable cuando se
 
 Con fines ilustrativos, a continuación se muestra cómo llevar a cabo una migración con dos prompts de ejemplo. Se trata únicamente de una demostración con fines didácticos y está aplicado a una base de datos extramadamente sencilla (tres tablas, una consulta, formularios básicos y un informe). A continuación se muestra unas imágenes de la ventana de relaciones con la estructura de la base de datos, un formulario de ejemplo y el informe que se migrará.
 
-image::images/access-relaciones.png[]
+image::access-relaciones.png[]
 
-image::images/access-formulario.png[]
+image::access-formulario.png[]
 
-image::images/access-informe.png[]
+image::access-informe.png[]
 
 Sobre esta base de datos lanzamos un primer prompt
 
@@ -456,11 +456,11 @@ Tras esto, tendremos:
 
 * una API REST documentada con OpenAPI
 
-image::images/access-openapi.png[]
+image::access-openapi.png[]
 
 * un frontend React con la información de los pacientes migrada desde Access.
 
-image::images/access-frontend.png[]
+image::access-frontend.png[]
 
 Este ejemplo sólo es una demostración de lo que es posible hoy día (junio 2026) con las herramientas de IA generativa. No obstante, ha sido una demostración con un caso extremandamente sencillo. Por supuesto, no se trata hacer migraciones sin ningún tipo de intervención humana: el profesional de TI sigue siendo el responsable de dirigir el proceso, validar los resultados y tomar decisiones críticas. Pero sí muestra cómo la IA puede acelerar y facilitar cada etapa del proceso, permitiendo que una migración que antes era un proyecto de meses se convierta en una tarea de días.
 
@@ -509,8 +509,6 @@ Algunas recomendaciones:
 * Involucrar a los usuarios clave en la definición de la nueva interfaz, no solo en la validación final.
 * Mantener durante un período la aplicación Access en modo solo lectura, como red de seguridad, mientras los usuarios se familiarizan con la nueva herramienta.
 * Documentar los cambios en términos de flujo de trabajo, no de tecnología.
-
-'''
 
 == Conclusión: una oportunidad estratégica
 

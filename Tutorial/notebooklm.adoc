@@ -715,7 +715,7 @@ Usar un conjunto ficticio de documentos:
 === Ejercicio
 
 1. Crear un notebook llamado `Mesa contratación - sistema de turnos`.
-2. Subir las fuentes.
+2. Subir las fuentes disponibles en la https://github.com/ualmtorres/CursoTorrecardenasIA/tree/gh-pages/GestionDocumentacion/MesaContratacion[carpeta `MesaContratacion` de este repositorio, window=_blank].
 3. Pedir un resumen ejecutivo del expediente.
 4. Identificar requisitos obligatorios y criterios valorables.
 5. Comparar las ofertas en una tabla.

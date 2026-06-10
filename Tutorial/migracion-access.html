@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.26">
+<meta name="generator" content="Asciidoctor 2.0.22">
 <meta name="author" content="Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería">
-<title>IA generativa en la migración de aplicaciones Access</title>
+<title>Primeros pasos en la migración de aplicaciones con IA generativa</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -117,6 +117,7 @@ h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title str
 :not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
 pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
 pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
 pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
 em em{font-style:normal}
 strong strong{font-weight:400}
@@ -219,7 +220,6 @@ table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
 .literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
 .literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
 .listingblock>.content{position:relative}
-.listingblock pre>code{display:block}
 .listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
 .listingblock:hover code[data-lang]::before{display:block}
 .listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
@@ -437,7 +437,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="book toc2 toc-right">
 <div id="header">
-<h1>IA generativa en la migración de aplicaciones Access</h1>
+<h1>Primeros pasos en la migración de aplicaciones con IA generativa</h1>
 <div class="details">
 <span id="author" class="author">Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería</span><br>
 </div>
@@ -494,7 +494,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_resumen">Resumen</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>A medida que las orgsnizaciones se hacen grandes y cuentan con servicios corporativos complekos es habitual que se desarrollen serviicos a medida para cubrir necesidades específicas. Microsoft Access ha sido durante décadas la herramienta de referencia para este tipo de soluciones rápidas y a medida, pero su proliferación sin control genera riesgos operativos significativos. Este capítulo aborda cómo la inteligencia artificial generativa puede ser un aliado estratégico en la migración de aplicaciones Access hacia una arquitectura de servicios moderna, permitiendo a los equipos de TI hospitalarios transformar sus sistemas críticos con mayor agilidad, control y alineación con las necesidades reales del negocio. Se presentan casos de uso concretos, un proceso estructurado de migración y consideraciones específicas para el entorno hospitalario. Se presenta un enfoque estructurado para analizar las aplicaciones existentes, diseñar la arquitectura objetivo, formular prompts efectivos para la generación de código y validar los resultados. Además, se discuten consideraciones específicas para organizaciones  donde la proliferación de soluciones Access es común y representa un riesgo operativo significativo. El objetivo es mostrar cómo la IA puede ser un aliado estratégico en la transformación digital, permitiendo a los equipos de TI migrar sus sistemas críticos con mayor agilidad y control.</p>
+<p>A medida que las organizaciones se hacen grandes y cuentan con servicios corporativos complejos es habitual que se desarrollen servicios a medida para cubrir necesidades específicas. Microsoft Access ha sido durante décadas la herramienta de referencia para este tipo de soluciones rápidas y a medida, pero su proliferación sin control genera riesgos operativos significativos. Este capítulo aborda cómo la inteligencia artificial generativa puede ser un aliado estratégico en la migración de aplicaciones Access hacia una arquitectura de servicios moderna, permitiendo a los equipos de TI hospitalarios transformar sus sistemas críticos con mayor agilidad, control y alineación con las necesidades reales del negocio. Se presentan casos de uso concretos, un proceso estructurado de migración y consideraciones específicas para el entorno hospitalario. Se presenta un enfoque estructurado para analizar las aplicaciones existentes, diseñar la arquitectura objetivo, formular prompts efectivos para la generación de código y validar los resultados. Además, se discuten consideraciones específicas para organizaciones  donde la proliferación de soluciones Access es común y representa un riesgo operativo significativo. El objetivo es mostrar cómo la IA puede ser un aliado estratégico en la transformación digital, permitiendo a los equipos de TI migrar sus sistemas críticos con mayor agilidad y control.</p>
 </div>
 <div class="ulist">
 <div class="title">Objetivos</div>
@@ -729,11 +729,28 @@ No se trata de que Access sea una mala herramienta. Se trata de que está diseñ
 <div class="paragraph">
 <p>En lugar de construir una aplicación monolítica donde la interfaz de usuario, la lógica de negocio y el acceso a datos están entrelazados —como ocurre en Access o en APEX—, una arquitectura API First separa estas responsabilidades:</p>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="images/diag-mermaid-md5-44a2a153d227a5da4f561f052cb9ec55.png" alt="Diagram" width="351" height="1328">
-</div>
-</div>
+<pre class='mermaid'>flowchart TD
+
+    subgraph CONSUMIDORES
+        C1[Navegador web]
+        C2[App móvil]
+        C3[Otro servicio]
+        C4[Excel / BI]
+    end
+
+    subgraph API["CAPA DE API"]
+        A1[Servicios REST documentados con OpenAPI / Swagger]
+        A2[Autenticación, autorización y auditoría]
+        A3[Lógica de negocio y validaciones]
+    end
+
+    subgraph DATOS["CAPA DE DATOS"]
+        D1[MySQL / PostgreSQL / Oracle / SQL Server]
+        D2[Esquema limpio, relaciones, índices y copias de seguridad]
+    end
+
+    CONSUMIDORES -->|HTTP / REST / JSON| API
+    API -->|SQL / ORM| DATOS</pre>
 <div class="paragraph">
 <p>Las ventajas para una organización como un hospital son inmediatas:</p>
 </div>
@@ -758,27 +775,68 @@ No se trata de que Access sea una mala herramienta. Se trata de que está diseñ
 <div class="paragraph">
 <p>Imaginemos cómo quedaría el mapa de servicios de un hospital mediano si cada una de las aplicaciones Access del inventario anterior se migrara a una arquitectura API First:</p>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="images/diag-mermaid-md5-1815daee9242a3a38e50fe7658855e67.png" alt="Diagram" width="724" height="582">
-</div>
-</div>
+<pre class='mermaid'>flowchart TD
+
+    P["PORTAL WEB / APP"]
+
+    P --> F
+    P --> L
+    P --> M
+
+    F["Servicio<br/>Farmacia API"]
+    L["Servicio<br/>Laboratorio API"]
+    M["Servicio<br/>Mantenimiento API"]
+
+    F --> DBF["MySQL / PostgreSQL"]
+    L --> DBL["MySQL / PostgreSQL"]
+    M --> DBM["MySQL / PostgreSQL"]
+
+    DBF --> G
+    DBL --> G
+    DBM --> G
+
+    G["Bus de integración /<br/>API Gateway"]
+
+    G --> HIS["HIS / Oracle / ERP<br/>(sistemas corporativos existentes)"]</pre>
 <div class="paragraph">
 <p>Otra opción puede ser que las APIs de los servicios de farmacia, laboratorio y mantenimiento interactúen directamente con los sistemas corporativos existentes, sin necesidad de un bus de integración. La arquitectura API First no prescribe un patrón de comunicación específico entre servicios, sino que establece el principio de que cada servicio expone su funcionalidad a través de APIs bien definidas. En ese caso, el mapa de servicios podría ser algo así:</p>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="images/diag-mermaid-md5-7d66aa937956b7dbab5f06141e72ba4c.png" alt="Diagram" width="632" height="350">
-</div>
-</div>
+<pre class='mermaid'>flowchart TD
+
+    P["PORTAL WEB / APP"]
+
+    P --> F
+    P --> L
+    P --> M
+
+    F["Servicio<br/>Farmacia API"]
+    L["Servicio<br/>Laboratorio API"]
+    M["Servicio<br/>Mantenimiento API"]
+
+    F --> HIS["HIS / Oracle / ERP<br/>(sistemas corporativos existentes)"]
+    L --> HIS
+    M --> HIS</pre>
 <div class="paragraph">
 <p>O una opción mixta, donde algunas APIs son constuidas en FastAPI sobre Oracle y otras en ORDS sobre Oracle, dependiendo de la complejidad y necesidades de cada caso:</p>
 </div>
-<div class="imageblock">
-<div class="content">
-<img src="images/diag-mermaid-md5-a05c78f7bccd8737baadeb4a674a6902.png" alt="Diagram" width="784" height="358">
-</div>
-</div>
+<pre class='mermaid'>flowchart TD
+
+    P["PORTAL WEB / APP"]
+
+    P --> F
+    P --> L
+    P --> M
+
+    F["Servicio<br/>Farmacia API (FastAPI)"]
+    L["Servicio<br/>Laboratorio API (ORDS)"]
+    M["Servicio<br/>Mantenimiento API (FastAPI)"]
+
+    style L fill:#ff0030,stroke:#31a354
+
+    F --> HIS["HIS / Oracle / ERP<br/>(sistemas corporativos existentes)"]
+    L --> HIS
+    M --> HIS
+</pre>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1056,17 +1114,17 @@ GET  /api/v1/tiempos-respuesta?tipo=troponina      → KPIs de tiempo urgentes</
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/images/access-relaciones.png" alt="access relaciones">
+<img src="access-relaciones.png" alt="access relaciones">
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/images/access-formulario.png" alt="access formulario">
+<img src="access-formulario.png" alt="access formulario">
 </div>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/images/access-informe.png" alt="access informe">
+<img src="access-informe.png" alt="access informe">
 </div>
 </div>
 <div class="paragraph">
@@ -1111,7 +1169,7 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/images/access-openapi.png" alt="access openapi">
+<img src="access-openapi.png" alt="access openapi">
 </div>
 </div>
 <div class="ulist">
@@ -1123,7 +1181,7 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="images/images/access-frontend.png" alt="access frontend">
+<img src="access-frontend.png" alt="access frontend">
 </div>
 </div>
 <div class="paragraph">
@@ -1233,7 +1291,6 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </li>
 </ul>
 </div>
-<hr>
 </div>
 </div>
 </div>
@@ -1257,7 +1314,7 @@ Una vez adaptado, implmementa el plan de migración y comprueba que funcione tod
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-06-02 22:38:21 +0200
+Last updated 2026-06-10 20:42:11 +0200
 </div>
 </div>
 </body>

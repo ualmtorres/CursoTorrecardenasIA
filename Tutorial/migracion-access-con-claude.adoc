@@ -1,0 +1,1790 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+:icons: font
+
+# Adentrándonos en el proceso de desarrollo con IA generativa con Claude Code
+Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería
+
+Interactuar con una inteligencia artifical generativa va más allá de crear unos prompts iniciales. Para aprovechar al máximo su potencial, es necesario establecer un protocolo de trabajo que permita a la IA entender el contexto del proyecto, seguir instrucciones específicas, y mantener un proceso de mejora continua a lo largo del tiempo. En este tutorial, vamos a mostrar cómo establecer ese protocolo de trabajo con Claude Code para llevar a cabo la migración de una aplicación Microsoft Access a una arquitectura moderna. Esto nos llevará a crear un entorno de trabajo colaborativo con Claude, donde la IA no solo generará código, sino que también actuará como un arquitecto y desarrollador senior dentro del proyecto, ayudándonos a tomar decisiones informadas, documentar el proceso, y mantener un alto nivel de calidad en el desarrollo. Comenzaremos por establecer el contexto del proyecto y las instrucciones de trabajo para Claude, y luego avanzaremos a través de las diferentes fases del proyecto, desde el análisis inicial hasta el diseño de la nueva arquitectura y la implementación del MVP.
+
+:numbered!:
+
+[abstract]
+== Resumen
+
+En este tutorial, aprenderás a establecer un protocolo de trabajo efectivo con Claude Code para llevar a cabo la migración de una aplicación Microsoft Access a una arquitectura moderna. A través de un enfoque estructurado y colaborativo, podrás aprovechar al máximo las capacidades de Claude para analizar el sistema existente, diseñar la nueva arquitectura, y guiar el proceso de migración de manera eficiente y documentada.
+
+.Objetivos de aprendizaje
+Al terminar este tutorial, deberías ser capaz de:
+
+* Establecer un protocolo de trabajo efectivo con Claude Code para proyectos de migración.
+* Crear el archivo `CLAUDE.md` con instrucciones de trabajo y contexto del proyecto.
+* Organizar la memoria del proyecto mediante archivos de documentación estructurada.
+* Analizar un sistema existente y documentar sus características, reglas de negocio, y riesgos.
+* Diseñar una nueva arquitectura basada en el análisis del sistema existente y los objetivos del proyecto.
+* Crear un plan de migración detallado que guíe el proceso de migración de manera ordenada y eficiente.
+* Iniciar el proyecto de migración con un backlog de tareas bien definido y alineado con la nueva arquitectura diseñada.
+* Crear comandos personalizados para facilitar la revisión de trabajo, la documentación de feedback, y el registro de avances a lo largo del proyecto.
+* Mantener un proceso de mejora continua a lo largo del proyecto mediante el uso de retrospectivas y checkpoints regulares.
+* Generar documentación clara y concisa que sirva como referencia tanto para el equipo de desarrollo como para Claude a lo largo del proyecto.
+
+:numbered:
+
+## Inicialización básica con Claude
+
+Con fines ilustrativos, vamos a suponer que partimos de un proyecto base que consiste en una aplicación Microsoft Access + VBA que implementa reglas de validación CMBD y queremos migrarla a una arquitectura moderna, que incluya:
+
+* Backend REST API
+* Base de datos MySQL
+* Frontend web
+* Docker Compose
+* Desarrollo asistido por Claude Code
+
+Pero, no queremos que Claude simplemente genere código. Queremos trabajar con Claude como si fuera un arquitecto y desarrollador senior dentro del proyecto.
+
+
+### Configuración de `CLAUDE.md`
+
+Anthropic recomienda dar contexto persistente del repositorio para que Claude Code trabaje mejor con el código y las convenciones del proyecto. Esto se hace a través del archivo `CLAUDE.md`. Aquí es tinde se coloca una descripción del proyecto, su arquitectura, reglas de estilo, y cualquier otra información relevante que Claude deba conocer para generar código coherente y alineado con el proyecto.
+
+En proyectos de código existente, es habitual comenzar pidiendo en Claude Code que cree ese archivo `CLAUDE.md` a partir de la revisión del código fuente, para que luego ese contexto se mantenga en futuras interacciones. Eso se realiza mediante el comando `/init`. Si hacemos `init` sobre nuestro proyecto base, obtenderemos lo siguiente
+
+.`CLAUDE.md` inicial
+[source, markdown]
+-----
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+This is a **CMBD (Conjunto Mínimo Básico de Datos) Error Management System** — a Spanish healthcare data validation tool for hospital discharge records. The application validates records against CMBD standards (ICD-10-ES medical coding, patient demographics, administrative data) and produces structured error reports.
+
+The processing engine is a **Microsoft Access 2007 database** (`Gestion de Errores CMBD_Access07v1_0_1.mdb`) containing embedded VBA macros and validation rules. There is no compiled source code in this repository.
+
+## Running the Application
+
+The application is driven by opening the `.mdb` file in Microsoft Access and importing the input pipe-delimited text file. No CLI commands or build steps exist.
+
+**Input:** Pipe-delimited (`|`) flat file (e.g., `HOS990426.txt`) containing hospital discharge records.
+
+**Outputs generated:**
+- `HOS990426-(VALIDOS).log` — Records that passed all validation checks
+- `HOS990426-(DETALLES).log` — Record-by-record error detail with error codes
+- `HOS990426-(RESUMEN).LOG` — Aggregate error frequency statistics
+- `HOS990426-(RECHAZADOS).LOG` — Records rejected outright (eliminatory errors)
+
+## Architecture & Data Flow
+
+```
+HOS######.txt (input)
+      ↓
+Access .mdb (validation rules + VBA)
+      ↓
+┌─────────────────────────────────────────────────────┐
+│  (VALIDOS).log   (DETALLES).log   (RESUMEN).LOG     │
+│  (RECHAZADOS).LOG                                   │
+└─────────────────────────────────────────────────────┘
+```
+
+### Input Record Format
+
+Each record is a pipe-delimited row with ~200+ fields covering:
+- Hospital and episode identifiers
+- Patient demographics (gender, date of birth, nationality, ID type)
+- Admission/discharge dates and times
+- ICD-10-ES diagnosis codes (primary + secondary)
+- ICD-10-ES procedure codes with dates and urgency flags
+- Administrative data (transfer hospital, emergency order, ward)
+
+### Error Classification
+
+Errors fall into three severity tiers:
+
+| Code prefix | Severity | Meaning |
+|---|---|---|
+| `E-` | Eliminatory | Record is rejected entirely (e.g., E-000102: overlapping episodes) |
+| `X-` | Error | Record is flagged but retained; the field value is invalid |
+| `W-` | Warning | Possible error; may indicate data quality issue |
+
+High-frequency error codes seen in sample data:
+- `X-001301` — Birth country code invalid
+- `X-100101` — Main diagnosis code missing or invalid (ICD-10-ES)
+- `X-310101` / `X-310201` — Procedure date-time missing or wrong format
+- `X-320102` / `X-320202` — Procedure urgency flag out of range
+- `X-000501` — Emergency identifier invalid
+- `X-000701` — Patient ID type code invalid
+
+### Summary Report Structure
+
+The `(RESUMEN).LOG` file reports:
+- Total records sent / processed / valid / invalid
+- Records with zero errors vs. records with at least one error
+- Per-error-code counts and percentages
+-----
+
+Sin embargo, buscamos que `CLAUDE.md` contenga también instrucciones de trabajo. En nuestro caso, podremos añadir una sección `## Project Goal` entre las secciones `Project Overview` y `Running the Application`, con el siguiente contenido:
+
+.Insertar sección `Project Goal` en `CLAUDE.md` entre `Project Overview` y `Running the Application`
+[source, markdown]
+----
+## Project Goal
+
+The goal is NOT to maintain the Access application.
+
+The goal is to reverse engineer the Access database and VBA logic and migrate the solution into a modern web platform.
+
+Target architecture:
+
+- Frontend: React
+- Backend: FastAPI
+- Database: MySQL
+- Containerization: Docker Compose
+
+Migration strategy:
+
+1. Discover Access structures.
+2. Document business rules.
+3. Extract validation logic.
+4. Design REST APIs.
+5. Build equivalent backend services.
+6. Build web frontend.
+7. Decommission Access.
+
+Claude must always prioritize:
+- Documentation first
+- Architecture before coding
+- Incremental delivery
+- Clean code
+- Testability
+----
+
+### Creación de la memoria de la memoria estructurada
+
+Claude funciona muchísimo mejor cuando tiene memoria estructurada. Esto se logra creando archivos de documentación que describan el proyecto, su arquitectura, reglas de negocio, análisis de la base de datos, y decisiones tomadas. Estos archivos se mantienen actualizados a medida que el proyecto avanza, y sirven como referencia tanto para el equipo de desarrollo como para Claude. Para ello crearemos una carpeta `/docs` en la raíz del proyecto con los siguientes archivos:
+
+[source, bash]
+----
+/docs
+    project-context.md
+    architecture.md
+    business-rules.md
+    database-analysis.md
+    decisions.md
+---- 
+
+Podemos crear todo esto de un golpe en un script inicial con el siguiente comando:
+[source, bash]
+----
+mkdir -p docs && touch docs/{project-context,architecture,business-rules,database-analysis,decisions}.md
+----
+
+#### Creación de `project-context.md`
+
+Comenzaremos por crear el archivo `project-context.md` con el siguiente contenido:
+
+.`project-context.md`
+[source, markdown]
+------
+# Project Context
+
+Name:
+CMBD Validation Platform
+
+Current System:
+Microsoft Access 2007
+
+Purpose:
+Validate hospital discharge records.
+
+Target:
+Modern web application.
+
+Database:
+MySQL
+
+Backend:
+FastAPI
+
+Frontend:
+React
+
+Deployment:
+Docker Compose
+------
+
+#### Creación de `decisions.md`
+
+Podemos crear un archivo inicial con una decisión senilla, como la siguiente:
+
+.`decisions.md`
+[source, markdown]
+------
+# Architecture Decisions
+
+2026-06-09
+
+Decision:
+Use FastAPI for backend development.
+
+Reason:
+- FastAPI is a modern, high-performance web framework for building APIs with Python 3.7+.
+- It has excellent support for asynchronous programming, which can improve performance when handling multiple requests.
+- FastAPI's automatic generation of OpenAPI documentation can facilitate API development and integration with frontend teams
+
+Status:
+Accepted
+------
+
+Este archivo se irá actualizando a medida que se tomen decisiones arquitectónicas, de diseño, o de implementación a lo largo del proyecto. Es importante mantenerlo actualizado para que tanto el equipo de desarrollo como Claude tengan un registro claro de las decisiones tomadas y sus razones.
+
+## Análisis de la base de datos y reglas de negocio
+
+Como primera tarea real de la migración, analizaremos la base de datos Access y las reglas de negocio implementadas en VBA. Le pediremos a Claude que se encargue de este trabajo y que además documento todo en la carpeta `/docs` para que quede registrado y sirva de referencia para el equipo y para Claude en futuras interacciones.
+
+.Análisis del sistema existente
+[source, markdown]
+------
+Analyze the Access application and create:
+
+1. System overview
+2. Table inventory
+3. Query inventory
+4. VBA inventory
+5. Forms inventory
+6. Reports inventory
+7. Business rules inventory
+
+Store everything under docs/
+------
+
+### Revisión de errores y documentación de feedback
+
+En tareas como esta es habitual que Claude genere errores. Es cierto que dentro del travajo del agente, va revisnando, proporcionando feedback, y corrigiendo esos errores. Sin embargo, si este tipo de errores se vuelve a repetir, es importante proporcionar feedback a Claude para que aprenda a evitarlos. Si queremos que esto ocurra, y que Claude mejore su rendimiento, al finalizar una tarea, revise el trabajo realizado, identifique errores y los documente para evitar que se repitan. Además, es importante que esa documentación quede registrada en el proyecto, podemos pedirle que lo haga de la siguiente manera:
+
+.Revisión de errores y documentación de feedback
+[source, markdown]
+----
+Claude, after completing any task:
+1. Review the work performed.
+2. Identify any errors, corrections, or decisions made.
+3. Determine if there is a risk of repeating them.
+4. Automatically update:
+   - MEMORY.md
+   - docs/decisions.md
+   - docs/lessons-learned.md
+5. Propose new rules if you detect repetitive patterns.
+6. Show a summary of the changes made.
+----
+
+Pero claro, esta instrucción habría que copiarla, pegarla y enviarla cada vez que queramos que Claude revise su trabajo. Para evitar esto, tenemos dos opciones: Añadir ese proceso de revisión y documentación dentro de `CLAUDE.md` como parte de las instrucciones de trabajo, o crear lo que se denomina un comando personalizado que ejecute ese proceso de revisión y documentación cada vez que lo invoquemos. En este caso, vamos a optar por la segunda opción, y vamos a crear un comando personalizado llamado `/retrospective` con el siguiente contenido:
+
+.Archivo `.claude/commands/retrospective.md`
+[source, markdown]
+----
+Perform a project retrospective.
+
+Review:
+
+* recent work
+* errors encountered
+* user corrections
+* failed assumptions
+* architectural deviations
+
+Update:
+
+* MEMORY.md
+* docs/decisions.md
+* docs/lessons-learned.md
+
+If needed:
+
+* propose new project rules
+* propose CLAUDE.md improvements
+
+Output:
+
+1. Findings
+2. Updates performed
+3. New recommendations
+----
+
+Una vez que tenemos este comando personalizado, cada vez que queramos realizar una retrospectiva, simplemente tendremos que ejecutar el comando `/retrospective` y Claude se encargará de revisar su trabajo, identificar errores, documentar feedback, y proponer mejoras. Esto nos permitirá mantener un proceso de mejora continua y aprendizaje a lo largo del proyecto, tanto para el equipo de desarrollo como para Claude.
+
+Ejecutemos ahora el comando `/retrospective` para revisar el trabajo realizado hasta ahora y documentar cualquier error o mejora que hayamos identificado.
+
+[TIP]
+====
+Desde ahora, el comando `/retrospective` es una herramienta poderosa para mantener un proceso de mejora continua en el proyecto. Sin embargo, no debe usarse en cada interacción con Claude. Más bien, se debe usar cuandlo se finalice una tarea completa, una sesión de trabajo, antes de hacer un commit y cuando Claude haya tenido que corregirse varias veces.
+====
+
+### Revisión de recomendaciones
+
+Tras realizar la retrospectiva, es importante revisar las recomendaciones propuestas por Claude. No todas las recomendaciones serán válidas o aplicables al proyecto, por lo que es necesario analizarlas críticamente y decidir cuáles implementar. Para ello, podemos seguir el siguiente proceso:
+
+.Revisión de recomendaciones
+[source, markdown]
+----
+Claude:
+
+Clasifica los hallazgos de la retrospectiva en:
+
+- Reglas permanentes
+- Decisiones técnicas
+- Riesgos
+- Deuda técnica
+- Hipótesis pendientes de validar
+
+Actualiza la documentación correspondiente.
+
+No modifiques código.
+No cambies arquitectura.
+----
+
+### Registrar pequeños avances
+
+El concepto de retrospectiva que hemos creado con el comando `/retrospective` está orientado a tareas completas. Sin embargo, a lo largo del proyecto se van produciendo pequeños avances que también es importante registrar para mantener un buen nivel de documentación y trazabilidad. Para ello, podemos crear otro comando personalizado llamado `/checkpoint` que se encargue de resumir el progreso actual, los hallazgos encontrados y las tareas pendientes. Este comando lo utilizaremos con mayor frecuencia para registrar avances incrementales a lo largo del proyecto.
+
+.Archivo `.claude/commands/checkpoint.md`
+[source, markdown]
+----
+Record a project checkpoint.
+
+Summarize:
+- Current progress
+- Findings
+- Pending tasks
+
+Do not update permanent decisions.
+Do not modify MEMORY.md unless relevant findings are identified.
+----
+
+Cada vez que ejecutemos el comando `/checkpoint`, Claude generará un resumen del progreso actual, los hallazgos encontrados, y las tareas pendientes. Esto nos permitirá mantener un registro detallado del avance del proyecto, identificar rápidamente cualquier bloqueo o desafío, y asegurar que toda la información relevante quede documentada para futuras referencias.
+
+Una vez que tenemos el análisis de la base de datos y las reglas de negocio documentados, y que además disponemos de un buen proceso de revisión y documentación de feedback mediante los comandos personalizados `/retrospective` y `/checkpoint`, es el momento de crear el plan del proyecto y diseñar la nueva arquitectura del sistema. 
+
+[TIP]
+====
+En proyectos de migración es conveniente adelantar el diseño de la nueva arquitectura antes de realizar el plan de migración. Esto se debe a que el diseño de la nueva arquitectura puede influir en las tareas de migración, y es importante tener claro cómo será el sistema final antes de planificar los pasos para llegar a él. Además, el diseño de la nueva arquitectura puede revelar nuevas tareas o desafíos que no habíamos considerado inicialmente, y es mejor identificarlos desde el principio para poder planificar adecuadamente. Sin embargo, en proyectos de nueva creación, el diseño de la arquitectura suele realizarse a continuación del plan de desarrollo, ya que el proceso de planificación puede ayudar a definir los requisitos y las necesidades del sistema, lo que a su vez influye en el diseño de la arquitectura.
+====
+
+## Diseño de la arquitectura
+
+Estamos en una etapa nueva y conviene abrir un nuevo hilo de conversación con Claude para centrarnos exclusivamente en el diseño de la nueva arquitectura del sistema. Para ello, podemos iniciar una nueva conversación y proporcionarle a Claude el contexto necesario para que pueda diseñar una arquitectura adecuada para nuestro proyecto de migración. Una buena práctica es pedirle que analice los documentos generados en la carpeta `/docs` y que cree un resumen conciso de los principales puntos a tener en cuenta para la nueva fase. Esto tiene una doble función: por un lado, nos aseguramos de que Claude tiene el contexto necesario para continuar y que no ha interpreado nada de forma errónea. Y por otro lado, el propio Claude tiene un contexto estructurado y resumido que le servirá de referencia para empezar con la siguiente tarea en el hilo nuevo.
+
+[source, markdown]
+----
+Read and analyze all documentation under /docs.
+
+Create a concise summary containing:
+
+1. Purpose of the current Access application
+2. Main business processes
+3. Key validation rules
+4. Main entities
+5. Main risks for migration
+6. Unknown areas that require further investigation
+
+Do not design the new architecture yet.
+
+Wait for approval before proceeding.
+----
+
+Este resumen debe ser revisado y aprobado por el equipo antes de que Claude continúe con el diseño de la nueva arquitectura. Es importante asegurarse de que el resumen refleja correctamente el contexto del proyecto y que no hay malentendidos o interpretaciones erróneas que puedan afectar el diseño de la nueva arquitectura. Además, hay que valorar los riesgos identificados y las áreas desconocidas para planificar adecuadamente las siguientes fases del proyecto. Si vemos que los riesgos con elevados o que hay muchas áreas desconocidas, es posible que queramos realizar una fase de investigación adicional antes de diseñar la nueva arquitectura para reducir esos riesgos y aclarar esas áreas desconocidas.
+
+.Creación de un informe de riesgos
+****
+En el caso de que se identifiquen riesgos elevados o áreas desconocidas significativas, es recomendable crear un informe de riesgos detallado que permita al equipo entender claramente los desafíos que enfrentamos y tomar decisiones informadas sobre cómo abordarlos. Este informe de riesgos debe incluir una clasificación de cada riesgo identificado, su impacto potencial en el proyecto, la probabilidad de que ocurra, y las acciones recomendadas para mitigarlo. Además, es importante que este informe sea revisado y actualizado regularmente a medida que avanzamos en el proyecto y obtenemos más información. Más adelante, este informe de riesgos también puede ser útil para comunicar a los stakeholders y para tomar decisiones estratégicas sobre el proyecto. Incluso, podemos utilizarlo como base para crear un plan de mitigación de riesgos específico que detalle las acciones concretas que se llevarán a cabo para reducir la probabilidad o el impacto de los riesgos identificados, y que ayude a asegurar el éxito del proyecto a largo plazo.
+
+A continuación, se muestra un ejemplo de cómo podríamos solicitar a Claude que genere este informe de riesgos:
+
+[source, markdown]
+----
+Based on the discovery findings:
+
+Create a Migration Readiness Assessment.
+
+Classify every identified risk as:
+
+* Blocker
+* Critical
+* High
+* Medium
+* Low
+
+For each item include:
+
+* Why it matters
+* Probability
+* Impact
+* Recommended investigation
+* Decision needed before architecture design
+
+Create:
+
+docs/migration-readiness.md
+
+At the end indicate:
+
+Can the target architecture be designed now?
+
+YES / NO
+
+If NO:
+
+List the minimum unanswered questions that must be resolved first.
+----
+
+Sin embargo, si esto es demasiado rígido para nuestro proyecto y estamos interesados en un enfoque más ágil, asumiento que puede haber cambios más adelante, podemos optar por un enfoque más flexible y avanzar en una arquitectura provisional.
+
+[source, markdown]
+----
+Design a proposed target architecture based on the information currently available.
+
+Assume that some discovery findings may change later.
+
+Objectives:
+
+* Continue the migration exercise
+* Produce a working architecture candidate
+* Identify assumptions explicitly
+* Highlight areas that may require redesign later
+
+For every major architectural decision:
+
+* State the assumption
+* State the impact if the assumption is wrong
+
+This architecture is provisional and intended to support iterative discovery.
+
+Store in:
+docs/architecture-v1.md
+----
+****
+
+Si el informe de riesgos indicara que no hay riesgos relevantes, se podría haber pasado directamente a la gase de diseño de la nueva arquitectura con un prompt similiar a este
+
+.Propuesta de arquitectura ante una inspección sin riesgos relevantes
+[source, markdown]
+----
+Using the documentation generated during discovery:
+
+Design the target architecture.
+
+Goals:
+
+* Replace Microsoft Access
+* Preserve existing business rules
+* Support future growth
+* Support multiple hospitals if needed
+* Be maintainable by a small IT team
+
+Proposed stack:
+
+* FastAPI
+* MySQL
+* React
+* Docker Compose
+
+Generate:
+
+1. Context diagram
+2. Logical architecture
+3. Main modules
+4. Service boundaries
+5. Authentication approach
+6. Deployment architecture
+7. Recommended folder structure
+8. Risks and tradeoffs
+
+Store in:
+docs/architecture.md
+----
+
+Una vez que tenemos disponible la arquitectura provisional o definitiva, dependiendo del enfoque que hayamos elegido, hacemos la retrospectiva para revisar el trabajo realizado, identificar errores, documentar feedback, y proponer mejoras. 
+
+### Creación de un plan de migración
+
+Con la nueva arquitectura diseñada, el siguiente paso es crear un plan de migración detallado que nos permita llevar a cabo la migración de manera ordenada y eficiente. Este plan debe incluir las fases del proyecto, los entregables de cada fase, los riesgos asociados, las dependencias entre tareas, y una estimación del tiempo o los puntos de historia necesarios para completar cada fase. No obstante, como se trata de una tarea nueva, abriremos un nuevo hilo de conversación con Claude para centrarnos exclusivamente en la creación del plan de migración. En este nuevo hilo, proporcionaremos a Claude el contexto necesario sobre la nueva arquitectura diseñada y los riesgos identificados para que pueda generar un plan de migración adecuado a las necesidades del proyecto.
+
+[source, markdown]
+----
+This is a new session.
+
+Before performing any work:
+
+1. Read the /docs folder
+2. Analyze the documentation.
+3. Produce a concise summary containing:
+   * Main architecture blocks
+   * Key architectural decisions
+   * Assumptions made
+   * Avoided risks
+   * Main migration risks
+   * Open questions still unresolved
+4. Highlight any assumption that could significantly impact the roadmap.
+
+Do not generate a roadmap yet.
+
+Wait for approval before proceeding.
+----
+
+Si el resumen es aprobado por el equipo, el siguiente paso será solicitar a Claude que genere el plan de migración detallado. Este plan debe ser lo suficientemente flexible para adaptarse a cambios futuros, pero también lo suficientemente estructurado para guiar al equipo a través del proceso de migración de manera eficiente. El plan debe abordar todas las fases del proyecto, desde la fase de descubrimiento y documentación, hasta la fase de diseño, implementación, pruebas, y despliegue. Además, el plan debe incluir una evaluación de los riesgos asociados a cada fase y las dependencias entre tareas para asegurar que el proyecto se mantenga en el camino correcto.
+
+A continuación, se muestra un ejemplo de cómo podríamos solicitar a Claude que genere este plan de migración:
+
+[source, markdown]
+----
+Create a migration roadmap.
+
+Output:
+
+Phase 1: Discovery
+Phase 2: Documentation
+Phase 3: Database design
+Phase 4: API design
+Phase 5: Backend implementation
+Phase 6: Frontend implementation
+Phase 7: Testing
+Phase 8: Deployment
+
+For each phase include:
+- Deliverables
+- Risks
+- Dependencies
+- Estimated timeline or story points
+
+Store in:
+docs/roadmap.md
+----
+
+Una vez finalizada la generación del plan de migración, es importante revisarlo cuidadosamente para asegurarnos de que es realista, completo, y alineado con los objetivos del proyecto. Es posible que sea necesario realizar ajustes o modificaciones al plan para adaptarlo a las necesidades específicas del proyecto o para abordar cualquier riesgo o desafío identificado durante el proceso de revisión. En cuanto esté, hacemos la retrospectiva con Claude (`/retrospective`) para revisar el trabajo realizado, identificar errores, documentar feedback, y proponer mejoras.
+
+## Arranque del proyecto
+
+Una vez que contamos con el plan de migración detallado, el siguiente paso es iniciar el proyecto. Sin embargo, esto no quiere decir comenzar a trabajar en primera fase del plan que esté marcada. Hacer esto nos puede llevar a pedir "Implementar fase 3", y esto pueden ser gran parte de puntos de historia, lo que puede derivar en un desarrollo pobre, incompleto, cargado de errores y en definitiva, algo nada o poco funcional. Para evitar esto, vamos a crear el backlog para constuir un MVP del proyecto a partir del plan, las decisiones y de la arquitectura diseñada. , y a partir de ese backlog, vamos a seleccionar las tareas más pequeñas e independientes que podamos para arrancar el proyecto.
+
+Como es fase nueva, comenzaremos un nuevo hilo de conversación con Claude para centrarnos exclusivamente en el arranque del proyecto. En este nuevo hilo, proporcionaremos a Claude el contexto necesario sobre el plan de migración, la nueva arquitectura diseñada, y los riesgos identificados para que pueda generar un backlog adecuado a las necesidades del proyecto. Como se trata de proceso repetitivo, lo podemos añadir a `CLAUDE.md` para que cada vez que iniciemos una fase nueva, lo siga. Antes del final del doumento, podremos añadir la siguiente sección:
+
+.Insertar sección `## Working protocol` casi al final de `CLAUDE.md`
+[source, markdown]
+------
+## Working Protocol
+
+At the start of every new task session:
+
+1. Read 
+    * docs/decisions.md
+    * docs/lessons-learned.md
+    * docs/architecture-v1.md
+    * docs/roadmap.md
+2. Produce a concise summary covering: architecture blocks, key decisions, assumptions, risks, open questions.
+3. Wait for explicit user approval before starting any implementation work.
+4. Do not generate roadmaps, code, or new documents until the context summary is validated.
+------
+
+Comos simpre, comenzamos con un prompt de análisis, que validaremos antes de pedirle a Claude que genere el backlog y las tareas para arrancar el proyecto.
+
+[source, markdown]
+----
+This is a new session.
+
+Analyze the documentation and produce a concise summary containing:
+
+1. System purpose
+2. Main architecture blocks
+3. Approved architectural decisions
+4. Main assumptions
+5. Main migration risks
+6. MVP scope
+
+Do not generate a backlog yet.
+
+Wait for approval before proceeding.
+----
+
+Si como resultado del análisis, se plantea algún problema con el planteamiento de ir refinando la arquitectura a medida que avanzamos, o con el hecho de arrancar el proyecto sin tener la arquitectura completamente definida, para no romper el ritmo del tutorial y sólo con fines didácticos, relajaremos esas restricciones y podremos proponer algo parecido a esto:
+
+[source, markdown]
+----
+The objective is to continue the migration using Architecture V1 assumptions.
+
+For planning purposes, assume:
+
+* A-01 is true (external validator remains external)
+* A-03 is true (single CMBD format)
+* A-04 remains approved (multi-load model with carga_id)
+
+The goal is not to wait for all gates to be resolved.
+
+The goal is to build a working MVP while discovery continues.
+
+Using the current architecture and roadmap:
+
+Identify the smallest useful MVP that can be implemented without resolving the remaining gates.
+
+Wait for approval before generating the backlog.
+
+----
+
+Así, podremos tener un informe por parte de Claude parecido a este, que nos permita validar el alcance del MVP, y a partir de ahí generar el backlog para arrancar el proyecto.  
+
+[cols="1,2,1",options="header"]
+|===
+| Area | Deliverable | Phase
+| Infrastructure | Docker Compose stack: FastAPI + MySQL + input volume | 3/5
+| Database | Full schema: cargas, registros_cmbd, detalle_errores, catalogo_errores, 13 ref_* tables, cie10_mc (2018, provisional) | 3
+| Database | Alembic migrations + all seed scripts extracted from .mdb | 3
+| API | OpenAPI spec + Pydantic models for ingestion, records, errors, reference data | 4
+| Backend | IngestService: .TXT + (DETALLES).LOG parser, fully transactional, warnings[] | 5
+| Backend | RecordService + ErrorService: paginated browse, campos_con_error map, per-record error list | 5
+| Backend | ReferenceService: lookup data for filter dropdowns | 5
+| Backend | Unit + integration tests (core services, real MySQL test stack) | 5
+| Frontend | LoadPage: file pair upload, load history, warnings[] display | 6
+| Frontend | BrowsePage: FilterPanel (error code, hospital, service, NUHSA, episode), paginated RecordTable | 6
+| Frontend | RecordDetail: FieldGrid with severity highlighting (BR-10 colors), DxPxPanel (D1–D20, P1–P20), ErrorList | 6
+| Testing | E2E: load HOS990426.txt pair, verify record/error counts, verify field highlighting matches Access output | 7
+|===
+
+
+[source, markdown]
+----
+Using the approved architecture and roadmap:
+
+Create docs/mvp-backlog.md
+
+Generate:
+
+1. Epics
+2. Features
+3. User Stories
+
+For each User Story include:
+
+* ID
+* Title
+* Description
+* Acceptance Criteria
+* Dependencies
+* Priority (P0, P1, P2)
+* Story Points
+
+The objective is a first working MVP.
+
+Include only functionality required to:
+
+* Upload CMBD files
+* Store loads
+* Browse records
+* Browse errors
+* Filter records
+* Display record details
+
+Exclude:
+
+* Advanced reporting
+* Historical analytics
+* Multi-hospital support
+* Future enhancements
+
+At the end:
+
+* Identify the MVP cut line
+* Identify the first implementation sprint
+
+Assume Architecture V1 remains valid until proven otherwise.
+----
+
+Tras finalizar, tendremos un documento con un conjunto de epics, historias de usuario con sus criterios de aceptación, y un primer sprint definido para arrancar el proyecto. A continuación, se muestra un ejemplo de cómo podría ser una historia de usuario para el primer sprint:
+
+.Ejemplo de historia de usuario para el primer sprint
+
+[cols="1,3",options="header"]
+|===
+| Field | Value
+| Priority | P0
+| Story Points | 5
+| Feature | F-01-01
+| Dependencies | None
+| Risk | None
+|===
+
+**As a** developer, **I want** a Docker Compose configuration that starts the frontend, backend, and database together **so that** the full system can be developed and tested locally with a single command.
+
+**Acceptance Criteria:**
+
+- [ ] `docker compose up` starts three named containers: `frontend` (port 3000), `backend` (port 8000), `db` (port 3306)
+- [ ] `GET http://localhost:8000/health` returns HTTP 200 once the backend container is ready
+- [ ] The React/Vite dev server at port 3000 serves the application shell (no build errors on first start)
+- [ ] The `db` container runs MySQL 8 and the schema migration runs automatically on first boot (before the backend accepts requests)
+- [ ] A read-only input volume is mounted at `/data/input` in the backend container
+- [ ] All containers have `restart: unless-stopped`
+- [ ] A `.env.example` file documents every required environment variable (DB credentials, ports, volume path)
+- [ ] A `docker compose down -v` followed by `docker compose up` reproduces the same working state from scratch
+
+A continuación, se muestra un ejemplo del primer sprint con sus historias de usuario:
+
+
+**Sprint 1 — Foundation**
+
+**Goal:** Establish the entire infrastructure foundation and complete the C-01 technical prerequisite. After this sprint, the ingestion and API tracks can start in parallel.
+
+**Duration:** 2 weeks  
+**Capacity target:** ~25 SP
+
+[cols="1,3,1,3",options="header"]
+|===
+| Story | Title | SP | Order
+| US-008 | Extract CMBD2016 import spec | 2 | **Day 1–2. Blocks US-011.**
+| US-009 | Extract detalles2016 import spec | 1 | Day 1–2. Blocks US-012.
+| US-001 | Docker Compose development stack | 5 | Parallel with US-008/009.
+| US-002 | Alembic migration scaffold | 2 | After US-001.
+| US-003 | DB startup seed runner | 2 | After US-001.
+| US-010 | Validate column mapping against HOS990426.txt | 2 | After US-008/009. Blocks US-004 final DDL.
+| US-004 | Core tables DDL | 5 | After US-010.
+| US-005 | Reference tables DDL and seed | 3 | After US-002. Parallel with US-004.
+| US-006 | Error catalog seed | 3 | After US-002. Parallel with US-004.
+| Total |  | 25 SP | 
+|===
+
+**Sprint 1 exit criteria:**
+
+- [ ] `docker compose up` starts all three services; `GET /health` returns 200
+- [ ] `alembic upgrade head` creates all tables on a clean instance
+- [ ] All reference and catalog seed data is loaded; row counts verified against `.mdb` source
+- [ ] `docs/_raw/import_spec_CMBD2016.txt` and `docs/_raw/import_spec_detalles2016.txt` exist and are signed off
+- [ ] Column mapping of `registros_cmbd` is confirmed against `HOS990426.txt`
+
+**After Sprint 1, these tracks can run in parallel:**
+
+[cols="1,1",options="header"]
+|===
+| Track A — Backend Ingestion | Track B — Frontend Shell
+| US-011 → US-012 → US-013 → US-014 → US-015 → US-016 → US-017 | US-034 → US-035 → US-038 (can use mock API while backend builds)
+|===
+
+## Flujo de trabajo iterativo
+
+Una vez que hemos arrancado el proyecto con el primer sprint, el siguiente paso es continuar con un flujo de trabajo iterativo que nos permita avanzar en la implementación del MVP de manera incremental. En este flujo de trabajo, no deberíamos caer en el error de pedir "Implementa el sprint 1 completo", ya que esto puede llevar a un desarrollo pobre, incompleto, y cargado de errores. En su lugar, iremos implementando cada una de las historias de usuario de forma individual, asegurándonos de que cada historia se completa correctamente antes de pasar a la siguiente. De esta manera, podremos mantener un alto nivel de calidad en el desarrollo y evitar que se acumulen errores o problemas que puedan afectar el progreso del proyecto. 
+
+Podmos establecer un protocolo de trabajo iterativo para cada sprint, que nos permita mantener un proceso de desarrollo ágil y eficiente. En este protocolo, para cada historia de usuario, seguiremos los siguientes pasos:
+
+1. Prompt de análisis. Tomará como fuente el mvp-backlog (o un archivo donde se haya extraido el sprint, y así se reduce contexto), la arquitectura diseñada, y las decisiones tomadas para generar un resumen del contexto específico de esa historia de usuario. Este resumen servirá como referencia para el desarrollo de la historia y asegurará que Claude tiene el contexto necesario para implementarla correctamente.
+2. Prompt de revisión del diseño. Antes de generar cualquier código, se le pedirá a Claude que actué como un arquitecto senior y revise el diseño propuesto identitficando sobreingeniería, componentes ausentes, complejiidad innecesaria y aspectos de seguridad.
+3. Implementación de la historia de usuario. Una vez que el diseño ha sido revisado y aprobado, se le pedirá a Claude que implemente la historia de usuario siguiendo las mejores prácticas de desarrollo, asegurándose de que el código sea limpio, mantenible, y testeable.
+4. Tras comprobar el funcionamiento de la historia de usuario, se le pedirá a Claude que realice una retrospectiva específica de esa historia, identificando cualquier error cometido durante su implementación, documentando feedback para evitar que se repitan esos errores en el futuro, y proponiendo mejoras tanto en el proceso de desarrollo como en el código implementado.
+
+.Prompt de análisis para una historia de usuario
+[source, markdown]
+----
+Read:
+
+* docs/architecture-v1.md
+* docs/decisions.md
+* docs/mvp-backlog.md
+
+Focus only on the selected user story.
+
+Analyze:
+
+1. Goal of the user story
+2. Acceptance criteria
+3. Technical approach
+4. Required files and folders
+5. Dependencies
+6. Risks
+7. Open questions
+
+Produce:
+
+* Proposed implementation approach
+* List of files to create or modify
+* Definition of done
+
+Do not generate code or files yet.
+
+Wait for approval.
+----
+
+En este caso de prompt de análisis, si lo comenzamos con "For US-001, read...", Claude comenzará  a crear la tarea de análisis con un enfoque específico en esa historia de usuario, lo que le permitirá generar un análisis más detallado y relevante para esa historia en particular. Además, al pedirle que se centre solo en la historia de usuario seleccionada, evitamos que Claude se disperse o que incluya información irrelevante que pueda afectar la calidad del análisis. Este enfoque específico también facilitará la revisión y aprobación del análisis por parte del equipo, ya que estará claramente enfocado en la historia de usuario que se va a implementar.
+
+.Prompt de revisión del diseño
+[source, markdown]
+----
+Review the proposed implementation approach.
+
+Act as a senior architect.
+
+Verify:
+
+* Acceptance criteria coverage
+* Simplicity
+* Maintainability
+* Security
+* Docker best practices
+* Development experience
+
+Identify:
+
+* overengineering
+* missing components
+* unnecessary complexity
+* risks
+
+Do not redesign.
+
+Only review.
+----
+
+.Prompt de implementación de la historia de usuario
+[source, markdown]
+----
+Implement the approved user story.
+
+Requirements:
+
+* Satisfy all acceptance criteria.
+* Follow the approved implementation approach.
+* Create only the files required for this story.
+* Do not implement future user stories.
+* Keep the solution simple.
+* Document important decisions.
+
+At the end provide:
+
+1. Files created
+2. Files modified
+3. Acceptance criteria checklist
+4. Manual verification steps
+----
+
+Si todo ha ido bien, finalizaremos haciendo la retrospectiva con el comando `/retrospective` para revisar el trabajo realizado, identificar errores, documentar feedback, y proponer mejoras tanto en el proceso de desarrollo como en el código implementado. 
+
+## Mejora del flujo iterativo
+
+Si nos paramos a pensar, para cada historia de usuario comenzaremos con "For US-XXX, read...", luego seguiremos con "Review the proposed implementation approach ....", después "Implement the approved user story...", y finalmente haremos la retrospectiva. Es decir, para cada historia de usuario,
+estamos realizando un proceso de análisis, diseño, implementación, y retrospectiva. Este proceso es muy completo y nos permite mantener un alto nivel de calidad en el desarrollo, pero también puede ser bastante repetitivo, lo cual nos lleva a pensar si es posible automatizar este proceso. 
+
+### Creación de un comando personalizado para el flujo iterativo
+
+Si queremos automatizar este proceso, podemos crear un comando personalizado llamado `/run-story` que incluya todos estos pasos de forma secuencial. De esta manera, cada vez que queramos implementar una historia de usuario, simplemente ejecutaremos el comando `/run-story US-XXX` y Claude se encargará de realizar el análisis, la revisión del diseño, la implementación, y la retrospectiva de forma automática. Esto nos permitirá mantener un flujo de trabajo iterativo eficiente y consistente a lo largo del proyecto, sin tener que repetir manualmente cada uno de los pasos para cada historia de usuario. Se lo podemos pedir al propio Claude, para que lo genere con nosotros indicándole que queremos crear un comando personalizado que ejecute todo el flujo iterativo para una historia de usuario específica a partir de los tres prompts (que se los pasamos en el mismo mensaje) que hemos definido anteriormente.
+
+Su código podría ser algo parecido a esto:
+
+.Archivo `.claude/commands/run-story.md`
+[source, markdown]
+----
+Read:
+
+* architecture-v1.md
+* decisions.md
+* sprint-01.md
+
+Execute the complete lifecycle of the selected user story:
+
+1. Analyze the story
+2. Propose implementation approach
+3. Review the approach
+4. Refine the approach
+5. Implement the story
+6. Validate against acceptance criteria
+7. Generate implementation report
+8. Update project memory if required
+
+Do not continue with any other user story.
+
+Stop after completing the selected story.
+----
+
+.Archivo `.claude/commands/run-story.md` generado
+[source, markdown]
+------
+Run the complete three-phase workflow for user story: $ARGUMENTS
+
+Execute each phase in sequence. After Phase 1 and Phase 2, stop and wait for explicit user approval before proceeding.
+
+---
+
+## Phase 1 — Analysis
+
+Read:
+
+* docs/architecture-v1.md
+* docs/decisions.md
+* docs/mvp-backlog.md
+
+Focus only on user story: **$ARGUMENTS**
+
+Analyze:
+
+1. Goal of the user story
+2. Acceptance criteria
+3. Technical approach
+4. Required files and folders
+5. Dependencies
+6. Risks
+7. Open questions
+
+Produce:
+
+* Proposed implementation approach
+* List of files to create or modify
+* Definition of done
+
+Do not generate code or files yet.
+
+**Stop here. Wait for the user to explicitly approve the implementation approach before continuing to Phase 2.**
+
+---
+
+## Phase 2 — Design Review
+
+*(Execute only after Phase 1 is approved)*
+
+Review the proposed implementation approach acting as a senior architect.
+
+Verify:
+
+* Acceptance criteria coverage
+* Simplicity
+* Maintainability
+* Security
+* Docker best practices
+* Development experience
+
+Identify:
+
+* Overengineering
+* Missing components
+* Unnecessary complexity
+* Risks
+
+Do not redesign. Only review.
+
+**Stop here. Wait for the user to explicitly approve the design before continuing to Phase 3.**
+
+---
+
+## Phase 3 — Implementation
+
+*(Execute only after Phase 2 is approved)*
+
+Implement the approved user story: **$ARGUMENTS**
+
+Requirements:
+
+* Satisfy all acceptance criteria.
+* Follow the approved implementation approach.
+* Create only the files required for this story.
+* Do not implement future user stories.
+* Keep the solution simple.
+* Document important decisions.
+
+At the end provide:
+
+1. Files created
+2. Files modified
+3. Acceptance criteria checklist
+4. Manual verification steps
+------
+
+Con este comando personalizado, cada vez que queramos implementar una historia de usuario, simplemente ejecutaremos el comando `/run-story US-XXX` y Claude se encargará de realizar todo el proceso de forma automática, asegurándose de que cada paso se complete correctamente antes de pasar al siguiente. Esto nos permitirá mantener un flujo de trabajo iterativo eficiente y consistente a lo largo del proyecto, sin tener que repetir manualmente cada uno de los pasos para cada historia de usuario. Además, al incluir puntos de parada después de las fases de análisis y diseño, nos aseguramos de que el equipo tenga la oportunidad de revisar y aprobar cada etapa antes de continuar, lo que ayuda a mantener un alto nivel de calidad en el desarrollo.
+
+Ahora podemos ejecutar el comando `/run-story US-002` para implementar la segunda historia de usuario del sprint, y Claude se encargará de guiar todo el proceso de forma automática, asegurándose de que cada paso se complete correctamente antes de pasar al siguiente. Tras finalizar, mostrará un informe detallado de la implementación, incluyendo los archivos creados, los archivos modificados, una checklist de los criterios de aceptación, y los pasos de verificación manual para validar que la historia de usuario se ha implementado correctamente. Por último, le pediremos a Claude que realice una retrospectiva específica de esa historia (`/retrospective`), identificando cualquier error cometido durante su implementación, documentando feedback para evitar que se repitan esos errores en el futuro, y proponiendo mejoras tanto en el proceso de desarrollo como en el código implementado.
+
+### Segregación de comandos para fases específicas
+
+El paso que hemos dado en la sección anterior de crear un comando personalizado para ejecutar todo el flujo iterativo de una historia de usuario es un gran avance en términos de eficiencia y automatización del proceso. Sin embargo, también es importante considerar la posibilidad de crear comandos personalizados específicos para cada fase del proceso (análisis, diseño, implementación) para aquellos casos en los que queramos ejecutar solo una fase en particular sin tener que pasar por todo el flujo completo. Esto nos permitiría tener una mayor flexibilidad y control sobre el proceso, permitiéndonos ejecutar solo la fase que necesitemos en cada momento sin tener que pasar por las demás fases si no es necesario. Por ejemplo, podríamos tener un comando `/analyze-story US-XXX` para ejecutar solo la fase de análisis, un comando `/review-design US-XXX` para ejecutar solo la fase de revisión del diseño, y un comando `/implement-story US-XXX` para ejecutar solo la fase de implementación. De esta manera, podríamos adaptar el proceso a nuestras necesidades específicas en cada momento, manteniendo al mismo tiempo la eficiencia y la calidad en el desarrollo. En este caso, `/run-story` seguiría existiendo como un comando que ejecuta todo el flujo completo, actuando como un orquestador. Pero también tendríamos comandos específicos para cada fase para aquellos casos en los que queramos ejecutar solo una parte del proceso. Podemos pedirle a Claude que genere estos comandos personalizados específicos para cada fase, siguiendo un formato similar al que hemos utilizado para el comando `/run-story`, pero enfocándose únicamente en la fase correspondiente.
+
+.Archivo `.claude/commands/analyze-story.md`
+[source, markdown]
+------
+Analyze user story: $ARGUMENTS
+
+Read:
+
+* docs/architecture-v1.md
+* docs/decisions.md
+* docs/mvp-backlog.md
+
+Focus only on user story: **$ARGUMENTS**
+
+Analyze:
+
+1. Goal of the user story
+2. Acceptance criteria
+3. Technical approach
+4. Required files and folders
+5. Dependencies on other stories or services
+6. Risks
+7. Open questions
+
+Produce:
+
+* Proposed implementation approach
+* List of files to create or modify
+* Definition of done
+
+Do not generate code or files yet.
+
+Wait for explicit user approval before proceeding.
+------
+
+.Archivo `.claude/commands/review-design.md`
+[source, markdown]
+----
+Review the proposed implementation approach for the current user story.
+
+Act as a senior architect.
+
+Verify:
+
+* Acceptance criteria coverage — does the approach address every criterion?
+* Simplicity — is there a simpler path to the same result?
+* Maintainability — will this be easy to change in six months?
+* Security — any exposed secrets, unvalidated inputs, or unsafe defaults?
+* Docker best practices — images, volumes, networking, env vars
+* Development experience — does this keep the local workflow clean?
+
+Identify:
+
+* Overengineering — abstractions or patterns not justified by current requirements
+* Missing components — anything the acceptance criteria require that is not in the plan
+* Unnecessary complexity — layers, files, or indirection that add no value
+* Risks — anything that could block delivery or cause regressions
+
+Do not redesign. Do not produce new code or files.
+
+Only review. State findings clearly and concisely.
+
+Wait for explicit user approval before proceeding to implementation.
+----
+
+.Archivo `.claude/commands/implement-story.md`
+[source, markdown]
+----
+Implement user story: $ARGUMENTS
+
+Requirements:
+
+* Satisfy all acceptance criteria.
+* Follow the approved implementation approach exactly.
+* Create only the files required for this story — nothing more.
+* Do not implement logic belonging to future user stories.
+* Keep the solution simple.
+* Document decisions that are non-obvious or constrained by external factors.
+
+At the end provide:
+
+1. **Files created** — path and one-line purpose for each
+2. **Files modified** — path and summary of changes for each
+3. **Acceptance criteria checklist** — each criterion marked DONE or PENDING
+4. **Manual verification steps** — exact commands or UI actions to confirm the story works
+----
+
+.Archivo `.claude/commands/validate-story.md`
+[source, markdown]
+----
+Validate user story: $ARGUMENTS
+
+Objective: confirm the implemented story meets every acceptance criterion before marking it done.
+
+Steps:
+
+1. Read the story definition from docs/mvp-backlog.md and extract all acceptance criteria for **$ARGUMENTS**.
+
+2. Start the application if not already running:
+
+   ```
+   docker compose up -d
+   ```
+
+3. For each acceptance criterion, verify it by:
+   * calling the relevant API endpoint, or
+   * observing the relevant UI behavior, or
+   * inspecting generated files or database state.
+
+4. Check for regressions: confirm that previously working stories are unaffected.
+
+Produce a validation report:
+
+| # | Acceptance criterion | Result | Notes |
+|---|---|---|---|
+| 1 | … | PASS / FAIL / PARTIAL | … |
+
+Overall verdict: **DONE** or **BLOCKED**
+
+If any criterion fails, list the specific failures with enough detail to open a fix task. Do not fix issues inline — keep validation and implementation separate.
+----
+
+Ahora, rediseñamos `/run-story` para que actúe como un orquestador de estos comandos específicos para cada fase, ejecutándolos en secuencia y esperando la aprobación del usuario entre cada fase antes de continuar a la siguiente. Lo que tendrá que hacer es leer cada comando y esperar a la aprobación del usuario. Así, tenemos una única fuente de verdad en los subcomandos, y el comando general (`/run-story`) simplemente orquesta la ejecución de esos comandos específicos para cada fase. De esta manera, mantenemos la flexibilidad de ejecutar fases específicas cuando sea necesario, pero también tenemos la opción de ejecutar todo el flujo completo con un solo comando cuando queramos seguir el proceso iterativo completo sin interrupciones.
+
+.Archivo `.claude/commands/run-story.md`
+[source, markdown]
+------
+Orchestrate the complete story workflow for: $ARGUMENTS
+
+For each phase below, read the corresponding command file and execute its instructions.
+Stop at each GATE and wait for explicit user approval before continuing.
+
+---
+
+## Phase 1 — Analysis
+
+Read `.claude/commands/analyze-story.md` and execute its instructions for story **$ARGUMENTS**.
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 2 — Design Review
+
+Read `.claude/commands/review-design.md` and execute its instructions.
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 3 — Implementation
+
+Read `.claude/commands/implement-story.md` and execute its instructions for story **$ARGUMENTS**.
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 4 — Validation
+
+Read `.claude/commands/validate-story.md` and execute its instructions for story **$ARGUMENTS**.
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 5 — Retrospective
+
+Read `.claude/commands/retrospective.md` and execute its instructions.
+------
+
+Ahora podemos ejecutar el comando `/run-story US-003` para implementar la historia de usuario US-003, y Claude se encargará de orquestar todo el proceso de forma automática, ejecutando cada fase en secuencia y esperando la aprobación del usuario entre cada fase antes de continuar a la siguiente. Esto nos permitirá mantener un flujo de trabajo iterativo eficiente y consistente a lo largo del proyecto, asegurándonos de que cada paso se complete correctamente antes de pasar al siguiente, y manteniendo al mismo tiempo la flexibilidad de ejecutar fases específicas cuando sea necesario.
+
+### Un paso más. Memorizar el informe de resultados de cada historia de usuario
+
+Cada vez que ejecutamos ahora una historia de usuario, analizamos, revisamos el diseño, implementamos, validamos, y hacemos la retrospectiva. Durante este proceso y al finalizar la retrospectiva, Claude va informando de ello en el chat de la sesión. Sin embargo, sería muy útil que toda esta información se guardara de forma estructurada en un archivo específico dentro del proyecto, para que podamos tener un registro detallado de cada historia de usuario implementada. De esta manera, más adelante podriamos consultar cuando se tomó la decisión de implmementar tal funcionalidad, o si existían riesgos que aún no han sido resueltos y que podrían afectar a futuras historias de usuario, o si durante la implementación de esa historia de usuario se cometieron errores que debemos evitar en el futuro. En definitiva, tener un registro detallado de cada historia de usuario implementada nos permitiría tener una memoria del proyecto a lo largo del tiempo, lo que puede ser muy valioso para futuras referencias, para identificar patrones o áreas de mejora en el proceso de desarrollo, y para mantener un historial de decisiones y aprendizajes a lo largo del proyecto. Nos planteamos entonces tener una estructura similar a la siguiente:
+
+[source, text]
+----
+docs/
+    stories/
+        US-001/
+            analysis.md
+            design-review.md
+            design.md
+            implementation.md
+            retrospective.md
+            validation.md
+        US-002/
+            ...
+----
+
+La idea es que cada vez que ejecutamos el comando `/run-story US-XXX`, Claude no solo ejecutará cada fase del proceso, sino que también guardará un informe detallado de cada fase en un archivo específico dentro de la carpeta `docs/stories/US-XXX/`, donde `US-XXX` corresponde al ID de la historia de usuario que estamos implementando. De esta manera, tendremos un registro completo y estructurado de todo el proceso de implementación de cada historia de usuario, lo que nos permitirá consultar esta información en el futuro para obtener insights, identificar áreas de mejora, y mantener una memoria detallada del proyecto a lo largo del tiempo. Podemos pedirle a Claude que implemente esta funcionalidad adicional para que cada fase del proceso se guarde automáticamente en un archivo específico dentro de la carpeta correspondiente a la historia de usuario. 
+
+A continuación se muestra un ejemplos de archivos obtenidos tras solicitarle a Claude ayuda en el proceso.
+
+.Archivo mejorado `.claude/commands/analyze-story.md` con guardado de informes
+[source, markdown]
+------
+Analyze user story: $ARGUMENTS
+
+Read:
+
+* docs/architecture-v1.md
+* docs/decisions.md
+* docs/mvp-backlog.md
+
+Focus only on user story: **$ARGUMENTS**
+
+Analyze:
+
+1. Goal of the user story
+2. Acceptance criteria
+3. Technical approach
+4. Required files and folders
+5. Dependencies on other stories or services
+6. Risks
+7. Open questions
+
+Produce:
+
+* Proposed implementation approach
+* List of files to create or modify
+* Definition of done
+
+Do not generate code or files yet.
+
+---
+
+## Output files
+
+After completing the analysis, create the directory `docs/stories/$ARGUMENTS/` if it does not exist, then write two files:
+
+**`docs/stories/$ARGUMENTS/analysis.md`**
+
+```markdown
+# $ARGUMENTS — Analysis
+
+## Objetivo
+<goal of the user story>
+
+## Acceptance Criteria
+<numbered list of acceptance criteria>
+
+## Dependencias
+<list of stories, services, or data this story depends on>
+
+## Riesgos
+<list of risks with brief description>
+
+## Definición de Done
+<checklist of conditions that must be true before the story is closed>
+```
+
+**`docs/stories/$ARGUMENTS/design.md`**
+
+```markdown
+# $ARGUMENTS — Diseño propuesto
+
+## Enfoque
+<summary of the implementation approach>
+
+## Componentes
+<list of components, modules, or layers involved>
+
+## Ficheros
+<list of files to create or modify with one-line purpose each>
+
+## Trade-offs
+<decisions made and alternatives discarded with brief rationale>
+```
+
+---
+
+Wait for explicit user approval before proceeding.
+------
+
+.Archivo mejorado `.claude/commands/implement-story.md` con guardado de informes
+[source, markdown]
+------
+Implement user story: $ARGUMENTS
+
+Read:
+
+* `docs/stories/$ARGUMENTS/analysis.md` — acceptance criteria and definition of done
+* `docs/stories/$ARGUMENTS/design.md` — approved implementation approach
+* `docs/stories/$ARGUMENTS/design-review.md` — conditions and recommendations to apply
+
+Requirements:
+
+* Satisfy all acceptance criteria.
+* Follow the approved implementation approach exactly.
+* Apply any conditions listed in the design review.
+* Create only the files required for this story.
+* Do not implement logic belonging to future user stories.
+* Keep the solution simple.
+* Document decisions that are non-obvious or externally constrained.
+
+---
+
+## Output file
+
+After completing the implementation, write:
+
+**`docs/stories/$ARGUMENTS/implementation.md`**
+
+```markdown
+# $ARGUMENTS — Implementation
+
+## Ficheros creados
+| Path | Purpose |
+|---|---|
+| … | … |
+
+## Ficheros modificados
+| Path | Summary of changes |
+|---|---|
+| … | … |
+
+## Cambios realizados
+<narrative summary of what was built and any non-obvious decisions made>
+```
+
+---
+
+Provide manual verification steps in the chat so the user can test before proceeding.
+------
+
+.Archivo mejorado `.claude/commands/review-design.md` con guardado de informes
+[source, markdown]
+------
+Review the proposed implementation approach for story: $ARGUMENTS
+
+Act as a senior architect.
+
+Read `docs/stories/$ARGUMENTS/design.md` to retrieve the proposed approach.
+
+Verify:
+
+* Acceptance criteria coverage — does the approach address every criterion?
+* Simplicity — is there a simpler path to the same result?
+* Maintainability — will this be easy to change in six months?
+* Security — any exposed secrets, unvalidated inputs, or unsafe defaults?
+* Docker best practices — images, volumes, networking, env vars
+* Development experience — does this keep the local workflow clean?
+
+Identify:
+
+* Overengineering — abstractions or patterns not justified by current requirements
+* Missing components — anything the acceptance criteria require that is not in the plan
+* Unnecessary complexity — layers, files, or indirection that add no value
+* Risks — anything that could block delivery or cause regressions
+
+Do not redesign. Do not produce code or files. Only review.
+
+---
+
+## Output file
+
+After completing the review, write:
+
+**`docs/stories/$ARGUMENTS/design-review.md`**
+
+```markdown
+# $ARGUMENTS — Design Review
+
+## Problemas detectados
+<numbered list of issues found; empty if none>
+
+## Recomendaciones
+<numbered list of concrete recommendations>
+
+## Aprobación
+[ ] Approved — ready to implement
+[ ] Approved with conditions — list conditions
+[ ] Rejected — list blocking reasons
+```
+
+---
+
+Wait for explicit user approval before proceeding to implementation.
+------
+
+.Archivo mejorado `.claude/commands/validate-story.md` con guardado de informes
+[source, markdown]
+------
+Validate user story: $ARGUMENTS
+
+Read `docs/stories/$ARGUMENTS/analysis.md` to extract the acceptance criteria.
+
+Start the application if not already running:
+
+```
+docker compose up -d
+```
+
+For each acceptance criterion, verify it by:
+
+* calling the relevant API endpoint, or
+* observing the relevant UI behavior, or
+* inspecting generated files or database state.
+
+Check for regressions: confirm that previously working stories are unaffected.
+
+---
+
+## Output file
+
+After completing validation, write:
+
+**`docs/stories/$ARGUMENTS/validation.md`**
+
+```markdown
+# $ARGUMENTS — Validation
+
+## Acceptance Criteria
+
+| # | Criterion | Result | Notes |
+|---|---|---|---|
+| 1 | … | PASS / FAIL / PARTIAL | … |
+
+## Regressions
+<list any regressions found, or "None detected">
+
+## Verdict
+DONE — all criteria pass
+BLOCKED — list of failing criteria
+```
+
+---
+
+If any criterion fails, list the specific failures with enough detail to open a fix task.
+Do not fix issues inline — keep validation and implementation separate.
+------
+
+.Archivo mejorado `.claude/commands/retrospective.md` con guardado de informes
+[source, markdown]
+------
+Perform a project retrospective.
+
+Review:
+
+* recent work
+* errors encountered
+* user corrections
+* failed assumptions
+* architectural deviations
+
+Update:
+
+* MEMORY.md
+* docs/decisions.md
+* docs/lessons-learned.md
+
+If needed:
+
+* propose new project rules
+* propose CLAUDE.md improvements
+
+Output:
+
+1. Findings
+2. Updates performed
+3. New recommendations
+
+---
+
+## Story artifact (only when $ARGUMENTS is provided)
+
+If a story ID was given ($ARGUMENTS), also write:
+
+**`docs/stories/$ARGUMENTS/retrospective.md`**
+
+```markdown
+# $ARGUMENTS — Retrospective
+
+## Lecciones aprendidas
+<what we would do differently next time>
+
+## Problemas encontrados
+<issues that slowed down or blocked the story>
+
+## Actualizaciones de memoria
+<list of memory files updated and what changed>
+```
+------
+
+Finalmente, también modificaremos el orquestador `run-story` para producir y guardar este tipo de información tras la finalización de cada comando.
+
+.Archivo mejorado `.claude/commands/run-story.md` con guardado de informes
+[source, markdown]
+------
+Orchestrate the complete story workflow for: $ARGUMENTS
+
+When reading and executing subcommand files below, treat every occurrence of
+`$ARGUMENTS` in those files as: $ARGUMENTS
+
+Stop at each GATE and wait for explicit user approval before continuing.
+
+---
+
+## Phase 1 — Analysis
+
+Read `.claude/commands/analyze-story.md` and execute its instructions for story **$ARGUMENTS**.
+
+Produce and save:
+- `docs/stories/$ARGUMENTS/analysis.md`
+- `docs/stories/$ARGUMENTS/design.md`
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 2 — Design Review
+
+Read `.claude/commands/review-design.md` and execute its instructions for story **$ARGUMENTS**.
+
+Produce and save:
+- `docs/stories/$ARGUMENTS/design-review.md`
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 3 — Implementation
+
+Read `.claude/commands/implement-story.md` and execute its instructions for story **$ARGUMENTS**.
+
+Produce and save:
+- `docs/stories/$ARGUMENTS/implementation.md`
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 4 — Validation
+
+Read `.claude/commands/validate-story.md` and execute its instructions for story **$ARGUMENTS**.
+
+Produce and save:
+- `docs/stories/$ARGUMENTS/validation.md`
+
+**GATE — Wait for explicit user approval before continuing.**
+
+---
+
+## Phase 5 — Retrospective
+
+Read `.claude/commands/retrospective.md` and execute its instructions for story **$ARGUMENTS**.
+
+Produce and save:
+- `docs/stories/$ARGUMENTS/retrospective.md`
+------
+
+.Guardando información de las historias de usuario pasadas
+****
+La modificación que acabamos de plantear se puede empezar a usar con las nuevas historias de usuario que se implementen a partir de ahora, pero también sería muy útil poder aplicar esta nueva estructura de documentación a las historias de usuario que ya han sido implementadas en el pasado, para tener un registro completo y estructurado de todo el proceso de implementación de cada historia de usuario desde el inicio del proyecto. Es cierto que son pocas, pero pueden guardar información de interés y conviene hacer un esfuerzo por documentarlas de la misma forma que las nuevas historias de usuario para mantener la consistencia en la documentación del proyecto. Pedimos a Claude que generara un comando para ejecutar en los chats de las tareas terminadas, que se encargue de leer toda la información disponible en el chat de esa tarea, extraer los datos relevantes, y generar los archivos correspondientes en la carpeta `docs/stories/US-XXX/` para cada historia de usuario ya implementada. 
+
+De cada etapa se le pidió lo siguiente:
+
+* Fase de análisis: 
+    ** Objetivo
+    ** Criteria de aceptación
+    ** Dependencias
+    ** Riesgos
+    ** Definición de Done
+
+* De diseño:
+    ** Enfoque
+    ** Componentes
+    ** Ficheros
+    ** Trade-offs
+
+* De la revisión:
+    ** Problemas detectados
+    ** Recomendaciones
+    ** Aprobación
+
+* De la implememntación:
+    ** Ficheros creados
+    ** Ficheros modificados
+    ** Cambios realizados
+
+* De la validación; 
+    ** Criterios de aceptación
+        *** PASS
+        *** FAIL
+        *** PARTIAL
+
+* Y de la retrospetiva:
+    ** Lecciones aprendidas
+    ** Problemas encontrados
+    ** Actualizaciones de memoria
+
+Este fue el resultado: un nuevo comando `/reconstruct-story` que se puede ejecutar en el contexto de cualquier historia de usuario ya implementada para generar toda esta información de forma estructurada en los archivos correspondientes dentro de la carpeta `docs/stories/US-XXX/` (p.e. /reconstruct-story US-001).
+
+.Archivo `.claude/commands/reconstruct-story.md`
+[source, markdown]
+------
+Reconstruct the documentation artifacts for an already-completed story: $ARGUMENTS
+
+This command recovers the six story artifacts from available project evidence
+when the original chat session is no longer accessible.
+
+---
+
+## Step 1 — Gather evidence
+
+Read the following sources and extract every mention of story **$ARGUMENTS**:
+
+* `docs/mvp-backlog.md` — original story definition and acceptance criteria
+* `docs/sprint-tracker.md` — status, notes, completion record
+* `docs/decisions.md` — decisions made during or related to this story
+* `docs/lessons-learned.md` — lessons recorded after this story
+* `docs/architecture-v1.md` — architectural context relevant to this story
+
+Then run:
+
+```
+git log --oneline --all -- .
+```
+
+Filter commits that mention **$ARGUMENTS** in the message or that touch files
+plausibly related to this story. For each relevant commit, inspect the diff to
+identify files created and modified.
+
+```
+git show <commit-hash> --stat
+```
+
+---
+
+## Step 2 — Reconstruct artifacts
+
+Using the evidence gathered, create the directory `docs/stories/$ARGUMENTS/`
+and write the following files. For any field that cannot be inferred with
+confidence from the evidence, write `[TO VERIFY]` in place of the content.
+
+---
+
+**`docs/stories/$ARGUMENTS/analysis.md`**
+
+```markdown
+# $ARGUMENTS — Analysis  *(reconstructed)*
+
+## Objetivo
+<infer from mvp-backlog.md story description>
+
+## Acceptance Criteria
+<copy from mvp-backlog.md; mark any missing ones as [TO VERIFY]>
+
+## Dependencias
+<infer from architecture and related stories; [TO VERIFY] if uncertain>
+
+## Riesgos
+<infer from decisions.md or lessons-learned.md; [TO VERIFY] if not recorded>
+
+## Definición de Done
+<infer from sprint-tracker.md completion notes; [TO VERIFY] if absent>
+```
+
+---
+
+**`docs/stories/$ARGUMENTS/design.md`**
+
+```markdown
+# $ARGUMENTS — Diseño propuesto  *(reconstructed)*
+
+## Enfoque
+<infer from architecture-v1.md and the files touched in git; [TO VERIFY] if uncertain>
+
+## Componentes
+<list components involved based on git diff and architecture; [TO VERIFY] if uncertain>
+
+## Ficheros
+<list files created or modified, taken from git log --stat>
+
+## Trade-offs
+<infer from decisions.md; [TO VERIFY] if not recorded>
+```
+
+---
+
+**`docs/stories/$ARGUMENTS/design-review.md`**
+
+```markdown
+# $ARGUMENTS — Design Review  *(reconstructed)*
+
+## Problemas detectados
+[TO VERIFY] — no design review record found
+
+## Recomendaciones
+[TO VERIFY] — no design review record found
+
+## Aprobación
+Approved — story completed (inferred from sprint-tracker.md)
+```
+
+---
+
+**`docs/stories/$ARGUMENTS/implementation.md`**
+
+```markdown
+# $ARGUMENTS — Implementation  *(reconstructed)*
+
+## Ficheros creados
+<populate from git log --stat for commits related to this story>
+
+## Ficheros modificados
+<populate from git log --stat for commits related to this story>
+
+## Cambios realizados
+<summarise what the commits accomplish based on diff and commit messages>
+```
+
+---
+
+**`docs/stories/$ARGUMENTS/validation.md`**
+
+```markdown
+# $ARGUMENTS — Validation  *(reconstructed)*
+
+## Acceptance Criteria
+
+| # | Criterion | Result | Notes |
+|---|---|---|---|
+| 1 | <from mvp-backlog.md> | PASS | inferred from story completion |
+
+> Validation was not recorded at the time. Criteria marked PASS are inferred
+> from the story being marked complete in sprint-tracker.md. Run
+> `/validate-story $ARGUMENTS` to produce a verified record.
+
+## Verdict
+DONE — inferred from sprint-tracker.md
+```
+
+---
+
+**`docs/stories/$ARGUMENTS/retrospective.md`**
+
+```markdown
+# $ARGUMENTS — Retrospective  *(reconstructed)*
+
+## Lecciones aprendidas
+<copy relevant entries from docs/lessons-learned.md that mention this story>
+
+## Problemas encontrados
+<copy relevant entries from docs/decisions.md or lessons-learned.md>
+
+## Actualizaciones de memoria
+[TO VERIFY] — memory updates from original session not recoverable
+```
+
+---
+
+## Step 3 — Summary report
+
+After writing all six files, output a report in the chat:
+
+```
+## Reconstruction report — $ARGUMENTS
+
+### Sources used
+- [ ] mvp-backlog.md
+- [ ] sprint-tracker.md
+- [ ] decisions.md
+- [ ] lessons-learned.md
+- [ ] git log (N commits found)
+
+### Fields requiring verification
+<list every field marked [TO VERIFY] with the file it appears in>
+
+### Recommended next action
+Run `/validate-story $ARGUMENTS` to replace the inferred validation record
+with a verified one.
+```
+------
+****
+
+Asi, seguiríamos desarrollando historias de usuario hasta finalizar el sprint. Ahora sí tenenemos un método completo para abordar cada historia de usuario de forma iterativa, asegurándonos de que cada fase del proceso se realice con cuidado y atención al detalle, y manteniendo un registro completo y estructurado de todo el proceso para cada historia de usuario implementada. Esto nos permitirá mantener un alto nivel de calidad en el desarrollo, identificar áreas de mejora a lo largo del tiempo, y tener una memoria detallada del proyecto que podemos consultar en el futuro para obtener insights y aprender de nuestras experiencias pasadas.
+
+## Conclusiones
+
+La inteligencia artificial puede ser una herramienta muy poderosa para mejorar nuestro proceso de desarrollo, ayudándonos a mantener un flujo de trabajo iterativo eficiente y consistente, y permitiéndonos automatizar tareas repetitivas para que podamos centrarnos en lo que realmente importa: construir un gran producto. Al crear comandos personalizados para cada fase del proceso, podemos asegurarnos de que cada paso se realice con cuidado y atención al detalle, mientras que el comando orquestador nos permite ejecutar todo el flujo completo con un solo comando cuando queramos seguir el proceso iterativo completo sin interrupciones. Además, al guardar un registro detallado de cada historia de usuario implementada, podemos mantener una memoria del proyecto a lo largo del tiempo, lo que nos permitirá aprender de nuestras experiencias pasadas y mejorar continuamente nuestro proceso de desarrollo. Al final, lo importante es encontrar un equilibrio entre la automatización y el control manual, asegurándonos de que cada fase del proceso se realice de forma cuidadosa y reflexiva, mientras que al mismo tiempo aprovechamos las ventajas de la inteligencia artificial para mejorar nuestra eficiencia y calidad en el desarrollo.

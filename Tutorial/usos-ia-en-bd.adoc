@@ -1,0 +1,981 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+
+////
+Nombre y título del trabajo
+////
+
+= Inteligencia artificial generativa aplicada a productividad IT hospitalaria
+Manuel Torres - Universidad de Almería
+
+// NO CAMBIAR!! (Entrar en modo no numerado de apartados)
+:numbered!: 
+
+[abstract]
+== Resumen
+
+Proident veniam veniam est officia qui culpa incididunt do Lorem. Deserunt tempor consequat nulla commodo ut elit exercitation fugiat do quis ipsum. Ex enim qui amet ea dolor. Enim nostrud cupidatat reprehenderit amet officia incididunt minim commodo culpa pariatur sint aute laboris labore. Consectetur veniam consectetur quis magna excepteur incididunt officia adipisicing ad ex in et culpa exercitation. Adipisicing proident velit tempor adipisicing minim culpa. Deserunt est commodo cillum eiusmod eu est.
+
+Ut esse quis ex laborum proident culpa amet aliqua cillum dolore laborum amet do sit. Anim cupidatat eu fugiat pariatur dolore culpa ullamco. Anim deserunt exercitation ut magna ea anim Lorem consequat ullamco incididunt dolor in. Mollit ea anim dolore amet minim Lorem esse reprehenderit eiusmod ad ad dolore in. Voluptate reprehenderit dolore cillum sint enim ea laborum Lorem sunt veniam. Ullamco voluptate consequat quis sit consequat nulla est deserunt cupidatat esse exercitation mollit elit.
+
+Duis ex culpa anim cupidatat incididunt minim nulla sint commodo in fugiat anim commodo eiusmod. Nostrud excepteur irure eu eiusmod nulla irure occaecat. Ullamco commodo qui fugiat anim nulla non. Ex voluptate eu velit pariatur ex incididunt adipisicing fugiat reprehenderit consectetur non ullamco magna. Elit officia non cupidatat incididunt cillum veniam officia cillum ad nulla sunt culpa sint. Consequat eiusmod esse quis ut elit esse velit Lorem.
+
+////
+COLOCA A CONTINUACION LOS OBJETIVOS
+////
+.Objetivos
+Al finalizar el curso, las personas participantes deberían ser capaces de:
+
+* Dolor consequat laborum labore fugiat fugiat ut mollit duis nulla nostrud ipsum velit.
+
+// NO CAMBIAR!! (Entrar en modo numerado de apartados)
+:numbered: 
+
+## Estructura de la base de datos propuesta
+
+### Diagrama de la base de datos
+
+[mermaid,  format="svg"]
+....
+erDiagram
+    TERRITORIO_DISTRITO ||--o{ TERRITORIO_ZBS : contiene
+    TERRITORIO_PROVINCIA ||--o{ TERRITORIO_MUNICIPIO : contiene
+    TERRITORIO_ZBS ||--o{ CENTRO_SANITARIO : agrupa
+    TERRITORIO_MUNICIPIO ||--o{ CENTRO_SANITARIO : ubica
+    TERRITORIO_MUNICIPIO ||--o{ HOSPITAL : ubica
+    TERRITORIO_MUNICIPIO ||--o{ LABORATORIO : ubica
+
+    PACIENTE ||--o{ PACIENTE_DIRECCION_HIST : tiene
+    PACIENTE ||--o{ PACIENTE_DETERMINANTE_SOCIAL_HIST : tiene
+    PACIENTE ||--o{ PACIENTE_FACTOR_RIESGO : presenta
+    PACIENTE ||--o{ DIAGNOSTICO_CASO : registra
+    PACIENTE ||--o{ VACUNACION_EVENTO : recibe
+    PACIENTE ||--o{ INGRESO_HOSPITALARIO : ingresa
+    PACIENTE ||--o{ MUESTRA_BIOLOGICA : aporta
+    PACIENTE ||--o{ DEFUNCION : puede_tener
+
+    PROFESIONAL ||--o{ PROFESIONAL_ADSCRIPCION_HIST : adscrito
+    CENTRO_SANITARIO ||--o{ PROFESIONAL_ADSCRIPCION_HIST : recibe
+
+    CATALOGO_PATOLOGIA ||--o{ DIAGNOSTICO_CASO : clasifica
+    PROFESIONAL ||--o{ DIAGNOSTICO_CASO : diagnostica
+    CENTRO_SANITARIO ||--o{ DIAGNOSTICO_CASO : notifica
+
+    VACUNACION_EVENTO ||--o{ VACUNACION_INCIDENCIA : genera
+    PROFESIONAL ||--o{ VACUNACION_EVENTO : administra
+    CENTRO_SANITARIO ||--o{ VACUNACION_EVENTO : realiza
+
+    HOSPITAL ||--o{ INGRESO_HOSPITALARIO : atiende
+    INGRESO_HOSPITALARIO ||--o{ INGRESO_DIAGNOSTICO : relaciona
+    DIAGNOSTICO_CASO ||--o{ INGRESO_DIAGNOSTICO : relaciona
+
+    MUESTRA_BIOLOGICA ||--o{ PRUEBA_DIAGNOSTICA : soporta
+    PRUEBA_DIAGNOSTICA ||--o{ RESULTADO_LABORATORIO : produce
+    LABORATORIO ||--o{ RESULTADO_LABORATORIO : emite
+
+    BROTE ||--o{ BROTE_CASO : incluye
+    DIAGNOSTICO_CASO ||--o{ BROTE_CASO : asociado
+    BROTE ||--o{ ALERTA_EPIDEMIOLOGICA : dispara
+
+    PACIENTE ||--o{ CONTACTO_EPIDEMIOLOGICO : origen
+    PACIENTE ||--o{ CONTACTO_EPIDEMIOLOGICO : contacto
+
+    DIAGNOSTICO_CASO ||--o{ SEGUIMIENTO_CASO : evoluciona
+
+    DEFUNCION ||--o{ DEFUNCION_CAUSA_SECUNDARIA : detalla
+    DEFUNCION ||--o{ DEFUNCION_REL_PATOLOGIA : vincula
+    DEFUNCION ||--o{ DEFUNCION_REL_BROTE : vincula
+....
+
+### Tablas principales
+
+* **Vigilancia clínica**
+    * diagnostico_caso (id_diagnostico PK, id_paciente FK, patologia_id FK, fecha_diagnostico, fecha_resolucion, gravedad_id FK, origen_diagnostico_id FK, id_profesional FK, id_centro FK, estado_caso)
+    * ingreso_hospitalario (id_ingreso PK, id_paciente FK, id_hospital FK, fecha_ingreso, fecha_alta, motivo_ingreso_id FK, uci_flag, resultado_alta_id FK)
+    * ingreso_diagnostico (id PK, id_ingreso FK, id_diagnostico FK, tipo_asociacion_id FK)
+    * defuncion (id_defuncion PK, id_paciente FK, fecha_defuncion, causa_principal_cie_id FK, lugar_defuncion_id FK, certificador_profesional_id FK)
+    * defuncion_causa_secundaria (id PK, id_defuncion FK, causa_cie_id FK, orden)
+    * defuncion_rel_patologia (id PK, id_defuncion FK, patologia_id FK, rol_relacion_id FK)
+    * defuncion_rel_brote (id PK, id_defuncion FK, id_brote FK, grado_relacion_id FK)
+
+* **Vacunación**
+    * vacunacion_evento (id_vacunacion PK, id_paciente FK, vacuna_id FK, fabricante_id FK, lote, dosis_numero, fecha_vacunacion, id_profesional FK, id_centro FK, via_administracion_id FK)
+    * vacunacion_incidencia (id PK, id_vacunacion FK, tipo_incidencia_id FK, severidad_id FK, descripcion, fecha_incidencia)
+
+* **Laboratorio**
+    * muestra_biologica (id_muestra PK, id_paciente FK, tipo_muestra_id FK, fecha_toma, id_centro_toma FK, id_profesional_toma FK, estado_muestra_id FK)
+    * prueba_diagnostica (id_prueba PK, id_muestra FK, tipo_prueba_id FK, fecha_solicitud, fecha_ejecucion, prioridad_id FK, solicitante_profesional_id FK, id_centro_solicitante FK)
+    * resultado_laboratorio (id_resultado PK, id_prueba FK, id_laboratorio FK, parametro_id FK, valor_num, valor_texto, unidad_id FK, rango_ref_min, rango_ref_max, interpretacion_id FK, fecha_resultado, validado_por_profesional_id FK)
+
+* **Inteligencia epidemiológica**
+    * observacion_epidemiologica (id_observacion PK, tipo_observacion, id_paciente FK nullable, ambito_geo_tipo, ambito_geo_id, fecha_observacion, indicador_id FK, valor_num, valor_texto, nivel_alerta_id FK, fuente)
+    * alerta_epidemiologica (id_alerta PK, id_brote FK nullable, nivel_alerta_id FK, fecha_apertura, fecha_cierre, estado_alerta_id FK, criterio_disparo, descripcion)
+    * brote (id_brote PK, codigo_brote UQ, clasificacion_brote_id FK, fecha_deteccion, fecha_inicio_estim, fecha_cierre, estado_brote_id FK, provincia_id FK, municipio_id FK, id_centro_notificador FK)
+    * brote_caso (id PK, id_brote FK, id_diagnostico FK, fecha_asociacion, rol_en_brote_id FK, confirmado_flag)
+    * contacto_epidemiologico (id_contacto PK, paciente_origen_id FK, paciente_contacto_id FK, tipo_contacto_id FK,
+    * seguimiento_caso (id_seguimiento PK, id_diagnostico FK, fecha_seguimiento, estado_caso, gravedad_id FK, observaciones)
+
+* **Catálogos**
+Catálogos desacoplados para evitar redundancia y permitir gobernanza semántica: sexo, provincias, municipios, categorías profesionales, especialidades, patologías, gravedad, origen diagnóstico, vacunas, fabricantes, tipo muestra, tipo prueba, unidades, niveles alerta, tipos de contacto, niveles de riesgo, etc.
+
+### Claves primarias y foráneas
+
+Resumen operativo (principales):
+* paciente. PK: id_paciente. FK: sexo_id
+* paciente_direccion_hist. PK: id. FK: id_paciente, municipio_id, provincia_id
+* paciente_determinante_social_hist. PK: id. FK: id_paciente + catálogos sociales
+* paciente_factor_riesgo. PK: id. FK: id_paciente, factor_riesgo_id
+* profesional. PK: id_profesional. FK: categoria_id, especialidad_id
+* profesional_adscripcion_hist. PK: id. FK: id_profesional, id_centro
+* centro_sanitario. PK: id_centro. FK: zbs_id, municipio_id, tipo_centro_id
+* hospital. PK: id_hospital. FK: municipio_id
+* laboratorio. PK: id_laboratorio. FK: municipio_id
+* diagnostico_caso. PK: id_diagnostico. FK: id_paciente, patologia_id, gravedad_id, origen_diagnostico_id, id_profesional, id_centro
+* vacunacion_evento. PK: id_vacunacion. FK: id_paciente, vacuna_id, fabricante_id, id_profesional, id_centro
+* vacunacion_incidencia. PK: id. FK: id_vacunacion
+* ingreso_hospitalario. PK: id_ingreso. FK: id_paciente, id_hospital
+* ingreso_diagnostico. PK: id. FK: id_ingreso, id_diagnostico
+* defuncion. PK: id_defuncion. FK: id_paciente, causa_principal_cie_id
+* defuncion_causa_secundaria. PK: id. FK: id_defuncion, causa_cie_id
+* defuncion_rel_patologia. PK: id. FK: id_defuncion, patologia_id
+* defuncion_rel_brote. PK: id. FK: id_defuncion, id_brote
+* muestra_biologica. PK: id_muestra. FK: id_paciente, tipo_muestra_id, id_centro_toma, id_profesional_toma
+* prueba_diagnostica. PK: id_prueba. FK: id_muestra, tipo_prueba_id, solicitante_profesional_id, id_centro_solicitante
+* resultado_laboratorio. PK: id_resultado. FK: id_prueba, id_laboratorio, parametro_id, unidad_id, validado_por_profesional_id
+* observacion_epidemiologica. PK: id_observacion. FK: id_paciente opcional, indicador_id, nivel_alerta_id
+* alerta_epidemiologica. PK: id_alerta. FK: id_brote opcional, nivel_alerta_id
+* brote. PK: id_brote. FK: provincia_id, municipio_id, id_centro_notificador
+* brote_caso. PK: id. FK: id_brote, id_diagnostico
+* contacto_epidemiologico. PK: id_contacto. FK: paciente_origen_id, paciente_contacto_id, tipo_contacto_id, nivel_riesgo_id, id_brote opcional
+* seguimiento_caso. PK: id_seguimiento. FK: id_diagnostico
+
+### Índices recomendados
+
+* **Índices de unicidad**
+    * paciente: id_sistema_sanitario
+    * profesional: num_colegiado
+    * centro_sanitario: codigo_centro
+    * hospital: codigo_hospital
+    * laboratorio: codigo_laboratorio
+    * brote: codigo_brote
+
+* **Índices por consultas clínicas/epidemiológicas**
+* diagnostico_caso: (patologia_id, fecha_diagnostico), (id_paciente, fecha_diagnostico desc), (estado_caso)
+* vacunacion_evento: (id_paciente, fecha_vacunacion desc), (vacuna_id, dosis_numero), (id_centro, fecha_vacunacion)
+* ingreso_hospitalario: (id_hospital, fecha_ingreso), (id_paciente, fecha_ingreso desc)
+* defuncion: (fecha_defuncion), (causa_principal_cie_id, fecha_defuncion)
+* muestra_biologica: (fecha_toma), (id_paciente, fecha_toma desc)
+* prueba_diagnostica: (tipo_prueba_id, fecha_solicitud), (id_muestra)
+* resultado_laboratorio: (fecha_resultado), (id_prueba), (parametro_id, fecha_resultado)
+* brote: (estado_brote_id, fecha_deteccion), (provincia_id, municipio_id, fecha_deteccion)
+* brote_caso: (id_brote, fecha_asociacion), (id_diagnostico)
+* contacto_epidemiologico: (paciente_origen_id, fecha_contacto), (paciente_contacto_id, fecha_contacto), (id_brote)
+* seguimiento_caso: (id_diagnostico, fecha_seguimiento desc)
+* observacion_epidemiologica: (fecha_observacion), (indicador_id, ambito_geo_tipo, ambito_geo_id, fecha_observacion)
+
+* **Particionado recomendado**
+* Particionado anual o mensual por fecha_evento en: diagnostico_caso, vacunacion_evento, ingreso_hospitalario, muestra_biologica, prueba_diagnostica, resultado_laboratorio, observacion_epidemiologica, seguimiento_caso, contacto_epidemiologico.
+* Subparticionado opcional por provincia en tablas de muy alto volumen.
+
+### Reglas de negocio clave
+
+1. Un paciente no puede tener más de una dirección activa en la misma fecha.
+2. En historial social y adscripción profesional no puede haber solapamiento de intervalos para la misma dimensión.
+3. Fecha de resolución de diagnóstico debe ser mayor o igual a fecha de diagnóstico.
+4. Dosis de vacunación debe ser secuencial por paciente y vacuna.
+5. Resultado de laboratorio requiere prueba previa y fecha_resultado mayor o igual a fecha_toma.
+6. Un contacto epidemiológico no puede tener origen y contacto iguales.
+7. Un brote cerrado exige fecha_cierre informada.
+8. Una defunción debe tener causa principal obligatoria y al menos una fuente de certificación.
+9. Observación agregada no debe referenciar paciente; observación individual sí puede hacerlo.
+10. Todo registro operativo debe incluir metadatos de trazabilidad: fecha_creacion, usuario/sistema_origen, fecha_ultima_actualizacion, version_registro, id_lote_ingesta opcional.
+
+### Volumen estimado por tabla
+
+Para un periodo de 5 años y 250.000 pacientes tendríamos aproximadamente los siguientes volúmenes, basados en tasas epidemiológicas realistas para Andalucía:
+
+1. paciente: 250.000
+2. paciente_direccion_hist: 325.000
+3. paciente_determinante_social_hist: 350.000
+4. paciente_factor_riesgo: 600.000
+5. profesional: 18.000
+6. profesional_adscripcion_hist: 32.000
+7. centro_sanitario: 450
+8. hospital: 55
+9. laboratorio: 70
+10. diagnostico_caso: 1.500.000
+11. vacunacion_evento: 1.000.000
+12. vacunacion_incidencia: 40.000
+13. ingreso_hospitalario: 200.000
+14. ingreso_diagnostico: 320.000
+15. defuncion: 12.000
+16. defuncion_causa_secundaria: 24.000
+17. muestra_biologica: 1.200.000
+18. prueba_diagnostica: 1.800.000
+19. resultado_laboratorio: 3.200.000
+20. observacion_epidemiologica: 900.000
+21. alerta_epidemiologica: 8.000
+22. brote: 2.000
+23. brote_caso: 150.000
+24. contacto_epidemiologico: 450.000
+25. seguimiento_caso: 1.200.000
+26. catálogos: < 20.000 en total
+
+## Distribución de la población y actividad epidemiológica
+
+La base temporal seleccionada es el periodo 2021-2025
+
+**Distribución territorial (Andalucía, estable 5 años)**
+
+| Provincia | % población | Pacientes sobre 250.000 |
+|---|---:|---:|
+| Sevilla | 23,1% | 57.750 |
+| Málaga | 20,5% | 51.250 |
+| Cádiz | 14,8% | 37.000 |
+| Granada | 10,9% | 27.250 |
+| Córdoba | 9,2% | 23.000 |
+| Almería | 8,7% | 21.750 |
+| Jaén | 7,4% | 18.500 |
+| Huelva | 5,4% | 13.500 |
+| **Total** | **100%** | **250.000** |
+
+**Distribución demográfica (2025, aplicable como referencia)**
+
+* Sexo
+- Mujeres: **50,7%**
+- Hombres: **49,2%**
+- No especificado/otros: **0,1%**
+* Edad
++
+| Grupo edad | % |
+|---|---:|
+| 0–14 | 15,3% |
+| 15–24 | 10,0% |
+| 25–44 | 27,1% |
+| 45–64 | 27,5% |
+| 65–79 | 13,8% |
+| 80+ | 6,3% |
+| **Total** | **100%** |
+
+* Tendencia de envejecimiento (65+)
+- 2021: **18,2%**
+- 2022: **18,5%**
+- 2023: **18,8%**
+- 2024: **19,1%**
+- 2025: **19,4%**
+
+**Determinantes sociales**
+
+* Entorno
+- Urbano: **81%**
+- Rural: **19%**
+
+* Nivel educativo (adultos 25+)
+- Primaria o menos: **28%**
+- Secundaria: **44%**
+- Superior: **28%**
+
+* Situación laboral (16–64)
+- Ocupado: **58%**
+- Desempleado: **16%**
+- Inactivo (estudios/cuidados/otros): **26%**
+
+* Renta estimada por hogar (tramos)
+- Baja: **34%**
+- Media-baja: **29%**
+- Media: **24%**
+- Media-alta/alta: **13%**
+
+* Vulnerabilidad social (al menos un factor)
+- Sí: **22%**
+- No: **78%**
+
+**Factores de riesgo prevalentes (adultos, 2025)**
+- Tabaquismo activo: **24%**
+- Obesidad: **19%**
+- Diabetes: **10%**
+- HTA: **23%**
+- EPOC/asma crónica: **8%**
+- Inmunosupresión: **2,5%**
+
+**Distribución anual de actividad epidemiológica (sobre cohorte 250.000)**
+
+| Año | Diagnósticos | Vacunaciones | Ingresos | Defunciones | Muestras | Pruebas | Resultados |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 2021 | 340.000 | 290.000 | 42.000 | 2.700 | 300.000 | 460.000 | 810.000 |
+| 2022 | 320.000 | 240.000 | 41.000 | 2.550 | 270.000 | 410.000 | 740.000 |
+| 2023 | 285.000 | 165.000 | 39.000 | 2.350 | 215.000 | 320.000 | 575.000 |
+| 2024 | 275.000 | 155.000 | 38.500 | 2.280 | 205.000 | 305.000 | 545.000 |
+| 2025 | 280.000 | 150.000 | 39.500 | 2.320 | 210.000 | 315.000 | 560.000 |
+| **Total 5 años** | **1.500.000** | **1.000.000** | **200.000** | **12.200** | **1.200.000** | **1.810.000** | **3.230.000** |
+
+**Estacionalidad realista (multiplicadores mensuales)**
+
+Aplicable a diagnósticos respiratorios, pruebas y alertas.
+
+| Mes | Multiplicador |
+|---|---:|
+| Ene | 1,24 |
+| Feb | 1,18 |
+| Mar | 1,05 |
+| Abr | 0,96 |
+| May | 0,90 |
+| Jun | 0,84 |
+| Jul | 0,79 |
+| Ago | 0,81 |
+| Sep | 0,90 |
+| Oct | 1,00 |
+| Nov | 1,10 |
+| Dic | 1,23 |
+
+**Brotes y vigilancia (5 años)**
+
+- Brotes registrados: **1.900–2.200** (recomendación: 2.050)
+- Casos asociados a brotes: **130.000–170.000** (recomendación: 150.000)
+- Contactos epidemiológicos: **400.000–500.000** (recomendación: 450.000)
+- Seguimientos de caso: **1,1M–1,3M** (recomendación: 1,2M)
+- Alertas epidemiológicas: **7.000–9.000** (recomendación: 8.000)
+
+
+## Anonimización
+
+### Situación inicial 
+
+[source]
+----
+Rol: Experto en MySQL
+
+Objetivo: Crea una vista SQL que recupere todos los pacientes afectados en un brote con todos sus datos personales, datos del brote, diagnóstico, patologías y profesional que lo atendio
+
+Salida: Vista SQL en archivo vw_brote_pacientes_detalle.sql
+----
+
+### Anonimización de la vista. Creación del prompt
+
+[source]
+----
+Rol: Experto en MySQL y protección de datos
+
+Contexto: Tengo una vista creada con datos sencibles (vw_brote_pacientes_detalle). 
+
+Objetivo: Quiero realizar un trabajo de anonimización que identifique campos sensibles y proponga una estrategia de anonimización para generar código SQL de anonimización y documente los riesgos. 
+
+Salida: Prompt para pedirle a otra IA que haga ese trabajo
+----
+
+.Prompt de Auditoría de privacidad y anonimización de una vista epidemiológica
+
+[source]
+----
+Actúa como un consultor senior especializado en:
+
+* RGPD
+* Protección de datos sanitarios
+* Anonimización y pseudonimización
+* Diseño de bases de datos sanitarias
+* MySQL
+* Vigilancia epidemiológica
+
+Voy a proporcionarte la definición de una vista SQL que está en @file:050_views.sql. El resto de archivos del contexto se corresponde con scripts SQL que te ayudar a conocer la estrucutra de la base de datos actual.
+
+Tu tarea NO es únicamente anonimizarla.
+
+Debes realizar una auditoría completa de privacidad.
+
+## Contexto
+
+La vista se utiliza para:
+
+* análisis epidemiológico
+* investigación de brotes
+* explotación analítica
+* generación de datasets de pruebas
+* formación técnica
+
+El objetivo es obtener una versión que pueda utilizarse fuera del entorno de producción minimizando el riesgo de identificación de personas.
+
+## Tareas obligatorias
+
+### 1. Inventario de campos
+
+Analiza todos los campos de la vista y clasifícalos en:
+
+* Identificadores directos
+* Identificadores indirectos (cuasi-identificadores)
+* Datos clínicos
+* Datos administrativos
+* Datos geográficos
+* Datos temporales
+* Datos no sensibles
+
+Presenta una tabla resumen.
+
+---
+
+### 2. Identificación de riesgos de reidentificación
+
+Para cada campo indica:
+
+* Nivel de sensibilidad (Alto / Medio / Bajo)
+* Riesgo de reidentificación
+* Motivo
+
+Ten especialmente en cuenta combinaciones de campos que permitan identificar personas aunque no exista nombre o DNI.
+
+Ejemplos:
+
+* Fecha nacimiento + municipio
+* Sexo + edad avanzada + patología rara
+* Fecha exacta de ingreso + localidad pequeña
+
+---
+
+### 3. Estrategia de anonimización
+
+Propón para cada campo una de las siguientes estrategias:
+
+* Eliminar
+* Enmascarar
+* Generalizar
+* Agrupar
+* Sustituir por valor sintético
+* Pseudonimizar mediante hash
+* Mantener sin cambios
+
+Justifica cada decisión.
+
+---
+
+### 4. Propuesta de vista anonimizada
+
+Genera una nueva definición SQL en un archivo denominado:
+
+vw_brote_pacientes_detalle_anon.sql <1>
+
+Aplicando la estrategia propuesta.
+
+Utiliza sintaxis compatible con MySQL.
+
+Cuando sea necesario:
+
+* sustituye fechas exactas por periodos
+* sustituye edad exacta por rangos
+* sustituye municipios por áreas sanitarias
+* sustituye identificadores por hashes reproducibles
+
+Comenta cada transformación dentro del SQL.
+
+---
+
+### 5. Evaluación de utilidad analítica
+
+Analiza si la anonimización propuesta permite seguir realizando:
+
+* vigilancia epidemiológica
+* análisis de brotes
+* análisis temporal
+* análisis geográfico
+* cuadros de mando Power BI
+* estudios estadísticos
+
+Indica posibles pérdidas de información.
+
+---
+
+### 6. Riesgos residuales
+
+Identifica:
+
+* riesgos de reidentificación restantes
+* ataques posibles por combinación de atributos
+* limitaciones de la anonimización
+* escenarios de uso no recomendados
+
+---
+
+### 7. Recomendación final
+
+Clasifica el resultado obtenido según el nivel de protección:
+
+* Uso interno restringido
+* Uso interno general
+* Formación
+* Compartición con terceros
+* Publicación abierta
+
+Justifica la clasificación.
+
+## Formato de salida
+
+Genera un archivo markdown con la respuesta en este orden: <2>
+
+1. Resumen ejecutivo
+2. Inventario de campos
+3. Riesgos detectados
+4. Estrategia de anonimización
+5. SQL de la vista anonimizada
+6. Riesgos residuales
+7. Recomendaciones finales
+
+No inventes información que no aparezca en la definición de la vista. <3>
+Si existen dudas o ambigüedades, indícalas explícitamente.
+
+----
+<1> Indicamos que queremos la consulta en un archivo
+<2> Indicamos que queremos el resultado en un archivo. Puede ser útil como contexto más adelante
+<3> Evitar alucinaciones
+
+### Resultado de la auditoría
+
+La consulta anonimizada está en un archivo y este sería un ejemplo de informe devuelto
+
+#### Resumen ejecutivo
+
+La vista actual en `mysql/init/050_views.sql` contiene datos altamente identificables: nombre, apellidos, identificadores internos, direccion, codigo postal, fechas exactas y combinaciones clinicas-geograficas-temporales.
+
+Para su uso fuera de produccion, el riesgo de reidentificacion es alto incluso eliminando campos obvios, por combinacion de cuasi-identificadores.
+
+La propuesta aplicada es:
+
+* eliminar identificadores directos y datos de localizacion precisa,
+* pseudonimizar claves analiticas con hash reproducible,
+* generalizar fechas a mes,
+* convertir fecha de nacimiento a rango de edad,
+* reducir granularidad geografica a provincia o area aproximada,
+* generalizar codigo de patologia,
+* mantener las variables con valor epidemiologico alto.
+
+Resultado esperado:
+
+* utilidad analitica alta para vigilancia y brotes,
+* riesgo residual moderado,
+* no apto para publicacion abierta sin controles adicionales.
+
+#### Inventario de campos
+
+[cols="1,1,1",options="header"]
+|===
+|Campo | Clasificacion principal | Observacion
+
+|brote_id | Administrativo / identificador indirecto | Identificador interno de brote
+|codigo_brote | Administrativo / identificador indirecto | Puede enlazarse con expedientes o informes
+|brote_clasificacion | No sensible operativo | Dato funcional de brote
+|estado_brote | No sensible operativo | Dato funcional de seguimiento
+|fecha_deteccion | Temporal | Fecha exacta de evento
+|fecha_inicio_estimada | Temporal | Fecha epidemiologica relevante
+|fecha_cierre | Temporal | Fecha de cierre del brote
+|brote_provincia | Geografico | Granularidad media
+|brote_municipio | Geografico | Granularidad fina
+
+|paciente_id | Identificador directo interno | Identificador tecnico
+|id_sistema_sanitario | Identificador directo | Muy sensible
+|paciente_nombre | Identificador directo | Identificacion directa
+|paciente_apellidos | Identificador directo | Identificacion directa
+|paciente_sexo | Identificador indirecto | Cuasi-identificador
+|fecha_nacimiento | Identificador indirecto / temporal | Cuasi-identificador fuerte
+|paciente_fecha_alta | Administrativo / temporal | Puede permitir linkage temporal
+|paciente_estado_registro | Administrativo | Bajo valor identificativo aislado
+
+|paciente_direccion | Identificador directo geografico | Localizacion precisa
+|paciente_codigo_postal | Geografico indirecto | Cuasi-identificador
+|paciente_municipio | Geografico indirecto | Cuasi-identificador fuerte
+|paciente_provincia | Geografico | Granularidad media
+
+|nivel_educativo | Social | Dato indirectamente sensible
+|situacion_laboral | Social | Dato indirectamente sensible
+|tramo_renta | Social | Dato indirectamente sensible
+|entorno | Social / geografico | Sensibilidad media
+|vulnerabilidad | Social sensible | Alto valor inferencial
+
+|diagnostico_id | Clinico / identificador interno | Identificador tecnico de episodio
+|fecha_diagnostico | Clinico / temporal | Riesgo alto en combinacion
+|fecha_resolucion | Clinico / temporal | Riesgo medio-alto en combinacion
+|estado_caso | Clinico | Dato sensible
+|gravedad | Clinico | Dato sensible
+|origen_diagnostico | Clinico / administrativo | Sensibilidad media
+|patologia_cie10 | Clinico | Dato de salud sensible
+|patologia_nombre | Clinico | Dato de salud sensible
+|patologia_grupo | Clinico | Sensible pero mas agregable
+
+|fecha_asociacion | Temporal epidemiologico | Puede correlacionar con eventos conocidos
+|rol_en_brote | Clinico-epidemiologico | Sensible moderado
+|confirmado_flag | Clinico-epidemiologico | Sensible moderado
+
+|profesional_id | Identificador directo interno | Identificador tecnico
+|num_colegiado | Identificador directo | Identifica profesional
+|profesional_nombre | Identificador directo | Identifica profesional
+|profesional_apellidos | Identificador directo | Identifica profesional
+|profesional_categoria | Administrativo sanitario | Riesgo bajo-medio
+|profesional_especialidad | Administrativo sanitario | Riesgo medio en grupos pequenos
+
+|centro_id | Identificador interno | Identificador tecnico
+|codigo_centro | Identificador interno | Puede enlazar con catalogos internos
+|centro_nombre | Administrativo / geografico | Puede desvelar localizacion y circuito asistencial
+|===
+
+#### Riesgos detectados
+
+##### Riesgo por campo
+
+[cols="1,1,1,2",options="header"]
+|===
+|Campo o grupo | Sensibilidad | Riesgo de reidentificacion | Motivo
+
+|id_sistema_sanitario, paciente_nombre, paciente_apellidos | Alto | Alto | Identificacion directa
+|paciente_id, profesional_id, diagnostico_id | Alto | Alto | Identificadores internos persistentes
+|num_colegiado, profesional_nombre, profesional_apellidos | Alto | Alto | Identificacion directa del profesional
+|paciente_direccion | Alto | Alto | Localizacion exacta
+|paciente_codigo_postal, paciente_municipio | Medio-Alto | Alto | Cuasi-identificadores geograficos
+|fecha_nacimiento | Alto | Alto | Muy distintivo en combinacion
+|fecha_diagnostico, fecha_resolucion, fecha_asociacion | Alto | Alto | Correlacion temporal con eventos externos
+|patologia_cie10, patologia_nombre | Alto | Alto | Dato sanitario especialmente protegido
+|gravedad, estado_caso | Alto | Medio | Sensibles clinicamente
+|vulnerabilidad, tramo_renta, situacion_laboral | Medio-Alto | Medio-Alto | Facilitan singling out
+|brote_municipio, centro_nombre | Medio | Medio-Alto | Contexto geografico y organizativo fino
+|brote_provincia, paciente_provincia | Bajo-Medio | Medio | Menor granularidad
+|brote_clasificacion, estado_brote, origen_diagnostico | Bajo | Bajo-Medio | Bajo riesgo aislado
+|===
+
+##### Combinaciones de alto riesgo
+
+* Fecha de nacimiento + municipio + sexo
+* Fecha diagnostico exacta + patologia + municipio
+* Sexo + edad avanzada + patologia rara
+* Vulnerabilidad + entorno + provincia + periodo corto
+* Profesional_especialidad + centro + fechas del brote
+
+##### Ambiguedades detectadas
+
+No existe en la definicion de la vista un mapeo explicito desde municipio a area sanitaria o distrito sanitario.
+Por tanto, cualquier sustitucion por area sanitaria requiere una tabla de referencia adicional no presente en la definicion suministrada.
+
+#### Estrategia de anonimizacion
+
+[cols="1,1,2",options="header"]
+|===
+|Campo o grupo | Estrategia | Justificacion
+
+|paciente_id | Pseudonimizar mediante hash | Permite analisis longitudinal sin exponer clave interna
+|id_sistema_sanitario | Eliminar | Identificador directo innecesario fuera de produccion
+|paciente_nombre, paciente_apellidos | Eliminar | Identificacion directa
+|paciente_sexo | Mantener | Variable epidemiologica de alto valor con riesgo controlable
+|fecha_nacimiento | Agrupar | Sustituir por rango de edad para reducir unicidad
+|paciente_fecha_alta | Generalizar | Transformar a mes
+|paciente_estado_registro | Mantener | Bajo riesgo y utilidad operativa
+|paciente_direccion | Eliminar | Localizacion precisa innecesaria
+|paciente_codigo_postal | Eliminar | Geografia demasiado fina
+|paciente_municipio | Generalizar | Sustituir por area aproximada o provincia
+|paciente_provincia | Mantener | Buen equilibrio utilidad/riesgo
+|nivel_educativo, situacion_laboral, tramo_renta, entorno, vulnerabilidad | Mantener | Utiles para desigualdades y analitica; requieren acceso controlado
+|diagnostico_id | Eliminar | Clave tecnica sin valor externo
+|fecha_diagnostico, fecha_resolucion, fecha_asociacion | Generalizar | Sustituir por mes
+|estado_caso, gravedad, origen_diagnostico | Mantener | Necesarios para vigilancia y analisis clinico
+|patologia_cie10 | Generalizar | Mantener solo categoria CIE a 3 caracteres
+|patologia_nombre | Eliminar | Duplicado descriptivo del dato sensible
+|patologia_grupo | Mantener | Aporta valor agregado suficiente
+|brote_id | Pseudonimizar mediante hash | Evita exponer id tecnico y permite analisis
+|codigo_brote | Mantener con cautela | Util para investigacion de brotes; no recomendable en datasets abiertos
+|brote_clasificacion, estado_brote | Mantener | Bajo riesgo y alta utilidad
+|fecha_deteccion, fecha_inicio_estimada, fecha_cierre | Generalizar | Sustituir por mes
+|brote_municipio | Generalizar | Sustituir por area aproximada o provincia
+|brote_provincia | Mantener | Valor geografico aceptable
+|rol_en_brote, confirmado_flag | Mantener | Utilidad epidemiologica alta
+|profesional_id | Pseudonimizar mediante hash | Permite analizar patrones sin revelar identidad
+|num_colegiado | Eliminar | Identificador directo
+|profesional_nombre, profesional_apellidos | Eliminar | Identificacion directa
+|profesional_categoria, profesional_especialidad | Mantener | Utiles analiticamente; riesgo moderado
+|centro_id, codigo_centro | Eliminar | Identificadores tecnicos
+|centro_nombre | Eliminar | Puede revelar ubicacion y circuito asistencial
+|===
+
+#### SQL de la vista anonimizada
+
+La siguiente propuesta se da en sintaxis compatible con SQL Server, tal y como se solicito.
+Se asume la existencia previa de una vista base `dbo.vw_brote_pacientes_detalle` con la estructura equivalente.
+
+[source,sql]
+----
+USE `epidemiologia_dev`;
+
+-- Vista anonimizada orientada a analitica epidemiologica fuera de produccion.
+-- Requiere MySQL 8.0+ (usa funciones de ventana en subconsultas heredadas de la vista original).
+
+DROP VIEW IF EXISTS vw_brote_pacientes_detalle_anon;
+
+CREATE VIEW vw_brote_pacientes_detalle_anon AS
+SELECT
+  -- Pseudonimizacion reproducible de identificador interno de brote.
+  SHA2(CONCAT('EPID_ANON_V1|BROTE|', CAST(b.id AS CHAR)), 256) AS brote_uid,
+
+  -- Se mantiene clasificacion y estado por su alto valor de vigilancia.
+  b.clasificacion AS brote_clasificacion,
+  b.estado_brote,
+
+  -- Generalizacion temporal de fechas exactas a periodo mensual.
+  DATE_FORMAT(b.fecha_deteccion, '%Y-%m-01') AS brote_periodo_deteccion,
+  CASE
+    WHEN b.fecha_inicio_estimada IS NULL THEN NULL
+    ELSE DATE_FORMAT(b.fecha_inicio_estimada, '%Y-%m-01')
+  END AS brote_periodo_inicio_estimada,
+  CASE
+    WHEN b.fecha_cierre IS NULL THEN NULL
+    ELSE DATE_FORMAT(b.fecha_cierre, '%Y-%m-01')
+  END AS brote_periodo_cierre,
+
+  -- Reduccion geografica: se elimina municipio y se mantiene provincia.
+  cp.nombre AS brote_provincia,
+
+  -- Sustitucion de municipio por area sanitaria aproximada (distrito/ZBS del centro notificador).
+  COALESCE(td_b.nombre, CONCAT('PROVINCIA_', cp.nombre)) AS brote_area_sanitaria,
+
+  -- Pseudonimizacion reproducible del paciente.
+  SHA2(CONCAT('EPID_ANON_V1|PAC|', CAST(p.id AS CHAR)), 256) AS paciente_uid,
+
+  -- Se elimina nombre/apellidos/id_sistema_sanitario y se conserva sexo con normalizacion.
+  CASE
+    WHEN UPPER(COALESCE(csx.descripcion, 'NO_CONSTA')) IN ('HOMBRE', 'MUJER') THEN UPPER(csx.descripcion)
+    ELSE 'OTRO_NO_CONSTA'
+  END AS paciente_sexo,
+
+  -- Sustitucion de fecha de nacimiento por tramo de edad en fecha de diagnostico.
+  CASE
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, COALESCE(dc.fecha_diagnostico, CURDATE())) BETWEEN 0 AND 14 THEN '00-14'
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, COALESCE(dc.fecha_diagnostico, CURDATE())) BETWEEN 15 AND 24 THEN '15-24'
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, COALESCE(dc.fecha_diagnostico, CURDATE())) BETWEEN 25 AND 44 THEN '25-44'
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, COALESCE(dc.fecha_diagnostico, CURDATE())) BETWEEN 45 AND 64 THEN '45-64'
+    WHEN TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, COALESCE(dc.fecha_diagnostico, CURDATE())) BETWEEN 65 AND 79 THEN '65-79'
+    ELSE '80+'
+  END AS paciente_grupo_edad,
+
+  -- Generalizacion de fecha de alta administrativa a mes.
+  DATE_FORMAT(p.fecha_alta, '%Y-%m-01') AS paciente_periodo_alta,
+  p.estado_registro AS paciente_estado_registro,
+
+  -- Se elimina direccion/codigo_postal/municipio y se mantiene provincia de residencia.
+  pp.nombre AS paciente_provincia,
+
+  -- Area sanitaria aproximada basada en el centro asociado al diagnostico.
+  COALESCE(td.nombre, CONCAT('PROVINCIA_', pp.nombre)) AS paciente_area_sanitaria_aprox,
+
+  -- Determinantes sociales se conservan por valor analitico, con null-safe.
+  COALESCE(cne.descripcion, 'NO_CONSTA') AS nivel_educativo,
+  COALESCE(csl.descripcion, 'NO_CONSTA') AS situacion_laboral,
+  COALESCE(ctr.descripcion, 'NO_CONSTA') AS tramo_renta,
+  COALESCE(cen.descripcion, 'NO_CONSTA') AS entorno,
+  COALESCE(cvu.descripcion, 'NO_CONSTA') AS vulnerabilidad,
+
+  -- Pseudonimizacion de episodio diagnostico.
+  SHA2(CONCAT('EPID_ANON_V1|DX|', CAST(dc.id AS CHAR)), 256) AS diagnostico_uid,
+
+  -- Generalizacion temporal de fechas clinicas.
+  DATE_FORMAT(dc.fecha_diagnostico, '%Y-%m-01') AS diagnostico_periodo,
+  CASE
+    WHEN dc.fecha_resolucion IS NULL THEN NULL
+    ELSE DATE_FORMAT(dc.fecha_resolucion, '%Y-%m-01')
+  END AS resolucion_periodo,
+
+  dc.estado_caso,
+  COALESCE(cg.descripcion, 'NO_CONSTA') AS gravedad,
+  COALESCE(cod.descripcion, 'NO_CONSTA') AS origen_diagnostico,
+
+  -- Generalizacion de CIE10 a prefijo (3 caracteres) para reducir unicidad.
+  CONCAT(LEFT(pat.codigo_cie10, 3), 'X') AS patologia_cie10_grupo,
+  COALESCE(pat.grupo, 'NO_CONSTA') AS patologia_grupo,
+
+  -- Generalizacion de fecha de asociacion del caso al brote.
+  DATE_FORMAT(bc.fecha_asociacion, '%Y-%m-01') AS asociacion_brote_periodo,
+  COALESCE(bc.rol_en_brote, 'NO_CONSTA') AS rol_en_brote,
+  bc.confirmado_flag,
+
+  -- Pseudonimizacion de profesional; se elimina num_colegiado y nombre/apellidos.
+  CASE
+    WHEN pr.id IS NULL THEN NULL
+    ELSE SHA2(CONCAT('EPID_ANON_V1|PROF|', CAST(pr.id AS CHAR)), 256)
+  END AS profesional_uid,
+  COALESCE(ccp.descripcion, 'NO_CONSTA') AS profesional_categoria,
+  COALESCE(ces.descripcion, 'NO_CONSTA') AS profesional_especialidad,
+
+  -- Pseudonimizacion del centro y mantenimiento de atributos agregados.
+  CASE
+    WHEN ce.id IS NULL THEN NULL
+    ELSE SHA2(CONCAT('EPID_ANON_V1|CENTRO|', CAST(ce.id AS CHAR)), 256)
+  END AS centro_uid,
+  COALESCE(ctc.descripcion, 'NO_CONSTA') AS centro_tipo,
+  COALESCE(td.nombre, CONCAT('PROVINCIA_', cp.nombre)) AS centro_area_sanitaria
+
+FROM brote b
+INNER JOIN brote_caso bc
+  ON bc.brote_id = b.id
+INNER JOIN diagnostico_caso dc
+  ON dc.id = bc.diagnostico_id
+INNER JOIN paciente p
+  ON p.id = dc.paciente_id
+LEFT JOIN cat_sexo csx
+  ON csx.id = p.sexo_id
+
+LEFT JOIN (
+  SELECT x.*
+  FROM (
+    SELECT
+      pdh.*,
+      ROW_NUMBER() OVER (
+        PARTITION BY pdh.paciente_id
+        ORDER BY pdh.actual DESC, pdh.fecha_inicio DESC, pdh.id DESC
+      ) AS rn
+    FROM paciente_direccion_hist pdh
+  ) x
+  WHERE x.rn = 1
+) da
+  ON da.paciente_id = p.id
+LEFT JOIN cat_provincia pp
+  ON pp.id = da.provincia_id
+
+LEFT JOIN (
+  SELECT y.*
+  FROM (
+    SELECT
+      pds.*,
+      ROW_NUMBER() OVER (
+        PARTITION BY pds.paciente_id
+        ORDER BY pds.fecha_inicio DESC, pds.id DESC
+      ) AS rn
+    FROM paciente_determinante_social_hist pds
+  ) y
+  WHERE y.rn = 1
+) ds
+  ON ds.paciente_id = p.id
+LEFT JOIN cat_nivel_educativo cne
+  ON cne.id = ds.nivel_educativo_id
+LEFT JOIN cat_situacion_laboral csl
+  ON csl.id = ds.situacion_laboral_id
+LEFT JOIN cat_tramo_renta ctr
+  ON ctr.id = ds.tramo_renta_id
+LEFT JOIN cat_entorno cen
+  ON cen.id = ds.entorno_id
+LEFT JOIN cat_vulnerabilidad cvu
+  ON cvu.id = ds.vulnerabilidad_id
+
+LEFT JOIN cat_gravedad cg
+  ON cg.id = dc.gravedad_id
+LEFT JOIN cat_origen_diagnostico cod
+  ON cod.id = dc.origen_diagnostico_id
+LEFT JOIN cat_patologia pat
+  ON pat.id = dc.patologia_id
+LEFT JOIN profesional pr
+  ON pr.id = dc.profesional_id
+LEFT JOIN cat_categoria_profesional ccp
+  ON ccp.id = pr.categoria_id
+LEFT JOIN cat_especialidad ces
+  ON ces.id = pr.especialidad_id
+
+LEFT JOIN centro_sanitario ce
+  ON ce.id = dc.centro_id
+LEFT JOIN cat_tipo_centro ctc
+  ON ctc.id = ce.tipo_centro_id
+LEFT JOIN territorio_zbs tz
+  ON tz.id = ce.zbs_id
+LEFT JOIN territorio_distrito td
+  ON td.id = tz.distrito_id
+
+LEFT JOIN cat_provincia cp
+  ON cp.id = b.provincia_id
+
+LEFT JOIN centro_sanitario ce_b
+  ON ce_b.id = b.centro_notificador_id
+LEFT JOIN territorio_zbs tz_b
+  ON tz_b.id = ce_b.zbs_id
+LEFT JOIN territorio_distrito td_b
+  ON td_b.id = tz_b.distrito_id;
+----
+
+#### Evaluacion de utilidad analitica
+
+[cols="1,1,2",options="header"]
+|===
+|Caso de uso | Utilidad tras anonimizar | Observaciones
+
+|Vigilancia epidemiologica | Alta | Se mantienen clasificacion, gravedad, estado, periodos y provincia
+|Analisis de brotes | Alta | Se conserva trazabilidad por brote_token y contexto clinico
+|Analisis temporal | Media-Alta | Se pierde dia exacto pero se mantiene mes
+|Analisis geografico | Media | Se pierde municipio exacto; se mantiene provincia y area aproximada
+|Cuadros de mando Power BI | Alta | La estructura sigue siendo explotable
+|Estudios estadisticos | Alta | Se mantienen variables clinicas, sociales y temporales agregadas
+|===
+
+Perdidas de informacion principales:
+
+* no se puede hacer microinvestigacion nominal,
+* no se puede analizar direccion o codigo postal,
+* se pierde granularidad temporal diaria,
+* se reduce precision geografica.
+
+#### Riesgos residuales
+
+Persisten riesgos residuales incluso tras la anonimización:
+
+* unicidad en patologias raras por provincia y periodo,
+* combinaciones de sexo + edad avanzada + vulnerabilidad + provincia,
+* correlacion con brotes publicos conocidos,
+* inferencia por tokens persistentes en subpoblaciones pequenas.
+
+Ataques posibles:
+
+* linkage con noticias locales sobre brotes,
+* singling out en grupos pequenos,
+* inferencia a partir de atributos sociales y clinicos combinados.
+
+Escenarios no recomendados:
+
+* publicacion abierta en internet,
+* datasets sin control de acceso,
+* comparticion amplia con terceros sin acuerdo ni finalidad cerrada.
+
+#### Recomendaciones finales
+
+Clasificacion propuesta del nivel de proteccion:
+
+[cols="1,1,2",options="header"]
+|===
+|Categoria de uso | Recomendacion | Justificacion
+
+|Uso interno restringido | Si | Riesgo residual asumible con controles de acceso
+|Uso interno general | Si, con cautela | Adecuado para analitica interna no asistencial nominal
+|Formacion | Si | Buen equilibrio entre utilidad y minimizacion
+|Comparticion con terceros | Si, bajo acuerdo y control | Requiere base juridica y medidas adicionales
+|Publicacion abierta | No recomendada | Riesgo residual todavia significativo
+|===
+
+Recomendacion final:
+
+La version anonimizada es adecuada para analitica interna, formacion tecnica y comparticion controlada con terceros bajo medidas organizativas y contractuales.
+No debe considerarse anonimizacion irreversible suficiente para publicacion abierta.
+
+En caso de necesitar un dataset de menor riesgo, se recomienda una segunda version mas estricta con:
+
+* eliminacion de `codigo_brote`,
+* supresion de `profesional_especialidad`,
+* agregacion semanal o mensual obligatoria,
+* generalizacion geografica a provincia o distrito amplio,
+* supresion o agregacion de patologias raras.
+
+
+
+
+[source]
+----
+docker compose exec -T mysql mysql -uroot -pchangeme_root_password -D epidemiologia_dev < reverse-engineering.sql
+----
+
+
+
+
+
+
