@@ -86,6 +86,11 @@ link:GestionDocumentacion/PreparacionReuniones/preparacion-reuniones-citas360.ht
 | Protocolos de trabajo con GenIA para proyectos de desarrollo: narrativa paulatina, casos de uso, prompts y práctica.
 | link:Tutorial/migracion-access-con-claude.html[Tutorial, window=_blank] - link:https://drive.google.com/file/d/1_13RZJrvBxxLWeTSgP3m7a9UYlDZDp3y/view?usp=sharing[Presentación NotebookLM, window=_blank]
 link:Tutorial/migracion-access-con-claude-presentacion.html[Presentación Claude, window=_blank]
+
+| Ecosistema Anthropic y Claude Code en el Entorno TIC Sanitario
+| Tutorial y presentación
+| Introducción al ecosistema de Antrhropic y creación de un flujo de trabajo para mejorar la eficiencia y la productividad: narrativa paulatina, casos de uso, prompts, repositorio y práctica.
+| link:Tutorial/introduccion-ecosistema-claude.html[Tutorial, window=_blank] - link:Tutorial/introduccion-ecosistema-claude-presentacion.html[Presentación Claude, window=_blank]
 |===
 
 

@@ -1,0 +1,1375 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ecosistema Anthropic y Claude Code en el Entorno TIC Sanitario</title>
+  <style>
+    :root {
+      --ink: #15202b;
+      --muted: #52616f;
+      --paper: #f7f8f5;
+      --panel: #ffffff;
+      --line: #d8ddd3;
+      --teal: #007c89;
+      --green: #6f8f39;
+      --red: #b23a48;
+      --amber: #c47a1d;
+      --blue: #2f5f9e;
+      --violet: #6855a3;
+      --shadow: 0 18px 50px rgba(23, 32, 42, 0.12);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(0,124,137,.10) 0 1px, transparent 1px 100%),
+        linear-gradient(0deg, rgba(0,124,137,.08) 0 1px, transparent 1px 100%),
+        var(--paper);
+      background-size: 44px 44px;
+      overflow: hidden;
+    }
+
+    .deck {
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 22px;
+      padding: clamp(28px, 5vw, 64px);
+      opacity: 0;
+      transform: translateX(34px) scale(.985);
+      transition: opacity .22s ease, transform .22s ease;
+      pointer-events: none;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 24px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+    }
+
+    .kicker {
+      margin: 0 0 8px;
+      color: var(--teal);
+      font-size: clamp(13px, 1.3vw, 16px);
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 1100px;
+      margin-bottom: 20px;
+      font-size: clamp(38px, 6.5vw, 80px);
+      line-height: .98;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin-bottom: 0;
+      max-width: 1040px;
+      font-size: clamp(30px, 4.5vw, 62px);
+      line-height: 1.02;
+      font-weight: 820;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: clamp(20px, 2.1vw, 28px);
+      line-height: 1.15;
+    }
+
+    p, li {
+      font-size: clamp(18px, 2vw, 27px);
+      line-height: 1.28;
+    }
+
+    .lead {
+      max-width: 980px;
+      color: var(--muted);
+      font-size: clamp(22px, 2.9vw, 38px);
+      line-height: 1.22;
+    }
+
+    .content {
+      min-height: 0;
+      align-self: center;
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .wide { width: min(1360px, 100%); }
+    .narrow { width: min(900px, 100%); }
+
+    /* Cover */
+    .cover {
+      background:
+        linear-gradient(135deg, rgba(21,32,43,.84), rgba(0,124,137,.58)),
+        radial-gradient(circle at 80% 22%, rgba(255,255,255,.22), transparent 22%),
+        linear-gradient(90deg, rgba(255,255,255,.11) 0 1px, transparent 1px 100%),
+        linear-gradient(0deg, rgba(255,255,255,.10) 0 1px, transparent 1px 100%),
+        #10212c;
+      background-size: auto, auto, 52px 52px, 52px 52px, auto;
+      color: white;
+    }
+
+    .cover .slide-header { border-color: rgba(255,255,255,.24); }
+    .cover .kicker, .cover .lead, .cover .meta { color: rgba(255,255,255,.82); }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+    }
+
+    /* Layout grid */
+    .grid { display: grid; gap: 18px; }
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    /* Cards */
+    .card {
+      min-height: 100%;
+      padding: clamp(18px, 2.2vw, 28px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.88);
+      box-shadow: var(--shadow);
+    }
+
+    .card.compact { padding: 18px; box-shadow: none; }
+    .card p, .card li { font-size: clamp(16px, 1.65vw, 22px); }
+
+    /* Lists */
+    ul, ol { margin: 0; padding-left: 1.15em; }
+    li + li { margin-top: 10px; }
+
+    /* Big number */
+    .big-number {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--teal);
+      font-size: clamp(40px, 4.5vw, 64px);
+      font-weight: 870;
+      line-height: 1;
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      margin-bottom: 12px;
+      padding: 4px 9px;
+      color: white;
+      background: var(--teal);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .tag.red    { background: var(--red); }
+    .tag.green  { background: var(--green); }
+    .tag.blue   { background: var(--blue); }
+    .tag.amber  { background: var(--amber); }
+    .tag.violet { background: var(--violet); }
+
+    /* Statement */
+    .statement {
+      max-width: 1100px;
+      padding-left: clamp(16px, 2vw, 26px);
+      border-left: 9px solid var(--teal);
+      font-size: clamp(26px, 3.8vw, 52px);
+      line-height: 1.12;
+      font-weight: 780;
+    }
+
+    /* Callouts */
+    .callout {
+      padding: 22px 26px;
+      border-left: 8px solid var(--amber);
+      background: #fff9ed;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .callout.tip   { border-color: var(--teal);  background: #eef9fa; }
+    .callout.warn  { border-color: var(--red);   background: #fff4f4; }
+    .callout.info  { border-color: var(--blue);  background: #eef3fc; }
+    .callout p, .callout li { font-size: clamp(18px, 1.8vw, 25px); }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+    th, td {
+      padding: clamp(10px, 1.4vw, 18px);
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+      font-size: clamp(14px, 1.35vw, 19px);
+      line-height: 1.22;
+    }
+    th {
+      color: white;
+      background: #17313f;
+      font-size: clamp(13px, 1.2vw, 17px);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tr:nth-child(even) td { background: #f8fafa; }
+
+    /* Flow steps */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .step {
+      position: relative;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -12px;
+      width: 12px;
+      height: 2px;
+      background: var(--teal);
+    }
+
+    .step p { font-size: clamp(15px, 1.5vw, 21px); }
+    .step h3 { font-size: clamp(16px, 1.6vw, 22px); margin-bottom: 6px; }
+
+    /* Code blocks with copy */
+    .code-wrap {
+      position: relative;
+      background: #0d1926;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .code-lang {
+      display: block;
+      padding: 8px 16px;
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.45);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px 20px 20px 20px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(13px, 1.25vw, 17px);
+      line-height: 1.6;
+      color: #c9d1d9;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 6px;
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.7);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,.18);
+      color: white;
+      border-color: rgba(255,255,255,.4);
+    }
+
+    .copy-btn.copied {
+      background: rgba(111,143,57,.35);
+      border-color: rgba(111,143,57,.6);
+      color: #a8d87a;
+    }
+
+    code {
+      padding: .08em .25em;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: rgba(255,255,255,.72);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .86em;
+    }
+
+    pre code {
+      padding: 0;
+      border: none;
+      background: none;
+      font-size: inherit;
+    }
+
+    /* Syntax highlight tokens */
+    .tok-kw   { color: #ff7b72; }
+    .tok-str  { color: #a5d6ff; }
+    .tok-cmt  { color: #8b949e; font-style: italic; }
+    .tok-lit  { color: #79c0ff; }
+    .tok-fn   { color: #d2a8ff; }
+    .tok-key  { color: #ffa657; }
+    .tok-val  { color: #a5d6ff; }
+
+    /* Decision tree */
+    .decision {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr .9fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .node {
+      padding: 20px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .node.question { border-color: var(--teal); background: #eef9fa; }
+    .node p { font-size: clamp(16px, 1.6vw, 22px); }
+    .split-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    /* Controls */
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(-50%);
+      padding: 8px;
+      border: 1px solid rgba(21,32,43,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 10px 30px rgba(21,32,43,.18);
+      backdrop-filter: blur(12px);
+    }
+
+    button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--ink);
+      background: white;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--teal); color: var(--teal); }
+
+    .counter {
+      min-width: 72px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    /* Progress bar */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      height: 5px;
+      width: 100%;
+      background: rgba(21,32,43,.08);
+    }
+
+    .bar {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--teal), var(--green), var(--amber));
+      transition: width .2s ease;
+    }
+
+    /* Footer */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .cover .footer { color: rgba(255,255,255,.72); }
+
+    /* Two-column layout */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .split.code-right { grid-template-columns: 1fr 1.2fr; }
+
+    /* Model tier badges */
+    .tier {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .tier-haiku  { background: #d1f0d7; color: #2a6a35; }
+    .tier-sonnet { background: #d1e8f5; color: #1c4f72; }
+    .tier-opus   { background: #e9d9f7; color: #5c3080; }
+    .tier-fable  { background: #fde8cc; color: #7a3b00; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .deck { min-height: 100vh; height: auto; }
+      .slide {
+        position: relative;
+        min-height: 100vh;
+        display: none;
+        padding: 26px 18px 90px;
+      }
+      .slide.active { display: grid; }
+      .slide-header, .footer { flex-direction: column; }
+      .cols-2, .cols-3, .cols-4, .decision, .flow, .split { grid-template-columns: 1fr; }
+      .step:not(:last-child)::after { display: none; }
+      th, td { font-size: 14px; }
+    }
+
+    @media print {
+      body { overflow: visible; background: white; }
+      .controls, .progress { display: none; }
+      .deck { height: auto; }
+      .slide {
+        position: relative;
+        page-break-after: always;
+        min-height: 100vh;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <main class="deck" aria-live="polite">
+
+    <!-- 1. PORTADA -->
+    <section class="slide cover active">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Curso Torrecárdenas IA · Tutorial</p>
+          <h1>Ecosistema Anthropic y Claude Code</h1>
+          <p class="lead">IA generativa aplicada a productividad IT hospitalaria.</p>
+        </div>
+      </header>
+      <div class="content">
+        <div class="meta">
+          <span class="pill">Introducción</span>
+          <span class="pill">Junio 2026</span>
+          <span class="pill">TIC sanitaria</span>
+          <span class="pill">Manuel Torres · UAL</span>
+        </div>
+      </div>
+      <footer class="footer">
+        <span>Tutorial: introduccion-ecosistema-claude.adoc</span>
+        <span>Usa ← → o Espacio</span>
+      </footer>
+    </section>
+
+    <!-- 2. EL RETO: HIS + SATÉLITES -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">01 · Contexto</p>
+          <h2>El HIS: inamovible pero insuficiente</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card">
+          <span class="tag blue">HIS Central</span>
+          <h3>Sistema crítico cerrado</h3>
+          <p>Admisión, historias clínicas, citación e informes. Modificarlo está <strong>prohibido o desaconsejado</strong> por riesgo de fallos en Urgencias o Quirófanos.</p>
+        </article>
+        <article class="card">
+          <span class="tag amber">Necesidad</span>
+          <h3>Aplicaciones satélite</h3>
+          <p>Portales de turnos, alertas de sepsis en UCI, integración con IoT de monitorización. Se construyen <strong>alrededor</strong> del HIS.</p>
+        </article>
+        <article class="card">
+          <span class="tag red">Riesgos</span>
+          <h3>Problemas habituales</h3>
+          <ul>
+            <li>Consultas directas a la BD legacy que degradan producción</li>
+            <li>Archivos planos en vez de APIs REST</li>
+            <li>Scripts de hace 15 años que nadie toca</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>La IA como puente inteligente</span><span>2</span></footer>
+    </section>
+
+    <!-- 3. LA IA COMO CATALIZADOR -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">La propuesta</p>
+          <h2>La IA no sustituye el HIS: lo rodea con inteligencia</h2>
+        </div>
+      </header>
+      <div class="content narrow">
+        <p class="statement">La IA facilita la ingeniería inversa del código legacy, automatiza la traducción a estándares modernos y acelera el desarrollo seguro de servicios interoperables.</p>
+        <br>
+        <div class="callout tip">
+          <p><strong>Objetivo del tutorial:</strong> Entender el ecosistema Anthropic, elegir el modelo correcto para cada tarea y crear un flujo de trabajo estructurado con Claude Code que multiplique la productividad del equipo TIC.</p>
+        </div>
+      </div>
+      <footer class="footer"><span>Catalizador, no sustituto</span><span>3</span></footer>
+    </section>
+
+    <!-- 4. CONCEPTOS LLM -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">02 · Fundamentos LLM</p>
+          <h2>Token, contexto y ventana de contexto</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card">
+          <span class="big-number">🔤</span>
+          <h3>Token</h3>
+          <p>Unidad básica de texto que el modelo procesa. Puede ser una palabra, parte de ella o un signo. <em>"hospitalización"</em> → <code>hospital</code> + <code>ización</code>.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">🧠</span>
+          <h3>Contexto</h3>
+          <p>Toda la información disponible en un instante: conversación previa, instrucciones de sistema, documentos adjuntos, código fuente y mensajes del usuario.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">📏</span>
+          <h3>Ventana de contexto</h3>
+          <p>Límite máximo de información simultánea, medido en tokens. Superado el límite, el modelo <strong>compacta o resume</strong> el contenido.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>El contexto es la "memoria de trabajo" del modelo</span><span>4</span></footer>
+    </section>
+
+    <!-- 5. TABLA DE VENTANAS DE CONTEXTO -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Ventanas de contexto</p>
+          <h2>Los modelos actuales ofrecen contextos enormes</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead>
+            <tr><th>Proveedor</th><th>Modelo</th><th>Ventana de contexto</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Anthropic</strong></td><td>Claude Opus 4.6–4.8</td><td>1 M tokens</td></tr>
+            <tr><td><strong>Anthropic</strong></td><td>Claude Sonnet 4–5 / 4.6 · Haiku 4.5</td><td>200 K tokens</td></tr>
+            <tr><td><strong>OpenAI</strong></td><td>GPT-5.5</td><td>1,1 M tokens</td></tr>
+            <tr><td><strong>OpenAI</strong></td><td>GPT-4o</td><td>128 K tokens</td></tr>
+            <tr><td><strong>Google</strong></td><td>Gemini 3.1 Pro</td><td>1 M tokens</td></tr>
+            <tr><td><strong>Otros</strong></td><td>DeepSeek-V4-Pro-Max · Mistral Small 4</td><td>256 K–1 M tokens</td></tr>
+          </tbody>
+        </table>
+        <br>
+        <p style="color:var(--muted); font-size:clamp(16px,1.5vw,21px);">Una ventana de 200 K tokens equivale aproximadamente a <strong>400 páginas de texto</strong>: suficiente para analizar repositorios enteros o documentación extensa.</p>
+      </div>
+      <footer class="footer"><span>Mayor ventana → menos truncamiento de contexto</span><span>5</span></footer>
+    </section>
+
+    <!-- 6. ¿QUÉ ES CLAUDE? -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">03 · Ecosistema Anthropic</p>
+          <h2>Claude: seguridad constitucional en el sector salud</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <span class="tag blue">Privacidad y cumplimiento</span>
+          <h3>Compromisos clave de Anthropic</h3>
+          <ul>
+            <li><strong>No entrenamiento</strong> con datos enviados vía API o Claude Code</li>
+            <li>Cifrado en tránsito y en reposo</li>
+            <li>Posibilidad de firmar BAA/DPA para cumplimiento RGPD/ENS</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag red">Regla de oro</span>
+          <h3>Privacidad desde el diseño</h3>
+          <p>Antes de enviar cualquier log, volcado de BD o mensaje HL7 a Claude, <strong>pseudonimiza o anonimiza</strong> los datos personales:</p>
+          <ul>
+            <li>Nombres de pacientes · DNI · NUHSA · Teléfonos</li>
+          </ul>
+          <br>
+          <div class="callout tip" style="padding:12px 16px;">
+            <p style="margin:0; font-size:clamp(14px,1.3vw,18px);">Claude genera datos de prueba sintéticos realistas para testing sin usar datos reales.</p>
+          </div>
+        </article>
+      </div>
+      <footer class="footer"><span>RGPD + ENS: responsabilidad compartida</span><span>6</span></footer>
+    </section>
+
+    <!-- 7. INTERFACES DE USO -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">¿Dónde se usa Claude?</p>
+          <h2>Cuatro interfaces para distintos perfiles TIC</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead>
+            <tr><th>Interfaz</th><th>Perfil de uso</th><th>Caso típico en el hospital</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Claude.ai (Web)</strong></td>
+              <td>Analistas, jefes de proyecto</td>
+              <td>Cargar documentación técnica en un <em>Proyecto</em> y hacer preguntas o redactar pliegos</td>
+            </tr>
+            <tr>
+              <td><strong>API</strong></td>
+              <td>Desarrolladores de integraciones</td>
+              <td>Servicio que recibe alertas de temperatura del banco de sangre y genera resúmenes del incidente</td>
+            </tr>
+            <tr>
+              <td><strong>Claude Code (CLI)</strong></td>
+              <td>Desarrolladores y administradores</td>
+              <td>Analizar repositorio de scripts PL/SQL antiguos, refactorizarlos a REST en Node.js y ejecutar tests</td>
+            </tr>
+            <tr>
+              <td><strong>Claude Cowork</strong></td>
+              <td>Público general</td>
+              <td>Automatizar tareas complejas del sistema operativo: archivos, correo, procesamiento de documentos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>También disponible como extensión de VS Code y JetBrains</span><span>7</span></footer>
+    </section>
+
+    <!-- 8. FAMILIA DE MODELOS -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">04 · Familia de modelos Claude</p>
+          <h2>Haiku · Sonnet · Opus · Fable</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <table>
+          <thead>
+            <tr><th>Modelo</th><th>Capacidad principal</th><th>Velocidad / Coste</th><th>Caso de uso TIC hospitalaria</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tier tier-haiku">Haiku</span></td>
+              <td>Análisis estructurado ágil</td>
+              <td>Ultra rápido / Muy bajo</td>
+              <td>Parsing masivo de mensajes HL7, validación de logs, scripts de automatización</td>
+            </tr>
+            <tr>
+              <td><span class="tier tier-sonnet">Sonnet</span></td>
+              <td>Razonamiento avanzado, programación, visión</td>
+              <td>Rápido / Moderado</td>
+              <td>Refactorización legacy, generación de servicios, mapeo FHIR, lógica de negocio compleja</td>
+            </tr>
+            <tr>
+              <td><span class="tier tier-opus">Opus</span></td>
+              <td>Razonamiento profundo multi-paso</td>
+              <td>Moderado / Alto</td>
+              <td>Arquitectura de satélites, políticas de seguridad ENS, auditoría de código crítico</td>
+            </tr>
+            <tr>
+              <td><span class="tier tier-fable">Fable</span></td>
+              <td>Razonamiento en tareas muy extensas</td>
+              <td>Moderado-lento / Muy alto</td>
+              <td>Análisis de grandes volúmenes de código legacy, ingeniería inversa, desarrollo multi-agente</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <footer class="footer"><span>El modelo adecuado para el trabajo adecuado</span><span>8</span></footer>
+    </section>
+
+    <!-- 9. SELECCIÓN DE MODELO: 3 ESCENARIOS -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Selección del modelo</p>
+          <h2>Tres escenarios reales del hospital</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card">
+          <span class="tier tier-haiku">Haiku</span>
+          <h3>Escenario A: Parsing HL7</h3>
+          <p>50.000 mensajes HL7/día desde laboratorios. Validar formato y extraer alertas de valores críticos (potasio alto).</p>
+          <p><strong>¿Por qué Haiku?</strong> Baja latencia + coste mínimo por millón de tokens = ideal para flujos masivos.</p>
+        </article>
+        <article class="card">
+          <span class="tier tier-sonnet">Sonnet</span>
+          <h3>Escenario B: PL/SQL → Node.js</h3>
+          <p>Procedimiento almacenado Oracle de 800 líneas con el algoritmo de triaje de Urgencias. Migrar a un servicio Node.js/Express con tests.</p>
+          <p><strong>¿Por qué Sonnet?</strong> Capacidades de codificación líderes. Entiende la lógica PL/SQL y genera código moderno.</p>
+        </article>
+        <article class="card">
+          <span class="tier tier-opus">Opus / Sonnet</span>
+          <h3>Escenario C: Auditoría ENS</h3>
+          <p>Estrategia de seguridad para que la app de hospitalización a domicilio consuma el HIS por API Gateway cumpliendo ENS categoría Media.</p>
+          <p><strong>¿Por qué Opus?</strong> Análisis profundo de normativa + evaluación de riesgos de red.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Optimizar coste y tiempo con el modelo correcto</span><span>9</span></footer>
+    </section>
+
+    <!-- 10. INTEROPERABILIDAD FHIR -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">05 · Interoperabilidad HL7 FHIR</p>
+          <h2>De datos legacy a un recurso FHIR con Claude</h2>
+        </div>
+      </header>
+      <div class="content wide split code-right">
+        <div>
+          <h3>Datos legacy del HIS</h3>
+          <div class="code-wrap">
+            <span class="code-lang">text · volcado plano</span>
+            <button class="copy-btn" data-target="code-legacy" aria-label="Copiar código">⎘ Copiar</button>
+            <pre><code id="code-legacy">ID_PACIENTE: 9948231
+FECHA_HORA: 2026-06-11 08:30:00
+PRUEBA: Glucemia basal (suero)
+VALOR: 145
+UNIDADES: mg/dL
+RANGO_REF: 70-100
+ESTADO: Alto
+ORIGEN: Lab Central - Torrecárdenas</code></pre>
+          </div>
+          <br>
+          <h3>Prompt para Claude Sonnet</h3>
+          <div class="code-wrap">
+            <span class="code-lang">prompt</span>
+            <button class="copy-btn" data-target="code-prompt" aria-label="Copiar código">⎘ Copiar</button>
+            <pre><code id="code-prompt">Actúa como experto en HL7 FHIR R4.
+Transforma estos datos legacy en un recurso
+FHIR JSON de tipo Observation.
+Usa el código LOINC 1558-6 (glucosa en suero)
+y garantiza que el JSON sea válido.</code></pre>
+          </div>
+        </div>
+        <div>
+          <h3>Recurso FHIR generado</h3>
+          <div class="code-wrap">
+            <span class="code-lang">json · FHIR R4</span>
+            <button class="copy-btn" data-target="code-fhir" aria-label="Copiar código">⎘ Copiar</button>
+            <pre><code id="code-fhir">{
+  "resourceType": "Observation",
+  "status": "final",
+  "code": {
+    "coding": [{
+      "system": "http://loinc.org",
+      "code": "1558-6",
+      "display": "Glucose in Serum"
+    }]
+  },
+  "subject": { "reference": "Patient/9948231" },
+  "effectiveDateTime": "2026-06-11T08:30:00Z",
+  "valueQuantity": {
+    "value": 145,
+    "unit": "mg/dL"
+  },
+  "interpretation": [{
+    "coding": [{
+      "system": "...v3-ObservationInterpretation",
+      "code": "H",
+      "display": "High"
+    }]
+  }],
+  "referenceRange": [{
+    "low":  { "value": 70,  "unit": "mg/dL" },
+    "high": { "value": 100, "unit": "mg/dL" }
+  }]
+}</code></pre>
+          </div>
+        </div>
+      </div>
+      <footer class="footer"><span>APIs FHIR limpias desacopladas del HIS interno</span><span>10</span></footer>
+    </section>
+
+    <!-- 11. CLAUDE CODE VS CLAUDE.AI -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">06 · Claude Code</p>
+          <h2>¿Qué aporta Claude Code sobre Claude.ai?</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <span class="tag red">Claude.ai (web) · limitaciones</span>
+          <ul>
+            <li>Copiar y pegar archivos constantemente</li>
+            <li>Sin acceso al sistema de archivos local</li>
+            <li>No sabe si el código compila ni qué dice la consola</li>
+            <li>Gestión manual de decenas de archivos</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag green">Claude Code (CLI) · ventajas</span>
+          <ul>
+            <li><strong>Acceso al sistema de archivos:</strong> lee, crea y edita archivos bajo tu supervisión</li>
+            <li><strong>Ejecución de comandos:</strong> <code>npm test</code>, <code>pytest</code>, <code>git diff</code>…</li>
+            <li><strong>Integración Git:</strong> commits con mensajes estructurados automáticos</li>
+            <li><strong>Control local:</strong> el código no sube a la nube; solo los fragmentos relevantes viajan a la API</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>Agente de desarrollo autónomo local</span><span>11</span></footer>
+    </section>
+
+    <!-- 12. FLUJO DE TRABAJO CLAUDE CODE -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Flujo de trabajo típico</p>
+          <h2>Del objetivo al código probado en 6 pasos</h2>
+        </div>
+      </header>
+      <div class="content wide flow">
+        <article class="step">
+          <span class="big-number">1</span>
+          <h3>Objetivo</h3>
+          <p>El desarrollador describe la tarea en lenguaje natural.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">2</span>
+          <h3>Análisis</h3>
+          <p>Claude lee rutas, modelos y reglas de negocio en <code>CLAUDE.md</code>.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">3</span>
+          <h3>Propuesta</h3>
+          <p>Presenta los cambios y pide <strong>confirmación explícita</strong> antes de editar.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">4</span>
+          <h3>Tests</h3>
+          <p>Sugiere ejecutar <code>npm run test</code> y espera autorización.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">5</span>
+          <h3>Autocorrección</h3>
+          <p>Si el test falla, analiza el error, corrige y repite.</p>
+        </article>
+        <article class="step">
+          <span class="big-number">6</span>
+          <h3>Informe</h3>
+          <p>Resumen de cambios, resultados de tests y sugerencias de mejora.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Human-in-the-loop en cada paso crítico</span><span>12</span></footer>
+    </section>
+
+    <!-- 13. SISTEMA DE TRABAJO ESTRUCTURADO -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">07 · Sistema de trabajo</p>
+          <h2>De asistente reactivo a colaborador metódico</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <span class="tag">Memoria del proyecto · ai-docs/</span>
+          <ul>
+            <li><code>architecture.md</code> — Diagramas y decisiones de diseño</li>
+            <li><code>backlog.md</code> — Historias de usuario y sprints</li>
+            <li><code>business-rules.md</code> — Reglas de negocio</li>
+            <li><code>decisions.md</code> — Decisiones clave y alternativas</li>
+            <li><code>lessons-learned.md</code> — Errores y soluciones</li>
+            <li><code>sprint-tracker.md</code> — Seguimiento ágil</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag violet">Por historia de usuario · stories/US-xxx/</span>
+          <ul>
+            <li><code>analysis.md</code> — Descripción + criterios de aceptación</li>
+            <li><code>design-review.md</code> — Revisión del diseño propuesto</li>
+            <li><code>design.md</code> — Diseño final implementado</li>
+            <li><code>implementation.md</code> — Código generado y tests</li>
+            <li><code>validation.md</code> — Resultados y correcciones</li>
+            <li><code>retrospective.md</code> — Lecciones aprendidas</li>
+          </ul>
+        </article>
+      </div>
+      <footer class="footer"><span>La conversación se cierra; el proyecto conserva lo importante</span><span>13</span></footer>
+    </section>
+
+    <!-- 14. CREAR ESTRUCTURA CON MKDIR -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Puesta en marcha</p>
+          <h2>Crear la estructura de documentación en un comando</h2>
+        </div>
+      </header>
+      <div class="content narrow">
+        <div class="code-wrap">
+          <span class="code-lang">bash · terminal</span>
+          <button class="copy-btn" data-target="code-mkdir" aria-label="Copiar código">⎘ Copiar</button>
+          <pre><code id="code-mkdir">mkdir -p ai-docs && touch ai-docs/{architecture,backlog,business-rules,\
+coding-standards,database-schema,decisions,lessons-learned,\
+project-context,project-log,roadmap,sprint-tracker}.md</code></pre>
+        </div>
+        <br>
+        <p>Estructura resultante:</p>
+        <div class="code-wrap">
+          <span class="code-lang">texto · árbol de proyecto</span>
+          <button class="copy-btn" data-target="code-tree" aria-label="Copiar código">⎘ Copiar</button>
+          <pre><code id="code-tree">project/
+├── CLAUDE.md
+├── ai-docs/
+│   ├── architecture.md
+│   ├── backlog.md
+│   ├── decisions.md
+│   ├── lessons-learned.md
+│   └── sprint-tracker.md  (y más…)
+└── stories/
+    └── US-001/
+        ├── analysis.md
+        ├── design.md
+        └── validation.md</code></pre>
+        </div>
+      </div>
+      <footer class="footer"><span>Una línea para inicializar la memoria del proyecto</span><span>14</span></footer>
+    </section>
+
+    <!-- 15. CLAUDE.MD COMO ÍNDICE OPERATIVO -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">CLAUDE.md</p>
+          <h2>El índice operativo que cada sesión necesita</h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <div class="code-wrap">
+          <span class="code-lang">markdown · CLAUDE.md · gestión de camas</span>
+          <button class="copy-btn" data-target="code-claudemd" aria-label="Copiar código">⎘ Copiar</button>
+          <pre><code id="code-claudemd"># Memoria del proyecto: Gestión de camas (Torrecárdenas)
+
+## Arquitectura y restricciones
+- HIS central: Oracle de SOLO LECTURA. PROHIBIDO INSERT/UPDATE/DELETE en HIS_PROD.
+- BD propia: PostgreSQL local para el estado de la aplicación.
+- Toda salida debe seguir el estándar FHIR R4.
+
+## Estándares de código
+- Backend: TypeScript / Node.js · APIs: FastAPI (Python)
+- Tablas y columnas: minúsculas y snake_case
+
+## Reglas de seguridad (Crítico)
+- NUNCA credenciales en código. Usar variables de entorno (.env).
+- PROHIBIDO usar datos reales de pacientes en tests. Usar mock_patients.py.
+
+## Protocolo de inicio de sesión
+1. Lee: decisions.md, lessons-learned.md, architecture.md, sprint-tracker.md
+2. Genera resumen: bloques de arquitectura, decisiones clave, riesgos.
+3. Espera APROBACIÓN EXPLÍCITA antes de implementar.
+4. No generes código hasta que se apruebe el resumen.</code></pre>
+        </div>
+      </div>
+      <footer class="footer"><span>Claude lee CLAUDE.md automáticamente al iniciar cada sesión</span><span>15</span></footer>
+    </section>
+
+    <!-- 16. QUÉ SON LOS COMANDOS -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">08 · Comandos personalizados</p>
+          <h2>De instrucciones repetidas a procesos reutilizables</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card">
+          <span class="tag red">Sin comandos</span>
+          <h3>Cada sesión empieza desde cero</h3>
+          <p><em>"Lee la arquitectura, revisa el backlog, analiza la historia US-001, dime qué archivos tocar, no implementes todavía, genera criterios de aceptación, crea propuesta de diseño y espera mi aprobación."</em></p>
+          <p>Fácil olvidar pasos. Difícil garantizar consistencia entre sesiones.</p>
+        </article>
+        <article class="card">
+          <span class="tag green">Con comandos</span>
+          <h3>Un comando, un proceso completo</h3>
+          <div class="code-wrap" style="margin-top:10px;">
+            <span class="code-lang">claude code</span>
+            <button class="copy-btn" data-target="code-cmd-ex" aria-label="Copiar código">⎘ Copiar</button>
+            <pre><code id="code-cmd-ex">/analyze-story US-001</code></pre>
+          </div>
+          <p style="margin-top:10px;">Claude sabrá que debe leer la documentación, localizar la historia, proponer diseño, crear archivos y <strong>detenerse antes de implementar</strong>.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Los comandos convierten buenas prácticas en hábitos repetibles</span><span>16</span></footer>
+    </section>
+
+    <!-- 17. ESTRUCTURA DE COMANDOS -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Estructura de comandos</p>
+          <h2>Una colección de procesos en <code>.claude/commands/</code></h2>
+        </div>
+      </header>
+      <div class="content wide split">
+        <div>
+          <div class="code-wrap">
+            <span class="code-lang">texto · árbol de comandos</span>
+            <button class="copy-btn" data-target="code-cmd-tree" aria-label="Copiar código">⎘ Copiar</button>
+            <pre><code id="code-cmd-tree">.claude/
+└── commands/
+    ├── init-project.md
+    ├── create-backlog.md
+    ├── analyze-story.md
+    ├── review-design.md
+    ├── implement-story.md
+    ├── validate-story.md
+    ├── retrospective.md
+    └── run-story.md</code></pre>
+          </div>
+          <br>
+          <div class="callout tip">
+            <p>Cada archivo <code>.md</code> es el <em>prompt</em> del comando. Al invocar <code>/analyze-story US-001</code>, Claude ejecuta el contenido del archivo pasando <code>US-001</code> como argumento.</p>
+          </div>
+        </div>
+        <div>
+          <h3>Qué debe definir un buen comando</h3>
+          <ul>
+            <li>Objetivo y argumentos que espera</li>
+            <li>Documentos que debe leer</li>
+            <li>Qué archivos debe crear o modificar</li>
+            <li>Qué tiene <strong>prohibido</strong> hacer</li>
+            <li>En qué punto debe <strong>detenerse y pedir aprobación</strong></li>
+          </ul>
+        </div>
+      </div>
+      <footer class="footer"><span>Parte de la infraestructura del proyecto, no un adorno</span><span>17</span></footer>
+    </section>
+
+    <!-- 18. EJEMPLO DE COMANDO ANALYZE-STORY -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Ejemplo de comando</p>
+          <h2>Anatomía de <code>/analyze-story</code></h2>
+        </div>
+      </header>
+      <div class="content wide">
+        <div class="code-wrap">
+          <span class="code-lang">markdown · .claude/commands/analyze-story.md</span>
+          <button class="copy-btn" data-target="code-analyze" aria-label="Copiar código">⎘ Copiar</button>
+          <pre><code id="code-analyze">Analyze story: $ARGUMENTS
+
+Read:
+- CLAUDE.md
+- ai-docs/project-context.md
+- ai-docs/architecture.md
+- ai-docs/backlog.md
+- ai-docs/decisions.md
+- ai-docs/lessons-learned.md
+
+Focus only on story: $ARGUMENTS
+
+Produce:
+- stories/$ARGUMENTS/analysis.md
+- stories/$ARGUMENTS/design.md
+- stories/$ARGUMENTS/status.md
+
+Do NOT implement any code.
+
+Wait for explicit user approval before continuing.</code></pre>
+        </div>
+        <br>
+        <div class="callout tip">
+          <p>El argumento <code>$ARGUMENTS</code> se sustituye por el valor que el usuario pasa al invocar el comando: <code>/analyze-story US-042</code> → Claude trabaja con <code>US-042</code>.</p>
+        </div>
+      </div>
+      <footer class="footer"><span>Un comando define un mini-proceso de trabajo completo</span><span>18</span></footer>
+    </section>
+
+    <!-- 19. REMOTE CONTROL -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Acceso remoto</p>
+          <h2>Supervisar y controlar Claude Code desde cualquier lugar</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card">
+          <span class="big-number">📱</span>
+          <h3>Remote Control</h3>
+          <p>Continúa una sesión local de Claude Code desde el móvil, tableta o cualquier navegador usando <strong>claude.ai/code</strong> o la app de Claude.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">🔄</span>
+          <h3>Sincronización en tiempo real</h3>
+          <p>Trabajo simultáneo en ambas interfaces (local + remota). Ideal para revisar código o dar feedback mientras estás fuera de la oficina.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">⌨️</span>
+          <h3>Comandos remotos</h3>
+          <p>Si tienes definidos comandos personalizados como <code>/run-story</code> o <code>/analyze-story</code>, se pueden ejecutar desde el dispositivo remoto exactamente igual.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Supervisión distribuida de tareas críticas</span><span>19</span></footer>
+    </section>
+
+    <!-- 20. CONCLUSIÓN: EL MODELO MENTAL CORRECTO -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">09 · Conclusiones</p>
+          <h2>Tres principios para adoptar la IA en TIC hospitalaria</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-3">
+        <article class="card">
+          <span class="big-number">1</span>
+          <h3>Agente, no asistente puntual</h3>
+          <p>Integrar Claude Code en el flujo diario de trabajo, no solo para consultas ocasionales. La clave está en el sistema, no en el prompt perfecto.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">2</span>
+          <h3>Memoria viva del proyecto</h3>
+          <p>Documentar arquitectura, decisiones y lecciones aprendidas en <code>ai-docs/</code>. La conversación se cierra; el repositorio conserva el conocimiento.</p>
+        </article>
+        <article class="card">
+          <span class="big-number">3</span>
+          <h3>Privacidad sin excepciones</h3>
+          <p>Desidentificar siempre antes de enviar datos a la API. Usar datos sintéticos para testing. Firmar los acuerdos DPA/BAA con Anthropic.</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Equipos pequeños aumentados con inteligencia operativa local</span><span>20</span></footer>
+    </section>
+
+    <!-- 21. CIERRE / STATEMENT -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Cierre</p>
+          <h2>La productividad no está en reemplazar desarrolladores</h2>
+        </div>
+      </header>
+      <div class="content narrow">
+        <p class="statement">El personal senior con conocimiento del dominio se concentra en decisiones estratégicas. Claude Code se encarga de lo repetitivo: generación de código, validación de tests y mantenimiento de la memoria del proyecto.</p>
+        <br>
+        <div class="callout tip">
+          <p>Esto requiere <strong>disciplina y organización</strong>: un <code>CLAUDE.md</code> actualizado, comandos bien diseñados y una memoria documental estructurada y versionada en el repositorio.</p>
+        </div>
+      </div>
+      <footer class="footer"><span>Agilidad + calidad + seguridad</span><span>21</span></footer>
+    </section>
+
+    <!-- 22. RECURSOS -->
+    <section class="slide">
+      <header class="slide-header">
+        <div>
+          <p class="kicker">Recursos y siguientes pasos</p>
+          <h2>Para continuar aprendiendo</h2>
+        </div>
+      </header>
+      <div class="content wide grid cols-2">
+        <article class="card compact">
+          <span class="tag">Documentación oficial</span>
+          <h3><a href="https://code.claude.com/docs/es/" target="_blank" rel="noopener">code.claude.com/docs/es</a></h3>
+          <p>Guías sobre instalación, CLI, hooks y configuración avanzada de Claude Code.</p>
+        </article>
+        <article class="card compact">
+          <span class="tag green">Plantilla de proyecto</span>
+          <h3><a href="https://github.com/ualmtorres/claude-project-starter-kit" target="_blank" rel="noopener">claude-project-starter-kit</a></h3>
+          <p>Estructura lista para adaptar: <code>CLAUDE.md</code> predefinido, <code>ai-docs/</code>, <code>stories/</code> y colección de comandos.</p>
+        </article>
+        <article class="card compact">
+          <span class="tag blue">Atajos de teclado</span>
+          <h3><a href="https://code.claude.com/docs/es/keyboard-shortcuts" target="_blank" rel="noopener">Keyboard Shortcuts</a></h3>
+          <p>Mejora la velocidad de trabajo en sesiones interactivas de Claude Code.</p>
+        </article>
+        <article class="card compact">
+          <span class="tag amber">Comparativa de modelos</span>
+          <h3><a href="https://llm-stats.com" target="_blank" rel="noopener">llm-stats.com</a></h3>
+          <p>Comparativas actualizadas de modelos, ventanas de contexto, parámetros y costes. Incluye <em>Open LLM Leaderboard</em> para modelos pequeños (&lt;32B).</p>
+        </article>
+      </div>
+      <footer class="footer"><span>Tutorial: introduccion-ecosistema-claude.adoc · Junio 2026</span><span>22</span></footer>
+    </section>
+
+  </main>
+
+  <nav class="controls" aria-label="Controles de presentación">
+    <button id="prev" aria-label="Diapositiva anterior" title="Anterior">‹</button>
+    <span class="counter" id="counter"></span>
+    <button id="next" aria-label="Diapositiva siguiente" title="Siguiente">›</button>
+  </nav>
+
+  <script>
+    // Navegación entre diapositivas
+    const slides = Array.from(document.querySelectorAll(".slide"));
+    const counter = document.getElementById("counter");
+    const bar = document.getElementById("bar");
+    let index = 0;
+
+    function show(nextIndex) {
+      index = Math.max(0, Math.min(slides.length - 1, nextIndex));
+      slides.forEach((slide, i) => slide.classList.toggle("active", i === index));
+      counter.textContent = `${index + 1} / ${slides.length}`;
+      bar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      history.replaceState(null, "", `#${index + 1}`);
+    }
+
+    document.getElementById("prev").addEventListener("click", () => show(index - 1));
+    document.getElementById("next").addEventListener("click", () => show(index + 1));
+
+    document.addEventListener("keydown", (event) => {
+      const forward  = ["ArrowRight", "PageDown", " ", "Enter"];
+      const backward = ["ArrowLeft", "PageUp", "Backspace"];
+      if (forward.includes(event.key))  { event.preventDefault(); show(index + 1); }
+      if (backward.includes(event.key)) { event.preventDefault(); show(index - 1); }
+      if (event.key === "Home") show(0);
+      if (event.key === "End")  show(slides.length - 1);
+    });
+
+    const hashIndex = Number(location.hash.replace("#", "")) - 1;
+    show(Number.isFinite(hashIndex) ? hashIndex : 0);
+
+    // Copiar bloques de código
+    document.querySelectorAll(".copy-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        const codeEl   = document.getElementById(targetId);
+        if (!codeEl) return;
+
+        const text = codeEl.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = "✓ Copiado";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "⎘ Copiar";
+            btn.classList.remove("copied");
+          }, 2000);
+        }).catch(() => {
+          // Fallback para navegadores sin clipboard API
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.opacity  = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          btn.textContent = "✓ Copiado";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "⎘ Copiar";
+            btn.classList.remove("copied");
+          }, 2000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

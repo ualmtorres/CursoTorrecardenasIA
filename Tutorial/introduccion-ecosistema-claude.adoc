@@ -1,0 +1,601 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+:icons: font
+
+= Ecosistema Anthropic y Claude Code en el Entorno TIC Sanitario
+Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería
+
+:numbered!:
+
+[abstract]
+== Resumen
+
+Este tutorial proporciona una introducción práctica a Claude Code y el ecosistema de Anthropic, diseñados para profesionales TIC en hospitales. Aprenderás cómo la IA generativa puede modernizar sistemas legacy, garantizar interoperabilidad HL7/FHIR, optimizar el desarrollo de aplicaciones satélites y crear flujos de trabajo eficientes sin comprometer la estabilidad del HIS.
+
+.Objetivos
+
+* Comprender los conceptos fundamentales de los modelos de lenguaje grande (LLM) y su relevancia en el sector salud.
+* Explorar el ecosistema de Anthropic y la familia de modelos Claude (Haiku, Sonnet, Opus, Fable), identificando cuándo usar cada uno.
+* Aprender a utilizar Claude Code como agente de desarrollo, incluyendo configuración de `CLAUDE.md`, gestión de comandos personalizados y flujos de trabajo estructurados.
+* Implementar un sistema eficiente de diseño,desarrollo, documentación y memoria de proyecto para maximizar la productividad en desarrollo asistido por IA.
+
+[TIP]
+====
+* https://github.com/ualmtorres/claude-project-starter-kit[Plantilla de proyecto recomendada, window=_blank]: Una estructura lista para comenzar el desarrollo de una nueva solución propia de forma segura y eficiente.
+====
+
+:numbered:
+
+== Introducción
+
+En el departamento TIC de un hospital, la realidad del día a día suele estar dominada por un gigante de software: el **HIS (Hospital Information System)**. Este sistema centraliza la admisión, las historias clínicas, la citación y los informes médicos. En la gran mayoría de los centros sanitarios, el HIS es un sistema cerrado, propietario o tan sumamente crítico que cualquier modificación directa está prohibida o desaconsejada por el riesgo de inducir fallos de seguridad o caídas del servicio en áreas críticas como Urgencias o Quirófanos.
+
+Frente a esta rigidez, el departamento TIC se ve obligado a construir **aplicaciones y servicios "satélite"**. Estos satélites resuelven necesidades ágiles (como un portal de visualización de turnos para enfermería, un sistema de alertas tempranas para sepsis en UCI, o integraciones con dispositivos IoT de monitorización). 
+
+Sin embargo, desarrollar satélites conlleva riesgos inherentes:
+
+* **Acoplamiento de datos:** Consultas directas a bases de datos legacy del HIS que degradan el rendimiento de producción.
+* **Falta de estándares:** Intercambio de información mediante archivos planos o tablas intermedias en lugar de APIs REST estandarizadas.
+* **Código legacy:** Scripts heredados de hace 15 años que nadie se atreve a tocar para no "romper la integración".
+
+[TIP]
+.La IA como catalizador
+La inteligencia artificial, y en particular el ecosistema de Anthropic, no viene a reemplazar el HIS, sino a actuar como un puente inteligente: facilitando la ingeniería inversa de código legacy, automatizando la traducción de datos a estándares modernos y acelerando el desarrollo seguro de servicios y soluciones interoperables.
+
+=== Características básicas de los LLM
+
+Cuando se habla de inteligencia artificial generativa es muy frecuente encontrarse con términos como _contexto, ventana de contexto, tokens, parámetros_ y demás. Es importante tener claros estos conceptos:
+
+==== Token
+
+Un token es la unidad básica de texto que el modelo procesa. Puede ser tan pequeño como un carácter o tan grande como una palabra completa. Por ejemplo, "hospital" podría ser un token, mientras que "hospitalización" podría dividirse en "hospital" y "ización". Es importante tener en cuenta que no todos los LLMs tokenizan de la misma manera, por lo que el número de tokens no siempre coincide con el número de palabras.
+
+==== Contexto
+
+El contexto es toda la información que el modelo tiene disponible para generar una respuesta en un instante determinado.
+
+Incluye, por ejemplo:
+
+* La conversación previa.
+* Las instrucciones del sistema.
+* Los documentos proporcionados.
+* El código fuente abierto.
+* Los mensajes del usuario.
+* La memoria o información adicional que se haya incorporado.
+
+Así pues, el contexto puede verse como la "memoria de trabajo" del modelo durante una interacción. De esta formar es como cuando hablas con una persona: el contexto es todo lo que recuerda de la conversación y de los documentos que tiene sobre la mesa.
+
+==== Ventana de contexto (Context Window)
+
+La ventana de contexto es la cantidad máxima de información que el modelo puede tener presente simultáneamente. Se mide normalmente en tokens, no en palabras. A continuación se muestran algunos ejemplos de límites de ventana de contexto en diferentes modelos:
+
+* Anthropic
+  ** Claude Opus 4.6-4.8: 1M tokens
+  ** Claude Sonnet 4-5-4.6: 200K tokens
+  ** Claude Haiku 4.5: 200K tokens
+* OpenAI
+  ** GPT-5.5: 1.1M tokens
+  ** GPT-5.4: 1M tokens
+  ** GPT-5.2: 400K tokens
+  ** GPT-4o: 128K tokens
+* Google
+  ** Gemini 3.1 Pro: 1M tokens
+  ** Gemma 4 31B: 262.1K tokens
+* Otros proveedores
+  ** DeepSeek-V4-Pro-Max: 1M tokens
+  ** Mistral Small 4: 256K tokens
+
+Si el contexto supera ese límite, normalmente el modelo compactará la información, descartando partes menos relevantes o resumiendo el contenido para ajustarse a la ventana. Antes, la estrategia más común era descartar las partes iniciales del contexto (lo que se conoce como "truncamiento"), pero esto podía llevar a perder información crítica. Así, una ventana de contexto grande permite trabajar con libros completos, grandes repositorios de código, documentación extensa y tener conversaciones muy largas.
+
+==== Parámetros de un modelo
+
+Otra característica importante de los LLM es el número de parámetros que tienen. Los parámetros son los pesos internos que el modelo ha aprendido durante el entrenamiento y representan el conocimiento distribuido del modelo. Se miden en miles de millones (billions, B). Esta información no siempre es pública, y es muy relevante para entender la capacidad de un modelo, aunque no es el único factor que determina su rendimiento. Además, si nos planteamos la posibilidad de tener un modelo local, el número de parámetros es un factor crítico a la hora de evaluar los requisitos de hardware necesarios para su ejecución. A continuación se muestran algunos ejemplos de modelos con su número de parámetros:
+
+* OpenAI GPT OSS 120B High: 116.8B parámetros
+* OpenAI GPT OSS 20B: 20.9B parámetros
+* Google Gemma 4 31B: 30.7B parámetros
+* Meta Llama 4 MavericK: 400B parámetros
+* Mistral Small 4: 119B parámetros
+
+En general, un mayor número de parámetros suele correlacionar con una mayor capacidad de representación y comprensión del lenguaje, lo que puede traducirse en respuestas más precisas, coherentes y contextualmente relevantes. Sin embargo, también implica un mayor consumo de recursos computacionales, tanto en términos de memoria como de potencia de cálculo, lo que puede afectar la velocidad de respuesta y el coste de uso.
+
+Todos estos parámetros y características técnicas son importantes para entender las capacidades y limitaciones de los LLM, y para elegir el modelo adecuado según las necesidades específicas. En https://llm-stats.com[LLM Stats, window=_blank] se pueden consultar las características técnicas de los principales LLMs disponibles en el mercado. Muy interesante la pestaña de _Open LLM Leaderboard_ para comparar modelos de código abierto. En ella, aparece un filtro específico para modelos pequeños (<32B parámetros), que son los más adecuados para ejecutar localmente sin necesidad de depender de la nube.
+
+=== ¿Qué es Claude y por qué es relevante en el sector salud?
+
+**Claude** es una familia de LLM desarrollada por **Anthropic**, una empresa de investigación en seguridad de IA. A diferencia de otros proveedores, Anthropic se fundó con un enfoque centrado en la seguridad constitucional y la alineación de valores, un factor crucial cuando tratamos con sistemas de salud.
+
+==== Privacidad y seguridad de datos (RGPD y ENS)
+En el entorno sanitario español, la protección de datos personales y de salud es estricta, regida por el **RGPD** y el **Esquema Nacional de Seguridad (ENS)**. Cuando un desarrollador TIC del hospital interactúa con un modelo de IA, surgen preguntas críticas: _¿Se usarán las historias clínicas para entrenar el modelo? ¿Viajan datos de pacientes fuera de la red segura?_
+
+[IMPORTANT]
+.Compromiso de Privacidad de Anthropic
+* **No entrenamiento:** Anthropic **no** utiliza los datos enviados a través de su API o de Claude Code para entrenar sus modelos de lenguaje.
+* **Seguridad en tránsito y reposo:** Los datos enviados a la API se cifran y se manejan bajo estrictas políticas de retención temporal.
+* **Cumplimiento sanitario:** Se pueden firmar acuerdos de confidencialidad y procesamiento de datos (BAA/DPA) adecuados para cumplir con normativas de protección de datos sanitarios.
+
+==== La Regla de oro en TIC hospitalaria: Desidentificación
+A pesar de las garantías de privacidad de los proveedores, como desarrolladores de salud debemos aplicar siempre el principio de **privacidad desde el diseño**. 
+[WARNING]
+Antes de enviar un log de error, un volcado de base de datos o un mensaje de integración a Claude, debemos asegurarnos de **pseudonimizar o anonimizar** cualquier dato de carácter personal (nombres de pacientes, DNI, números de tarjeta sanitaria - NUHSA, teléfonos, etc.). Claude es excelente generando datos de prueba realistas (sintéticos) para que podamos realizar pruebas sin usar datos reales de pacientes.
+
+=== ¿Dónde se puede usar Claude?
+
+El ecosistema de Anthropic ofrece diferentes interfaces de acceso adaptadas a distintos perfiles y necesidades dentro del departamento TIC:
+
+[cols="1,2,2", options="header"]
+|===
+| Interfaz | Perfil de uso | Caso típico en el Hospital
+
+| **Claude.ai (Web)**
+| Analistas, jefes de proyecto, desarrolladores para consultas rápidas.
+| Cargar la documentación técnica de un estándar (ej. Guía de integración de un laboratorio externo) en un **Proyecto** de Claude para hacerle preguntas o redactar el pliego de condiciones de un nuevo software.
+
+| **API**
+| Desarrolladores de integraciones y arquitectos de sistemas.
+| Conectar un servicio escrito que recibe alertas de temperatura del banco de sangre y utiliza Claude para redactar resúmenes estructurados del incidente.
+
+| **Claude Code (CLI)**
+| Desarrolladores de software y administradores de sistemas.
+| Analizar un repositorio local lleno de scripts PL/SQL de integración antiguos, refactorizarlos a servicios REST en Node.js y validar el código ejecutando pruebas locales desde la consola de comandos.
+
+| **Claude Cowork**
+| Público en general
+| Operar directamente en el ordenador y automatizar tareas complejas sin intervención humana (gestión de archivos, procesamiento de documentos, automatización de tareas repetitivas, gestión de correo electrónico, etc.).
+|===
+
+[NOTE]
+====
+También se pueden usar las extensiones de Claude para IDEs como Visual Studio Code, lo que permite a los desarrolladores interactuar con la IA directamente desde su entorno de desarrollo.
+====
+
+=== Familia de Modelos Claude: Haiku, Sonnet, Opus y Fable
+
+Anthropic organiza sus modelos en tres gamas principales, cada una optimizada para un equilibrio específico entre rendimiento, coste y velocidad. No obstante, recientemente (junio 2026) se la lanzado Fable, un nuevo modelo en la línea de Opus, pero con una capacidiad de razonamiento aún más profunda y especialmete orientado a tareas extensas o muy extensas.
+
+[cols="1,2,1,1,2", options="header"]
+|===
+| Modelo | Capacidad Principal | Velocidad | Coste | Caso de Uso en TIC Hospitalaria
+
+| **Claude Haiku**
+| Respuestas rápidas, análisis estructurado ágil.
+| Ultra rápido
+| Muy bajo
+| Procesamiento masivo de mensajería HL7, parsing de logs del servidor de aplicaciones, validación de formatos de datos, test unitarios, desarollo de scripts de automatización y código con un buen diseño como contexto.
+
+| **Claude Sonnet**
+| Razonamiento avanzado, programación excepcional, visión computacional.
+| Rápido
+| Moderado
+| Refactorización de código legacy, generación de servicios, mapeo de modelos relacionales antiguos a FHIR, desarrollo en genera con lógica de negocio de complejidad media-alta.
+
+| **Claude Opus**
+| Razonamiento profundo en problemas complejos y de múltiples pasos.
+| Moderado
+| Alto
+| Planificación de la arquitectura de la red de satélites, análisis de políticas de seguridad complejas, auditoría de código crítico.
+
+| **Claude Fable**
+| Razonamiento profundo en tareas extensas o muy extensas.
+| Moderado-lento
+| Muy alto
+| Análisis de grandes volúmenes de código legacy, auditorías de seguridad exhaustivas, tareas de ingeniería inversa compleja, desarrollo multiagente con múltiples iteraciones de feedback.
+|===
+
+=== Ejemplos de selección del modelo: El modelo adecuado para el trabajo adecuado
+
+Para optimizar costes y tiempos de respuesta, el departamento TIC debe aplicar el principio de "el modelo adecuado para el trabajo adecuado".
+
+* **Escenario A: Parsing y validación de mensajes HL7 v2.x (Haiku)**
+  ** **Tarea:** El motor de integraciones del hospital procesa 50.000 mensajes HL7 al día que provienen de los laboratorios. Necesitas validar rápidamente si los mensajes contienen el formato adecuado y extraer alertas específicas (por ejemplo, valores de potasio críticamente altos).
+  ** **Decisión:** **Claude Haiku**. Su baja latencia y coste reducido por millón de tokens lo hacen ideal para este flujo de trabajo masivo y repetitivo.
+
+* **Escenario B: Migración de PL/SQL a servicio en Node.js (Sonnet)**
+  ** **Tarea:** Tienes un procedimiento almacenado de 800 líneas en una base de datos Oracle que calcula el algoritmo de triaje de urgencias. Quieres extraer esa lógica y crear un servicio en Node.js/Express bien documentado y con pruebas unitarias.
+  ** **Decisión:** **Claude Sonnet**. Sus capacidades de codificación y traducción de lenguajes de programación son líderes en el sector, garantizando que entienda la lógica PL/SQL y genere código moderno y limpio.
+
+* **Escenario C: Auditoría de seguridad e interoperabilidad global (Opus)**
+  ** **Tarea:** Diseñar la estrategia de seguridad para que la aplicación satélite de hospitalización a domicilio pueda consumir datos del HIS a través de un API Gateway, cumpliendo con el Esquema Nacional de Seguridad (ENS) en categoría Media.
+  ** **Decisión:** **Claude Opus** o **Claude Sonnet**. Requiere un análisis profundo de la normativa, evaluación de riesgos de red y estructuración de políticas organizacionales.
+
+=== Interoperabilidad en la práctica: De legacy a HL7 FHIR con Claude
+
+Uno de los principales problemas de las soluciones propias desarrolladas en torno a los sistemas inistituciionales es la comunicación con el HIS. En lugar de compartir bases de datos, la tendencia moderna es el estándar **HL7 FHIR (Fast Healthcare Interoperability Resources)**.
+
+Veamos un ejemplo de cómo Claude puede ayudarnos a transformar un informe plano legacy (típico de un volcado de base de datos o de un archivo de texto del HIS) a un recurso FHIR de tipo `Observation` en formato JSON.
+
+.Datos Legacy (Volcado plano del HIS)
+[source,text]
+----
+ID_PACIENTE: 9948231
+FECHA_HORA: 2026-06-11 08:30:00
+PRUEBA: Glucemia basal (suero)
+VALOR: 145
+UNIDADES: mg/dL
+RANGO_REF: 70-100
+ESTADO: Alto
+ORIGEN: Lab Central - Torrecárdenas
+----
+
+Le pedimos a Claude (Sonnet) que realice la transformación con el siguiente prompt:
+
+[source,markdown]
+----
+Actúa como experto en interoperabilidad sanitaria y el estándar HL7 FHIR R4.
+Transforma los datos de este informe plano legacy del HIS en un recurso FHIR JSON de tipo 'Observation'. 
+Usa los códigos LOINC adecuados (por ejemplo, 1558-6 para glucosa en suero).
+Garantiza que la estructura JSON sea válida y cumpla con el estándar FHIR.
+----
+
+.Recurso FHIR Generado por Claude
+[source,json]
+----
+{
+  "resourceType": "Observation",
+  "status": "final",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "laboratory",
+          "display": "Laboratory"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "1558-6",
+        "display": "Glucose [Mass/volume] in Serum or Plasma"
+      }
+    ],
+    "text": "Glucemia basal (suero)"
+  },
+  "subject": {
+    "reference": "Patient/9948231"
+  },
+  "effectiveDateTime": "2026-06-11T08:30:00Z",
+  "valueQuantity": {
+    "value": 145,
+    "unit": "mg/dL",
+    "system": "http://unitsofmeasure.org",
+    "code": "mg/dL"
+  },
+  "interpretation": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+          "code": "H",
+          "display": "High"
+        }
+      ]
+    }
+  ],
+  "referenceRange": [
+    {
+      "low": {
+        "value": 70,
+        "unit": "mg/dL",
+        "system": "http://unitsofmeasure.org",
+        "code": "mg/dL"
+      },
+      "high": {
+        "value": 100,
+        "unit": "mg/dL",
+        "system": "http://unitsofmeasure.org",
+        "code": "mg/dL"
+      }
+    }
+  ]
+}
+----
+
+Este proceso, automatizado a través de la API en nuestras soluciones propias, permite desacoplar los sistemas finales del formato interno del HIS, exponiendo APIs FHIR limpias y estandarizadas.
+
+== Mejora del uso de Claude Code
+
+Una de los errores en los que debemos evitar caer al usar un asistente de IA en nuestro trabajo cotidiano es caer en la dinámica de "preguntar-responder" sin aprovechar al máximo las capacidades del modelo. Asimismo, también hay qeu evitar la tentación de buscar siempre la redacción del prompt perfecto para obtener la respuesta correcta a la primera. Quizá es mejor buscar la creación de una dinámica o un sistema de trabajo con la IA que permita iterar, desarrollar, anotar los errores encontrados y la solución a seguir cuando vuelva a ocurrir, documentar y cerrar la iteración de forma eficient. Por ejemplo, en lugar de pedirle a Claude que "genere un endpoint para recibir un recurso FHIR Patient", podríamos crear un sistema de trabajo basado en historias de usuario y tareas, donde cada historia de usuario se documente con su descripción, criterios de aceptación y pruebas unitarias asociadas. Luego, podríamos usar comandos personalizados para que Claude ejecute cada historia de usuario, genere el código necesario, ejecute las pruebas y documente los resultados en un formato estructurado. De esta forma, estaríamos creando un flujo de trabajo más robusto y eficiente que aprovecha al máximo las capacidades de Claude Code.
+
+=== ¿Qué aporta Claude Code sobre Claude.ai?
+
+Para el equipo de desarrollo del hospital, la interfaz web clásica de Claude (Claude.ai) presenta limitaciones cuando se trabaja en proyectos reales de desarrollo:
+
+* **Copiar y pegar constantemente:** Estar copiando archivos de código, pasándolos al chat, y luego copiando de vuelta las modificaciones.
+* **Falta de contexto del sistema:** El chat web no sabe qué archivos hay a su alrededor, si compila el código, o qué errores da la consola al ejecutar los tests.
+* **Dificultad en proyectos grandes:** Subir docenas de archivos manualmente es ineficiente y propenso a errores.
+
+**Claude Code** es una interfaz de línea de comandos (CLI) que actúa como un **agente de desarrollo autónomo local**. Se ejecuta directamente en el terminal de tu máquina de desarrollo o servidor, dentro del directorio de tu proyecto.
+
+==== Características clave para el desarrollador del hospital:
+1. **Acceso al sistema de archivos local:** Puede leer, crear y editar archivos directamente en tu proyecto (siempre bajo tu supervisión y previa confirmación).
+2. **Ejecución de herramientas y comandos:** Claude Code puede ejecutar comandos en tu terminal. Por ejemplo, puede compilar tu aplicación satélite (`npm run build`), pasar las pruebas unitarias (`pytest`) y analizar el resultado del error para corregir el código de forma autónoma.
+3. **Integración con Git:** Permite ver diferencias (`git diff`), añadir archivos al área de preparación (`git add`) y realizar commits con mensajes explicativos estructurados de forma automática.
+4. **Seguridad local:** No requiere subir tu base de código a plataformas en la nube públicas. Las llamadas a la API envían únicamente los fragmentos de código relevantes que estás editando bajo el flujo de trabajo actual, y todo el control de ejecución de comandos en tu máquina queda bajo tu autorización explícita.
+
+==== El flujo de trabajo típico de desarrollo
+En una sesión interactiva con Claude Code, el ciclo de desarrollo para construir o corregir una solución es el siguiente:
+
+1. **Planteas el objetivo:** 
+   `Desarrollador > "Agrega un endpoint al servicio de Admisión que reciba un JSON FHIR Patient y verifique si el paciente ya existe en nuestra base de datos local."`
+2. **Claude analiza el proyecto:** Lee las rutas de Express, el modelo de base de datos y tus reglas de negocio en `CLAUDE.md`.
+3. **Propone modificaciones de archivos:** Te presentará una propuesta de cambio. Te pedirá confirmación explícita antes de editar archivos en tu disco duro.
+4. **Ejecuta pruebas locales:** Claude puede sugerir ejecutar la suite de pruebas del proyecto:
+   `Claude > "Deseo ejecutar 'npm run test' para comprobar que el nuevo endpoint no rompe los tests existentes. ¿Permitir comando?"`
+5. **Autocorrección:** Si el test falla, Claude analizará el error del terminal, modificará el código para solucionar el fallo y volverá a pasar el test.
+6. **Informe de resultados:** Una vez todo funciona, te ofrecerá un resumen de los cambios realizados, el resultado de las pruebas y sugerencias para mejorar la implementación o la cobertura de tests.
+
+[TIP]
+====
+Este flujo interactivo reduce en un porcentaje significativo el tiempo dedicado a tareas mecánicas de programación, permitiendo al equipo TIC del hospital concentrarse en el diseño de arquitectura y en asegurar que la integración con el HIS sea segura y robusta. Sin embargo, aunque esto supone una mejora significativa, es posible llevar esto mucho más allá incorporando a la IA en el flujo de trabajo diario, y no limitar sólo su uso a la generación de código. Por ejemplo, podemos crear un sistema de trabajo basado en historias de usuario y tareas, donde cada historia de usuario se documente con su descripción, criterios de aceptación y pruebas unitarias asociadas. Luego, podríamos usar comandos personalizados para que Claude ejecute cada historia de usuario, genere el código necesario, ejecute las pruebas y documente los resultados en un formato estructurado. De esta forma, estaríamos creando un flujo de trabajo más robusto y eficiente que aprovecha al máximo las capacidades de Claude Code.
+====
+
+=== Preparación del entorno
+Claude Code se distribuye de varias formas:
+
+* **Aplicación de escritorio:** https://code.claude.com/docs/es/desktop-quickstart[Descarga la aplicación oficial, window=_blank] de Anthropic para tu sistema operativo (Windows, macOS, Linux). Esta aplicación incluye la CLI de Claude Code y una interfaz gráfica para gestionar tus proyectos y configuraciones.
+* **Plugin para IDEs:** Si usas Visual Studio Code, puedes instalar la https://code.claude.com/docs/es/vs-code[extensión oficial, window=_blank] de Claude Code desde el marketplace de VS Code, lo que te permitirá interactuar con la IA directamente desde tu editor. Si usas JetBrains, Anthropic también ofrece un https://code.claude.com/docs/es/jetbrains[plugin compatible, window=_blank] con IntelliJ IDEA, PyCharm y WebStorm.
+* **Remote control**: Permite continiuar una sesión local de Claude Code desde un teléfono, tableta o cualquier navegador usando Remote Control. Funciona con claude.ai/code y la aplicación móvil de Claude. Esto permite controlar una sesión de desarrollo en tu máquina local desde cualquier lugar, ideal para revisar código o dar feedback a los desarrolladores del hospital mientras estás fuera de la oficina. Las validaciones ahora también se podrán hacer de forma remota, lo que facilita la colaboración entre equipos distribuidos o la supervisión de tareas críticas sin necesidad de estar físicamente presente en el entorno de desarrollo. **Remote Control permite trabajar simultáneamente en ambas interfaces (local y remota) a la vez, con sincronización en tiempo real.**
++
+[TIP]
+====
+Si se han definido comandos personalizados para interactuar con Claude Code, como `/run-story` para ejecutar historias de usuario de acuerdo a un plan definido, se podrán ejecutar de forma remota.
+====
+
+Sigue los pasos en el navegador para autorizar la herramienta con tus credenciales de la API de Anthropic.
+
+=== Creación un sistema eficiente de trabajo con Claude Code
+
+Cuando inicias Claude Code en un repositorio, Claude busca un archivo especial en la raíz de tu proyecto llamado `CLAUDE.md`. Este archivo almacena instrucciones específicas del proyecto, convenciones y contexto que Claude debe conocer en cada sesión. Esto es sólo la base para aumentar la eficiencia de Claude en tareas de desarrollo, pero podemos ir mucho más allá creando un sistema de trabajo estructurado basado en historias de usuario y tareas.
+
+A continuación, se plantea una propuesta de estructura de archivos y documentación para organizar el trabajo con Claude Code en torno a historias de usuario. Esta estructura permitirá documentar cada historia de usuario de forma detallada, incluyendo su análisis, diseño, implementación, validación y retrospectiva. Y lo más importante, permitirá a Claude Code interactuar con esta documentación para ejecutar cada historia de usuario de forma autónoma, generando el código necesario, ejecutando las pruebas y documentando los resultados en un formato estructurado. Estos documentos representan la memoria de Claude y podrían tener la siguiente utilidad:
+
+* `architecture.md`: Documenta la arquitectura general del sistema, incluyendo diagramas, decisiones de diseño y patrones arquitectónicos.
+* `backlog.md`: Lista de historias de usuario, tareas y bugs pendientes, con su estado actual (pendiente, en progreso, bloqueada, etc.). Puede contener también los sprints planificados y su contenido en términos de historias de usuario.
+* `business-rules.md`: Documenta las reglas de negocio del sistema, incluyendo casos de uso, escenarios y validaciones.
+* `coding-standards.md`: Define los estándares de codificación, convenciones de nomenclatura, estructura de carpetas y cualquier otra regla relacionada con la calidad del código.
+* `database-schema.md`: Documenta el esquema de la base de datos, incluyendo tablas, relaciones, índices y cualquier otra información relevante sobre la estructura de datos.
+* `decisions.md`: Documenta las decisiones clave tomadas durante el desarrollo, incluyendo las alternativas consideradas, los pros y contras de cada opción y la justificación de la decisión final.
+* `lessons-learned.md`: Documenta las lecciones aprendidas durante el desarrollo, incluyendo errores cometidos, soluciones implementadas y recomendaciones para futuros proyectos.
+* `project-context.md`: Documenta el contexto del proyecto, incluyendo los objetivos, el alcance, los stakeholders, las restricciones y cualquier otra información relevante para entender el proyecto en su conjunto.
+* `project-log.md`: Un diario de desarrollo donde se registran los avances diarios, los bloqueos encontrados, las soluciones implementadas y cualquier otra información relevante sobre el progreso del proyecto.
+* `roadmap.md`: Documenta la hoja de ruta del proyecto, incluyendo las fases de desarrollo, los hitos clave, las fechas estimadas y cualquier otra información relevante para planificar el desarrollo.
+* `sprint-tracker.md`: Documenta el seguimiento de los sprints, incluyendo las historias de usuario planificadas, las historias de usuario completadas, los bloqueos encontrados y cualquier otra información relevante para gestionar el desarrollo ágil del proyecto.
+
+Para cada historia de usuario, podríamos tener una carpeta específica con la siguiente estructura:
+
+* `analysis.md`: Documenta el análisis de la historia de usuario, incluyendo la descripción detallada, los criterios de aceptación, los casos de uso y cualquier otra información relevante para entender la historia de usuario.
+* `design-review.md`: Se obtiene a partir del análisis, y documenta el diseño propuesto para implementar la historia de usuario, incluyendo diagramas, decisiones de diseño y cualquier otra información relevante para entender el diseño.
+* `design.md`: Documenta el diseño final implementado para la historia de usuario, incluyendo diagramas, decisiones de diseño y cualquier otra información relevante para entender el diseño final.
+* `implementation.md`: Documenta la implementación de la historia de usuario, incluyendo el código generado, las pruebas unitarias implementadas y cualquier otra información relevante para entender la implementación.
+* `validation.md`: Documenta la validación de la historia de usuario, incluyendo los resultados de las pruebas, los errores encontrados y las soluciones implementadas para corregir esos errores.
+* `retrospective.md`: Documenta la retrospectiva de la historia de usuario, incluyendo las lecciones aprendidas, los errores cometidos, las soluciones implementadas y las recomendaciones para futuras historias de usuario.
+
+.Estructura recomendada
+[source,text]
+----
+project/
+├── CLAUDE.md
+├── ai-docs/
+│   ├── architecture.md
+│   ├── backlog.md
+|   ├── business-rules.md
+|   ├── coding-standards.md
+|   ├── database-schema.md
+|   ├── decisions.md
+|   ├── lessons-learned.md
+│   ├── project-context.md
+│   ├── project-log.md
+│   ├── roadmap.md
+│   └── sprint-tracker.md
+└── stories/
+    └── US-xxx/
+        ├── analysis.md
+        ├── design-review.md
+        ├── design.md
+        ├── implementation.md
+        ├── retrospective.md
+        └── validation.md
+----
+
+Ahora crearemos esa estructura con `mkdir` y `touch` para generar los archivos vacíos, y luego editaremos el archivo `CLAUDE.md` para incluir instrucciones específicas sobre cómo usar esta estructura de documentación con Claude Code. Por ejemplo, podríamos definir comandos personalizados como `/run-story US-xxx` para que Claude ejecute la historia de usuario correspondiente, genere el código necesario, ejecute las pruebas y documente los resultados en los archivos correspondientes dentro de la carpeta `stories/US-xxx/`. De esta forma, estaríamos creando un sistema de trabajo estructurado que facilita la colaboración, el seguimiento del progreso y la documentación de todo el proceso de desarrollo con la ayuda de Claude Code.
+
+[source,bash]
+----
+mkdir -p ai-docs && touch ai-docs/{architecture,backlog,business-rules,coding-standards,database-schema,decisions,lessons-learned,project-context,project-log,roadmap,sprint-tracker}.md
+----  
+
+### Convertir `CLAUDE.md` en un índice operativo para el proyecto
+
+Cada sesión de Claude Code comienza con una ventana de contexto nueva. Podemos mejorar la eficiencia de Claude Code proporcionando un índice operativo en el archivo `CLAUDE.md`, que sirva como guía para que la IA entienda el proyecto y sus objetivos. Se usa para describir brevemente el proyecto, sus objetivos, forma de ejecutar la aplicación, la estructura del proyecto, así como cualquier otra información relevante que pueda ayudar a Claude Code a hacer su trabajo  de manera más eficiente y precisa. A continuación se muestra un ejemplo de cómo podría estructurarse el archivo `CLAUDE.md` para un proyecto de gestión de camas en un hospital.
+
+.Ejemplo de archivo `CLAUDE.md` para una solución propia de gestión de camas en el hospital
+[source,markdown]
+----
+# Memoria del proyecto: Gestión de camas (Torrecárdenas)
+
+## Arquitectura y restricciones del sistema
+- **HIS central:** El HIS central está en una base de datos Oracle de solo lectura para esta solución. Está estrictamente PROHIBIDO intentar realizar operaciones de INSERT, UPDATE o DELETE en el esquema `HIS_PROD`.
+- **Base de datos propia:** Usamos PostgreSQL local para almacenar el estado propio de la aplicación propia.
+- **Interoperabilidad:** Toda la comunicación de salida debe seguir el estándar FHIR R4.
+
+## Estándares de código
+- Lenguaje: TypeScript en Node.js (Backend) y React con Vanilla CSS (Frontend).
+- Para APIs, usamos FastAPI (Python).
+- Los nombres de las tablas y columnas de base de datos deben estar en minúsculas y snake_case.
+
+## Reglas de seguridad (Crítico)
+- NUNCA almacenes contraseñas, tokens de la API del HIS o claves privadas en archivos de código. Usa variables de entorno (`.env`).
+- Queda totalmente prohibido el uso de datos reales de pacientes en entornos de desarrollo o tests. Usa el generador sintético interno `mock_patients.py`.
+
+## Protocolo de trabajo
+
+Al iniciar una nueva sesión para una tare:
+
+1. Lee:
+    * docs/decisions.md
+    * docs/lessons-learned.md
+    * docs/architecture.md
+    * docs/roadmap.md
+    * docs/sprint-tracker.md
+2. Genera un resumen que incluya: bloques de la arquitecura, decisiones clave, suposiciones. riesgos y cuestiones abiertas.
+3. Antes de pasar a la implementación espera la aprobación explícita.
+4. No genreres roadmaps, código ni documentación hasta que se haya aprobado el resumen de la arquitectura y las decisiones clave.
+5. La carpeta `ai-docs/` contiene documentación de referencia que puede ser consultada para tomar decisiones de diseño y desarrollo. No modifiques estos archivos directamente sin autorización.
+----
+
+Cuando Claude Code comience a trabajar en tu código, leerá este archivo de forma automática y se asegurará de cumplir con las reglas y convenciones definidas. Además, podrá usar los archivos de documentación en `ai-docs/` para consultar decisiones previas, reglas de negocio y estándares de codificación, lo que le permitirá generar código más coherente y alineado con el proyecto.
+
+[TIP]
+====
+Para mejorar la eficiencia y productividad del equipo de trabajo, es recomendable seguir un protocolo consistente y uniforme. Puedes seguir este https://github.com/ualmtorres/claude-project-starter-kit[ejemplo de plantilla de proyecto, window=_blank] que incluye un archivo `CLAUDE.md` predefinido, una estructura de carpetas recomendada para proyectos de desarrollo con Claude Code, y un conjunto de comandos personalizados para inicializar el proyecto, crear el backlog y ejecutar historias de usuario y tareas de manera eficiente.
+====
+
+=== Comandos en Claude Code
+
+Una de las formas más potentes de usar Claude Code de manera profesional es mediante comandos personalizados.
+
+Un comando en Claude Code es, en esencia, un prompt reutilizable que se guarda dentro del proyecto (en `.claude/commands` en forma de archivo Markdown) para ejecutar una tarea de forma consistente. En lugar de escribir una y otra vez instrucciones largas como “analiza esta historia, revisa la arquitectura, genera un plan, no implementes todavía y crea documentación”, podemos encapsular todo ese procedimiento en un comando como:
+
+[source,bash]
+----
+/analyze-story US-001
+----
+
+De esta manera, los comandos convierten buenas prácticas en hábitos repetibles. No son simples atajos de texto. Bien diseñados, pueden actuar como pequeños procedimientos de trabajo: leen documentación, aplican reglas del proyecto, generan archivos, detienen el flujo en puntos de aprobación y ayudan a mantener la memoria viva del repositorio.
+
+==== Utilidad de los comandos
+
+Los comandos aportan una serie de ventajas, como
+
+* **Consistencia^**. Si cada desarrollador o cada sesión de Claude analiza una historia de manera diferente, el proyecto se vuelve difícil de seguir. Un comando permite que todas las historias pasen por el mismo proceso: análisis, diseño, implementación, validación y retrospectiva.
+
+* **Productividad**. Muchas tareas en desarrollo son repetitivas: preparar una historia, revisar un diseño, validar una implementación, cerrar una tarea, actualizar documentación. Si esas tareas se convierten en comandos, el usuario deja de invertir esfuerzo en recordar el procedimiento y se concentra en tomar decisiones.
+
+* **Calidad del contexto**. Claude funciona mejor cuando sabe qué documentos leer, qué restricciones respetar y qué salida debe producir. Un comando bien escrito actúa como una receta: le dice a Claude qué contexto necesita, qué debe hacer y qué no debe hacer.
+
+==== Impacto en el flujo de trabajo
+
+Sin comandos, una sesión típica puede empezar así:
+
+_Lee la arquitectura, revisa el backlog, analiza la historia US-001, dime qué archivos habría que tocar, no implementes todavía, genera criterios de aceptación, crea una propuesta de diseño y espera mi aprobación._
+
+Esto funciona, pero tiene dos problemas: es fácil olvidar alguna instrucción y es difícil garantizar que el proceso sea igual en todas las tareas.
+
+Con comandos, el mismo flujo se reduce a:
+
+[source,bash]
+----
+/analyze-story US-001
+----
+
+Y si el comando está bien diseñado, Claude sabrá que debe:
+
+* leer la documentación relevante
+* localizar la historia en el backlog
+* analizar el objetivo
+* identificar dependencias
+* proponer un enfoque técnico
+* crear archivos en docs/stories/US-001/
+* detenerse antes de implementar
+
+El resultado es un flujo más limpio, controlado y profesional.
+
+==== Ejemplo de estructura de comandos
+
+[source,text]
+----
+.claude/
+└── commands/
+    ├── init-project.md
+    ├── create-backlog.md
+    ├── analyze-story.md
+    ├── review-design.md
+    ├── implement-story.md
+    ├── validate-story.md
+    ├── retrospective.md
+    └── run-story.md
+----
+
+Cada archivo define el comportamiento del comando.
+
+Por ejemplo, el archivo `.claude/commands/analyze-story.md` permite invocar a `/analyze-story US-001`. El argumento `US-001` se pasa al comando para que Claude sepa sobre qué historia debe trabajar.
+
+==== Estructura de un buen comando
+
+Un comando útil no debería limitarse a decir “haz esta tarea”. Debería indicar con claridad:
+
+* Qué objetivo tiene.
+* Qué argumentos espera.
+* Qué documentos debe leer.
+* Qué debe producir.
+* Qué archivos debe crear o modificar.
+* Qué cosas tiene prohibido hacer.
+* En qué punto debe detenerse para pedir aprobación.
+
+Por ejemplo, un comando de análisis de historia debería incluir instrucciones como:
+
+[source,markdown]
+----
+Analyze story: $ARGUMENTS
+
+Read:
+- CLAUDE.md
+- docs/project-context.md
+- docs/architecture.md
+- docs/backlog.md
+- docs/decisions.md
+- docs/lessons-learned.md
+
+Focus only on story: $ARGUMENTS
+
+Produce:
+- docs/stories/$ARGUMENTS/analysis.md
+- docs/stories/$ARGUMENTS/design.md
+- docs/stories/$ARGUMENTS/status.md
+
+Do not implement code.
+
+Wait for explicit user approval before continuing.
+----
+
+Este comando no solo pide una respuesta. Define un pequeño proceso de trabajo.
+
+Los comandos son especialmente valiosos cuando se combinan con una buena memoria documental (p.e. almacenando el diseño de las historias de usuario, decisiones de arquitectura y lecciones aprendidas en archivos Markdown dentro del proyecto). Esto permite que cada sesión de Claude Code tenga acceso a un contexto completo y actualizado, mejorando la calidad de las respuestas y la coherencia del desarrollo. Así, cada historia completada deja conocimiento útil para el futuro. La conversación puede cerrarse, pero el proyecto conserva lo importante.
+
+[TIP]
+====
+No se debe intentar conservar una conversación infinita. Se debe conservar una memoria de proyecto limpia, estructurada y versionada.
+====
+
+Quédate con esto:
+
+* Los comandos permiten transformar Claude Code de un asistente reactivo en un colaborador metódico.
+* Sin comandos, Claude responde a instrucciones puntuales. Con comandos, Claude sigue procesos.
+* Por eso, una buena colección de comandos no es un adorno del proyecto. Es parte de su infraestructura de trabajo.
+
+== Conclusiones
+
+La inteligencia artificial generativa, y en particular el ecosistema de Anthropic, representa una oportunidad sin precedentes para modernizar los departamentos TIC hospitalarios. Sin embargo, esta oportunidad solo se materializa cuando se integra la IA no como una herramienta puntual de "preguntar y copiar", sino como un agente colaborativo integrado en los flujos de trabajo diarios. Esto nos lleva a tratar a Claude Code como agente, no como un asistente para tareas puntuales. Para lograrlo, es necesario establecer un sistema de trabajo estructurado, basado en documentación clara, comandos personalizados y una memoria viva del proyecto.
+
+El futuro de la productividad en TIC hospitalaria no está en reemplazar desarrolladores con IA, sino en aumentar equipos pequeños con inteligencia operativa local. Así, el personal senior con gran conocimiento del dominio puede concentrarse en decisiones estratégicas y de arquitectura, mientras que Claude Code se encarga de tareas repetitivas, generación de código y documentación, validación de pruebas y mantenimiento de la memoria del proyecto. Esto permite que los equipos sean más ágiles, reduzcan errores y mantengan un alto nivel de calidad en el desarrollo de soluciones propias. Sin embargo, esto requiere disciplina, organización y un enfoque iterativo en la integración de la IA en los flujos de trabajo. 
+
+=== Recursos y siguientes pasos
+
+Para profundizar en lo aprendido:
+
+* https://code.claude.com/docs/es/[Documentación oficial de Claude Code, window=_blank]: Guías sobre instalación, CLI, hooks y configuración avanzada.
+* https://code.claude.com/docs/es/keyboard-shortcuts[Atajos de teclado de Claude Code, window=_blank]: Mejora tu velocidad de trabajo.
+* https://github.com/ualmtorres/claude-project-starter-kit[Plantilla de proyecto recomendada, window=_blank]: Una estructura lista para adaptar a tus necesidades.
+* https://llm-stats.com[LLM Stats, window=_blank]: Comparativas actualizadas de modelos, tokens y costes.
