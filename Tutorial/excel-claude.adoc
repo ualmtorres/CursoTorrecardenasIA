@@ -1,0 +1,167 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+:icons: font
+
+= Claude en Excel
+Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería
+
+:numbered!:
+
+[abstract]
+== Resumen
+
+Claude para Excel es un complemento (add-in) de Anthropic que integra Claude directamente en Excel a través de un panel de tareas. A diferencia de copiar y pegar datos en un chat, Claude trabaja sobre la propia hoja de cálculo: puede leer el contenido de las celdas, entender la estructura de la tabla y proponer cambios (fórmulas, columnas nuevas, limpieza de datos) que se aplican sobre el propio libro.
+
+Esto lo hace especialmente útil para tareas repetitivas y propensas a errores que son habituales en la gestión de datos de un servicio de TI hospitalario: normalizar categorías escritas de forma inconsistente, convertir fechas o números guardados como texto, eliminar duplicados, construir fórmulas auditables en lugar de valores fijos, resumir campos de texto libre o detectar valores atípicos antes de tomar decisiones basadas en esos datos.
+
+Este tutorial usa un caso práctico ficticio de la sección de Farmacia hospitalaria (registro de dispensaciones) para recorrer las funciones principales del complemento: limpieza de datos, generación de fórmulas, resumen de texto, tablas dinámicas y detección de errores y valores atípicos.
+
+[IMPORTANT]
+====
+Este tutorial no propone cargar datos reales de pacientes ni información sensible sin autorización institucional. La hoja de cálculo de ejemplo (`claude-farmacia.xlsx`) contiene datos ficticios creados para la formación. Antes de usar Claude para Excel con documentación interna real, revisa las políticas del centro y las indicaciones del responsable de protección de datos.
+====
+
+.Objetivos
+Al finalizar este tutorial, deberías ser capaz de:
+
+* Explicar qué es Claude para Excel y en qué se diferencia de usar Claude como un chat aparte.
+* Instalar y configurar el complemento en Excel.
+* Detectar y corregir datos inconsistentes: categorías mal escritas, espacios sobrantes, fechas y números guardados como texto, y filas duplicadas.
+* Pedir columnas calculadas con fórmulas auditables en lugar de valores fijos.
+* Resumir y agrupar un campo de texto libre por temas.
+* Crear tablas dinámicas para analizar coste y consumo por distintas dimensiones.
+* Detectar errores lógicos y valores atípicos antes de usar los datos para un análisis o una decisión.
+
+[TIP]
+====
+* link:files/claude-farmacia.xlsx[Hoja de cálculo de ejemplo de sección de Farmacia]
+====
+
+:numbered:
+
+== Introducción
+
+En un servicio de TI hospitalario es habitual trabajar con hojas de cálculo para inventarios, registros de dispensación, cuadros de mando o seguimiento de indicadores. Muchas de estas tareas —limpiar datos, construir fórmulas, resumir texto libre, montar una tabla dinámica— consumen tiempo y son propensas a errores cuando se hacen a mano, especialmente sobre archivos que han crecido de forma orgánica y mezclan formatos, mayúsculas y minúsculas, o valores guardados como texto.
+
+Claude para Excel aborda esto de otra manera: en lugar de exportar los datos a un chat, describir el problema y copiar la respuesta de vuelta a la hoja, Claude trabaja directamente sobre el libro abierto. El panel de tareas del complemento puede leer el contenido de las hojas, y las peticiones se hacen en lenguaje natural indicando la hoja, la columna o el rango sobre el que hay que actuar.
+
+Algunas funciones que ofrece el complemento, y que se practican en este tutorial con el caso de la sección de Farmacia:
+
+* *Clean Messy Data*: detecta y corrige datos inconsistentes (categorías, espacios, mayúsculas, números o fechas guardados como texto, duplicados).
+* *Generación de fórmulas*: crea columnas calculadas con fórmulas auditables, en lugar de sustituirlas por valores fijos.
+* *Summarize Text Data*: agrupa y resume un campo de texto libre por temas, indicando cuántos casos hay de cada uno.
+* *Tablas dinámicas*: agrega datos limpios para analizar coste y consumo por distintas dimensiones (servicio, medicamento, etc.).
+* *Find outliers and errors*: localiza valores atípicos y errores lógicos (cantidades negativas, precios anómalos, totales que no cuadran, fechas imposibles, celdas vacías).
+
+[NOTE]
+====
+Como con cualquier resultado generado por IA, las fórmulas, correcciones y resúmenes que propone Claude deben revisarse antes de darlos por buenos, sobre todo si van a usarse para tomar decisiones clínicas, de compras o de coste. Claude para Excel favorece fórmulas auditables (visibles y verificables en la celda) frente a valores fijos precisamente para facilitar esa revisión.
+====
+
+== Instalación y configuración
+
+Claude para Excel es un complemento de Microsoft Office distribuido por Anthropic. Como cualquier funcionalidad en fase de disponibilidad limitada o beta, los requisitos exactos (planes admitidos, plataformas soportadas) pueden cambiar; conviene comprobarlos en la documentación oficial de Anthropic antes de una sesión formativa.
+
+.Requisitos habituales
+* Una suscripción a Microsoft 365 con Excel (de escritorio o en el navegador).
+* Una cuenta de Claude con un plan que incluya el complemento (en el momento de escribir este tutorial, disponible para determinados planes de pago; revisa la documentación oficial para conocer la disponibilidad actual).
+* Permisos para instalar complementos en Excel. En entornos corporativos, esto puede requerir autorización previa del departamento de sistemas.
+
+.Pasos de instalación
+. Abre Excel (escritorio o web) con un libro cualquiera.
+. Ve a la pestaña *Inicio* y selecciona *Complementos* (Add-ins).
+. Busca "Claude" de Anthropic e instálalo.
+. Una vez instalado, ábrelo desde la cinta de opciones para mostrar el panel de tareas de Claude junto a la hoja de cálculo.
+. Inicia sesión con tu cuenta de Claude y concede al complemento permiso para leer y modificar el contenido del libro abierto.
+. Ya puedes escribir peticiones en el panel de tareas indicando la hoja, columna o rango sobre el que quieres trabajar (por ejemplo: "Limpia los datos de la Hoja1").
+
+== Caso de uso
+
+Los siguientes ejemplos usan el archivo `claude-farmacia.xlsx`: un registro ficticio de dispensaciones de la sección de Farmacia hospitalaria, con columnas como Servicio, Medicamento, Cantidad, Precio unitario, Fecha de dispensación, Fecha de caducidad y Observaciones. El archivo incluye deliberadamente los mismos problemas que suelen aparecer en datos reales: categorías escritas de forma inconsistente, fechas y números guardados como texto, una fila duplicada y varios errores y valores atípicos.
+
+=== Detección y corrección de datos inconsistentes
+
+Es frecuente que los datos de un fichero Excel contengan errores, inconsistencias o formatos incorrectos. Antes de realizar cualquier análisis, es recomendable limpiar y normalizar los datos para garantizar la fiabilidad de los resultados. 
+
+*Ejemplo 1: Detectar y corregir datos inconsistentes, eliminar espacios, convertir números y fechas guardados como texto y quitar duplicados.*
+
+Datos anómalos en el archivo de ejemplo: 
+
+* Columna C con valores 'CARDIOLOGIA' y ' cardiología', 'urgencias' y ' Urgencias', 'uci' y ' UCI' (mayúsculas inconsistentes y espacios sobrantes).
+* Fechas y números guardados como texto (valores en columnas B y F).
+* Filas duplicadas (por ejemplo, la fila 8 y la fila 9 son idénticas).
+
+.Prompt sugerido
+[source, text]
+----
+Limpia los datos de la Hoja1: unifica los nombres del Servicio, elimina espacios sobrantes, convierte a número/fecha los valores guardados como texto y elimina las filas duplicadas.
+----
+
+*Ejemplo 2: Crear columnas calculadas con fórmulas auditables en lugar de valores fijos.*
+
+Columnas necesarias para el análisis de coste y consumo:
+
+* Columna 'Coste calculado' = Cantidad × Precio unitario
+* Columna 'Días hasta caducidad' = Fecha caducidad − Fecha dispensación
+
+.Prompt sugerido
+[source, text]
+----
+Añade una columna 'Coste calculado' = Cantidad × Precio unitario y otra 'Días hasta caducidad' = Fecha caducidad − Fecha dispensación.
+----
+
+*Ejemplo 3: Resumir y agrupar por temas un campo de texto libre, contando casos por categoría.*
+
+
+.Prompt sugerido
+[source, text]
+----
+Resume las Observaciones (col N): agrupa los temas principales (reacciones adversas, alergias, stock, estupefacientes) e indica cuántos casos hay de cada uno.
+----
+
+*Ejemplo 4: Agregar los datos limpios para analizar coste y consumo por distintas dimensiones.*
+
+A partir de los datos limpios, se pueden crear tablas dinámicas para analizar el coste y el número de dispensaciones por Servicio.
+
+.Prompt sugerido
+[source, text]
+----
+Crea una tabla dinámica con el coste total por Servicio y por Medicamento.
+----
+
+*Ejemplo 5: Detectar y corregir errores lógicos y valores atípicos: negativos, precios anómalos, totales que no cuadran, fechas imposibles y celdas vacías.*
+
+Crear una tabla dinámica con el coste y el número de dispensaciones por Servicio permite detectar errores lógicos y valores atípicos, como cantidades negativas, precios anómalos, costes que no cuadran con Cantidad × Precio, caducidades anteriores a la dispensación y celdas vacías.
+
+.Prompt sugerido
+[source, text]
+----
+Revisa los datos y detecta errores y valores atípicos: cantidades negativas, precios anómalos, costes que no cuadran con Cantidad × Precio, caducidades anteriores a la dispensación y celdas vacías.
+----
+
+== Conclusiones
+
+Claude para Excel resulta útil porque acorta el camino entre "tengo unos datos con problemas" y "tengo unos datos limpios y analizables", trabajando directamente sobre la hoja de cálculo en lugar de obligar a exportar, describir el problema en un chat aparte y copiar la respuesta de vuelta. En un servicio de TI hospitalario, donde los registros de dispensación, inventario o seguimiento suelen llegar con inconsistencias de formato, categorías mal escritas o valores atípicos, esto puede ahorrar tiempo en tareas que de otro modo se hacen a mano y de forma repetitiva.
+
+El valor no está solo en la limpieza inicial: pedir fórmulas auditables en lugar de valores fijos, resumir un campo de texto libre por temas, construir una tabla dinámica o detectar errores lógicos son tareas que se benefician de tener un asistente que entiende el contenido de la hoja y puede razonar sobre él.
+
+[IMPORTANT]
+====
+Claude para Excel puede acelerar la limpieza y el análisis de datos, pero la responsabilidad de revisar los resultados, verificar las fórmulas propuestas y tomar decisiones a partir de ellos sigue siendo humana — especialmente cuando los datos afectan a coste, stock o decisiones clínicas.
+====
+
+=== Recursos y siguientes pasos
+
+Para profundizar en lo aprendido:
+
+* Practica con la hoja de cálculo de ejemplo (`claude-farmacia.xlsx`) reproduciendo los cinco ejemplos de este tutorial y, después, prueba a formular tus propios prompts sobre los mismos datos.
+* Repite el ejercicio con una hoja de cálculo propia del servicio (siempre con datos ficticios o anonimizados) para comprobar cómo se comporta Claude para Excel ante problemas de datos reales del entorno hospitalario.
+* Consulta la documentación oficial de Anthropic sobre Claude para Excel para conocer los requisitos y la disponibilidad actualizados del complemento, ya que pueden cambiar mientras la funcionalidad evoluciona.

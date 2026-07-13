@@ -5,8 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.22">
-<meta name="author" content="Manuel Torres - Universidad de Almería">
-<title>Inteligencia artificial generativa aplicada a productividad IT hospitalaria</title>
+<meta name="author" content="Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería">
+<title>Claude en Excel</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -434,19 +434,30 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 #footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
 @media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body class="book toc2 toc-right">
 <div id="header">
-<h1>Inteligencia artificial generativa aplicada a productividad IT hospitalaria</h1>
+<h1>Claude en Excel</h1>
 <div class="details">
-<span id="author" class="author">Manuel Torres - Universidad de Almería</span><br>
+<span id="author" class="author">Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería</span><br>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Tabla de contenidos</div>
 <ul class="sectlevel1">
 <li><a href="#_resumen">Resumen</a></li>
-<li><a href="#_material_disponible">1. Material disponible</a></li>
-<li><a href="#_estructura_actual_del_material">2. Estructura actual del material</a></li>
+<li><a href="#_introducción">1. Introducción</a></li>
+<li><a href="#_instalación_y_configuración">2. Instalación y configuración</a></li>
+<li><a href="#_caso_de_uso">3. Caso de uso</a>
+<ul class="sectlevel2">
+<li><a href="#_detección_y_corrección_de_datos_inconsistentes">3.1. Detección y corrección de datos inconsistentes</a></li>
+</ul>
+</li>
+<li><a href="#_conclusiones">4. Conclusiones</a>
+<ul class="sectlevel2">
+<li><a href="#_recursos_y_siguientes_pasos">4.1. Recursos y siguientes pasos</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -455,150 +466,311 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_resumen">Resumen</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Este sitio organiza el material del curso <strong>Inteligencia artificial generativa aplicada a productividad IT hospitalaria</strong>. El curso está orientado a equipos de informática de hospitales que necesitan entender, evaluar y aplicar herramientas de IA generativa con criterio técnico, seguridad, trazabilidad y responsabilidad operativa.</p>
+<p>Claude para Excel es un complemento (add-in) de Anthropic que integra Claude directamente en Excel a través de un panel de tareas. A diferencia de copiar y pegar datos en un chat, Claude trabaja sobre la propia hoja de cálculo: puede leer el contenido de las celdas, entender la estructura de la tabla y proponer cambios (fórmulas, columnas nuevas, limpieza de datos) que se aplican sobre el propio libro.</p>
 </div>
 <div class="paragraph">
-<p>El material combina visión conceptual, criterios de adopción, presentaciones para impartir sesiones y documentos de apoyo. La intención no es presentar la IA como una solución mágica, sino como una capacidad de productividad que debe integrarse con buenas prácticas de ingeniería, gobierno del dato, revisión humana y control del ciclo de vida.</p>
+<p>Esto lo hace especialmente útil para tareas repetitivas y propensas a errores que son habituales en la gestión de datos de un servicio de TI hospitalario: normalizar categorías escritas de forma inconsistente, convertir fechas o números guardados como texto, eliminar duplicados, construir fórmulas auditables en lugar de valores fijos, resumir campos de texto libre o detectar valores atípicos antes de tomar decisiones basadas en esos datos.</p>
 </div>
 <div class="paragraph">
-<p>Desde esta página se accede al material navegable del curso. Por ahora se incluyen documentos, presentaciones y otros recursos de interés.</p>
+<p>Este tutorial usa un caso práctico ficticio de la sección de Farmacia hospitalaria (registro de dispensaciones) para recorrer las funciones principales del complemento: limpieza de datos, generación de fórmulas, resumen de texto, tablas dinámicas y detección de errores y valores atípicos.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Este tutorial no propone cargar datos reales de pacientes ni información sensible sin autorización institucional. La hoja de cálculo de ejemplo (<code>claude-farmacia.xlsx</code>) contiene datos ficticios creados para la formación. Antes de usar Claude para Excel con documentación interna real, revisa las políticas del centro y las indicaciones del responsable de protección de datos.</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <div class="title">Objetivos</div>
-<p>Al finalizar el curso, las personas participantes deberían ser capaces de:</p>
+<p>Al finalizar este tutorial, deberías ser capaz de:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Entender qué aporta la IA generativa al trabajo cotidiano de un departamento IT hospitalario.</p>
+<p>Explicar qué es Claude para Excel y en qué se diferencia de usar Claude como un chat aparte.</p>
 </li>
 <li>
-<p>Diferenciar entre usos razonables, usos experimentales y usos que requieren gobierno estricto.</p>
+<p>Instalar y configurar el complemento en Excel.</p>
 </li>
 <li>
-<p>Reconocer límites, riesgos y líneas rojas en privacidad, seguridad, datos sensibles y automatización.</p>
+<p>Detectar y corregir datos inconsistentes: categorías mal escritas, espacios sobrantes, fechas y números guardados como texto, y filas duplicadas.</p>
 </li>
 <li>
-<p>Evaluar plataformas y asistentes de desarrollo basados en IA antes de introducirlos en flujos reales.</p>
+<p>Pedir columnas calculadas con fórmulas auditables en lugar de valores fijos.</p>
 </li>
 <li>
-<p>Distinguir entre demo, prototipo, piloto controlado y aplicación preparada para producción.</p>
+<p>Resumir y agrupar un campo de texto libre por temas.</p>
 </li>
 <li>
-<p>Usar IA como apoyo para análisis, documentación, prototipado, generación de código y revisión crítica.</p>
+<p>Crear tablas dinámicas para analizar coste y consumo por distintas dimensiones.</p>
 </li>
 <li>
-<p>Mantener trazabilidad de fuentes, decisiones, supuestos y validaciones humanas.</p>
+<p>Detectar errores lógicos y valores atípicos antes de usar los datos para un análisis o una decisión.</p>
 </li>
 </ul>
 </div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="files/claude-farmacia.xlsx">Hoja de cálculo de ejemplo de sección de Farmacia</a></p>
+</li>
+</ul>
 </div>
-</div>
-<div class="sect1">
-<h2 id="_material_disponible">1. Material disponible</h2>
-<div class="sectionbody">
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 22.2222%;">
-<col style="width: 22.2222%;">
-<col style="width: 33.3333%;">
-<col style="width: 22.2223%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Sesión</th>
-<th class="tableblock halign-left valign-top">Formato</th>
-<th class="tableblock halign-left valign-top">Descripción</th>
-<th class="tableblock halign-left valign-top">Enlace</th>
+</td>
 </tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Visión general de IA generativa aplicada a IT hospitalaria</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial y presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Introducción al impacto de la IA generativa en departamentos de informática hospitalaria: paradigma operativo, tipos de IA, ecosistema de modelos, cloud vs. on-premise, casos de uso y riesgos.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/vision-general.html" target="_blank" rel="noopener">Tutorial</a> - <a href="Tutorial/vision-general-presentacion.html" target="_blank" rel="noopener">Presentación</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Primeros pasos con IA generativa</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial sobre cómo empezar a usar IA generativa, consejos en la redacción de prompts, gestión de contexto, uso de adjuntos, proyectos y GPTs personalizados, con ejemplos prácticos.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/primeros-pasos-ia-generativa.html" target="_blank" rel="noopener">Tutorial</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Plataformas de desarrollo asistido por IA</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial y presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial sobre herramientas tipo Firebase Studio, Google AI Studio, Replit, Bolt.new, Lovable, v0, GitHub Spark y Base44, con criterios de evaluación para uso responsable.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/plaformas-desarrollo-basado-ia.html" target="_blank" rel="noopener">Tutorial</a> - <a href="Tutorial/plaformas-desarrollo-basado-ia-presentacion.html" target="_blank" rel="noopener">Presentación</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Gestión de documentación con NotebookLM</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial y taller práctico</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">- Tutorial sobre NotebookLM.</p>
-<p class="tableblock">- Guiones prácticos para usar NotebookLM en un escenario de seguimimento de un proyecto y otro de análisis de ciberseguridad: narrativa paulatina, enlaces a fuentes, temporización, prompts, visualizaciones y práctica remota.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/notebooklm.html" target="_blank" rel="noopener">Tutorial</a> - <a href="https://drive.google.com/file/d/1M9dVQfgLoPX_jY-9v0O9gsUS6GQNWbqv/view?usp=sharing" target="_blank" rel="noopener">Presentación</a> -
-<a href="GestionDocumentacion/PreparacionReuniones/preparacion-reuniones-citas360.html" target="_blank" rel="noopener">Taller de seguimiento de Citas360</a> - <a href="GestionDocumentacion/ComisionCiberseguridad/preparacion-comision-ciberseguridad.html" target="_blank" rel="noopener">Taller de análisis de ciberseguridad</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Primeros pasos en la migración de aplicaciones con IA generativa</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial y presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Cómo la IA generativa puede acelerar y mejorar el proceso de migración de aplicaciones hacia servicios modernos: narrativa paulatina, casos de uso, prompts y práctica.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/migracion-access.html" target="_blank" rel="noopener">Tutorial</a> - <a href="https://drive.google.com/file/d/1nBcmQf3ir1J25lEntkCp2UOZ4DPRBPk-/view?usp=sharing" target="_blank" rel="noopener">Presentación NotebookLM</a> - <a href="Tutorial/migracion-access-presentacion.html" target="_blank" rel="noopener">Presentación Claude</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Adentrándonos en el proceso de desarrollo con IA generativa con Claude Code</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial y presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Protocolos de trabajo con GenIA para proyectos de desarrollo: narrativa paulatina, casos de uso, prompts y práctica.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/migracion-access-con-claude.html" target="_blank" rel="noopener">Tutorial</a> - <a href="https://drive.google.com/file/d/1_13RZJrvBxxLWeTSgP3m7a9UYlDZDp3y/view?usp=sharing" target="_blank" rel="noopener">Presentación NotebookLM</a>
-<a href="Tutorial/migracion-access-con-claude-presentacion.html" target="_blank" rel="noopener">Presentación Claude</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Ecosistema Anthropic y Claude Code en el Entorno TIC Sanitario</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial y presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Introducción al ecosistema de Anthropic y creación de un flujo de trabajo para mejorar la eficiencia y la productividad: narrativa paulatina, casos de uso, prompts, repositorio y práctica.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/introduccion-ecosistema-claude.html" target="_blank" rel="noopener">Tutorial</a> - <a href="Tutorial/introduccion-ecosistema-claude-presentacion.html" target="_blank" rel="noopener">Presentación Claude</a></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Claude para Excel</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial y presentación</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Tutorial sobre el uso de Claude para Excel, con ejemplos prácticos de limpieza y análisis de datos</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="Tutorial/excel-claude.html" target="_blank" rel="noopener">Tutorial</a> - <a href="Tutorial/excel-claude-presentacion.html" target="_blank" rel="noopener">Presentación</a></p></td>
-</tr>
-</tbody>
 </table>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="_estructura_actual_del_material">2. Estructura actual del material</h2>
+<h2 id="_introducción">1. Introducción</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>En un servicio de TI hospitalario es habitual trabajar con hojas de cálculo para inventarios, registros de dispensación, cuadros de mando o seguimiento de indicadores. Muchas de estas tareas —limpiar datos, construir fórmulas, resumir texto libre, montar una tabla dinámica— consumen tiempo y son propensas a errores cuando se hacen a mano, especialmente sobre archivos que han crecido de forma orgánica y mezclan formatos, mayúsculas y minúsculas, o valores guardados como texto.</p>
+</div>
+<div class="paragraph">
+<p>Claude para Excel aborda esto de otra manera: en lugar de exportar los datos a un chat, describir el problema y copiar la respuesta de vuelta a la hoja, Claude trabaja directamente sobre el libro abierto. El panel de tareas del complemento puede leer el contenido de las hojas, y las peticiones se hacen en lenguaje natural indicando la hoja, la columna o el rango sobre el que hay que actuar.</p>
+</div>
+<div class="paragraph">
+<p>Algunas funciones que ofrece el complemento, y que se practican en este tutorial con el caso de la sección de Farmacia:</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Visión general</strong>: marco conceptual para entender qué cambia con la IA generativa, dónde puede aportar valor y qué límites deben respetarse en un entorno hospitalario.</p>
+<p><strong>Clean Messy Data</strong>: detecta y corrige datos inconsistentes (categorías, espacios, mayúsculas, números o fechas guardados como texto, duplicados).</p>
 </li>
 <li>
-<p><strong>Primeros pasos</strong>: consejos prácticos para empezar a usar IA generativa, con ejemplos de prompts, gestión de contexto, proyectos y GPTs.</p>
+<p><strong>Generación de fórmulas</strong>: crea columnas calculadas con fórmulas auditables, en lugar de sustituirlas por valores fijos.</p>
 </li>
 <li>
-<p><strong>Plataformas de desarrollo asistido por IA</strong>: revisión práctica de herramientas que permiten pasar de una descripción en lenguaje natural a prototipos funcionales, con foco en evaluación, control técnico y salida hacia desarrollo gobernado.</p>
+<p><strong>Summarize Text Data</strong>: agrupa y resume un campo de texto libre por temas, indicando cuántos casos hay de cada uno.</p>
 </li>
 <li>
-<p><strong>Gestión de documentación con NotebookLM</strong>: guiones para usar NotebookLM en dos escenarios típicos de informática hospitalaria: preparación de reuniones ejecutivas y seguimiento de ciberseguridad. En ambos casos se busca mostrar cómo la IA puede ayudar a organizar información compleja, generar artefactos visuales y mejorar la calidad de las preguntas que se hacen a los documentos.</p>
+<p><strong>Tablas dinámicas</strong>: agrega datos limpios para analizar coste y consumo por distintas dimensiones (servicio, medicamento, etc.).</p>
 </li>
 <li>
-<p><strong>Primeros pasos en la migración de aplicaciones con IA generativa</strong>: tutorial sobre cómo la IA puede acelerar y mejorar el proceso de migración de aplicaciones hacia servicios modernos, con casos de uso, prompts y caso práctico.</p>
-</li>
-<li>
-<p><strong>Adentrándonos en el proceso de desarrollo con IA generativa con Claude Code</strong>: tutorial sobre protocolos de trabajo con GenIA para proyectos de desarrollo, con narrativa paulatina, casos de uso, prompts y práctica.</p>
+<p><strong>Find outliers and errors</strong>: localiza valores atípicos y errores lógicos (cantidades negativas, precios anómalos, totales que no cuadran, fechas imposibles, celdas vacías).</p>
 </li>
 </ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Como con cualquier resultado generado por IA, las fórmulas, correcciones y resúmenes que propone Claude deben revisarse antes de darlos por buenos, sobre todo si van a usarse para tomar decisiones clínicas, de compras o de coste. Claude para Excel favorece fórmulas auditables (visibles y verificables en la celda) frente a valores fijos precisamente para facilitar esa revisión.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_instalación_y_configuración">2. Instalación y configuración</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Claude para Excel es un complemento de Microsoft Office distribuido por Anthropic. Como cualquier funcionalidad en fase de disponibilidad limitada o beta, los requisitos exactos (planes admitidos, plataformas soportadas) pueden cambiar; conviene comprobarlos en la documentación oficial de Anthropic antes de una sesión formativa.</p>
+</div>
+<div class="ulist">
+<div class="title">Requisitos habituales</div>
+<ul>
+<li>
+<p>Una suscripción a Microsoft 365 con Excel (de escritorio o en el navegador).</p>
+</li>
+<li>
+<p>Una cuenta de Claude con un plan que incluya el complemento (en el momento de escribir este tutorial, disponible para determinados planes de pago; revisa la documentación oficial para conocer la disponibilidad actual).</p>
+</li>
+<li>
+<p>Permisos para instalar complementos en Excel. En entornos corporativos, esto puede requerir autorización previa del departamento de sistemas.</p>
+</li>
+</ul>
+</div>
+<div class="olist arabic">
+<div class="title">Pasos de instalación</div>
+<ol class="arabic">
+<li>
+<p>Abre Excel (escritorio o web) con un libro cualquiera.</p>
+</li>
+<li>
+<p>Ve a la pestaña <strong>Inicio</strong> y selecciona <strong>Complementos</strong> (Add-ins).</p>
+</li>
+<li>
+<p>Busca "Claude" de Anthropic e instálalo.</p>
+</li>
+<li>
+<p>Una vez instalado, ábrelo desde la cinta de opciones para mostrar el panel de tareas de Claude junto a la hoja de cálculo.</p>
+</li>
+<li>
+<p>Inicia sesión con tu cuenta de Claude y concede al complemento permiso para leer y modificar el contenido del libro abierto.</p>
+</li>
+<li>
+<p>Ya puedes escribir peticiones en el panel de tareas indicando la hoja, columna o rango sobre el que quieres trabajar (por ejemplo: "Limpia los datos de la Hoja1").</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_caso_de_uso">3. Caso de uso</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Los siguientes ejemplos usan el archivo <code>claude-farmacia.xlsx</code>: un registro ficticio de dispensaciones de la sección de Farmacia hospitalaria, con columnas como Servicio, Medicamento, Cantidad, Precio unitario, Fecha de dispensación, Fecha de caducidad y Observaciones. El archivo incluye deliberadamente los mismos problemas que suelen aparecer en datos reales: categorías escritas de forma inconsistente, fechas y números guardados como texto, una fila duplicada y varios errores y valores atípicos.</p>
+</div>
+<div class="sect2">
+<h3 id="_detección_y_corrección_de_datos_inconsistentes">3.1. Detección y corrección de datos inconsistentes</h3>
+<div class="paragraph">
+<p>Es frecuente que los datos de un fichero Excel contengan errores, inconsistencias o formatos incorrectos. Antes de realizar cualquier análisis, es recomendable limpiar y normalizar los datos para garantizar la fiabilidad de los resultados.</p>
+</div>
+<div class="paragraph">
+<p><strong>Ejemplo 1: Detectar y corregir datos inconsistentes, eliminar espacios, convertir números y fechas guardados como texto y quitar duplicados.</strong></p>
+</div>
+<div class="paragraph">
+<p>Datos anómalos en el archivo de ejemplo:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Columna C con valores 'CARDIOLOGIA' y ' cardiología', 'urgencias' y ' Urgencias', 'uci' y ' UCI' (mayúsculas inconsistentes y espacios sobrantes).</p>
+</li>
+<li>
+<p>Fechas y números guardados como texto (valores en columnas B y F).</p>
+</li>
+<li>
+<p>Filas duplicadas (por ejemplo, la fila 8 y la fila 9 son idénticas).</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Prompt sugerido</div>
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Limpia los datos de la Hoja1: unifica los nombres del Servicio, elimina espacios sobrantes, convierte a número/fecha los valores guardados como texto y elimina las filas duplicadas.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Ejemplo 2: Crear columnas calculadas con fórmulas auditables en lugar de valores fijos.</strong></p>
+</div>
+<div class="paragraph">
+<p>Columnas necesarias para el análisis de coste y consumo:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Columna 'Coste calculado' = Cantidad × Precio unitario</p>
+</li>
+<li>
+<p>Columna 'Días hasta caducidad' = Fecha caducidad − Fecha dispensación</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Prompt sugerido</div>
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Añade una columna 'Coste calculado' = Cantidad × Precio unitario y otra 'Días hasta caducidad' = Fecha caducidad − Fecha dispensación.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Ejemplo 3: Resumir y agrupar por temas un campo de texto libre, contando casos por categoría.</strong></p>
+</div>
+<div class="listingblock">
+<div class="title">Prompt sugerido</div>
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Resume las Observaciones (col N): agrupa los temas principales (reacciones adversas, alergias, stock, estupefacientes) e indica cuántos casos hay de cada uno.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Ejemplo 4: Agregar los datos limpios para analizar coste y consumo por distintas dimensiones.</strong></p>
+</div>
+<div class="paragraph">
+<p>A partir de los datos limpios, se pueden crear tablas dinámicas para analizar el coste y el número de dispensaciones por Servicio.</p>
+</div>
+<div class="listingblock">
+<div class="title">Prompt sugerido</div>
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Crea una tabla dinámica con el coste total por Servicio y por Medicamento.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Ejemplo 5: Detectar y corregir errores lógicos y valores atípicos: negativos, precios anómalos, totales que no cuadran, fechas imposibles y celdas vacías.</strong></p>
+</div>
+<div class="paragraph">
+<p>Crear una tabla dinámica con el coste y el número de dispensaciones por Servicio permite detectar errores lógicos y valores atípicos, como cantidades negativas, precios anómalos, costes que no cuadran con Cantidad × Precio, caducidades anteriores a la dispensación y celdas vacías.</p>
+</div>
+<div class="listingblock">
+<div class="title">Prompt sugerido</div>
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Revisa los datos y detecta errores y valores atípicos: cantidades negativas, precios anómalos, costes que no cuadran con Cantidad × Precio, caducidades anteriores a la dispensación y celdas vacías.</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusiones">4. Conclusiones</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Claude para Excel resulta útil porque acorta el camino entre "tengo unos datos con problemas" y "tengo unos datos limpios y analizables", trabajando directamente sobre la hoja de cálculo en lugar de obligar a exportar, describir el problema en un chat aparte y copiar la respuesta de vuelta. En un servicio de TI hospitalario, donde los registros de dispensación, inventario o seguimiento suelen llegar con inconsistencias de formato, categorías mal escritas o valores atípicos, esto puede ahorrar tiempo en tareas que de otro modo se hacen a mano y de forma repetitiva.</p>
+</div>
+<div class="paragraph">
+<p>El valor no está solo en la limpieza inicial: pedir fórmulas auditables en lugar de valores fijos, resumir un campo de texto libre por temas, construir una tabla dinámica o detectar errores lógicos son tareas que se benefician de tener un asistente que entiende el contenido de la hoja y puede razonar sobre él.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Claude para Excel puede acelerar la limpieza y el análisis de datos, pero la responsabilidad de revisar los resultados, verificar las fórmulas propuestas y tomar decisiones a partir de ellos sigue siendo humana — especialmente cuando los datos afectan a coste, stock o decisiones clínicas.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_recursos_y_siguientes_pasos">4.1. Recursos y siguientes pasos</h3>
+<div class="paragraph">
+<p>Para profundizar en lo aprendido:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Practica con la hoja de cálculo de ejemplo (<code>claude-farmacia.xlsx</code>) reproduciendo los cinco ejemplos de este tutorial y, después, prueba a formular tus propios prompts sobre los mismos datos.</p>
+</li>
+<li>
+<p>Repite el ejercicio con una hoja de cálculo propia del servicio (siempre con datos ficticios o anonimizados) para comprobar cómo se comporta Claude para Excel ante problemas de datos reales del entorno hospitalario.</p>
+</li>
+<li>
+<p>Consulta la documentación oficial de Anthropic sobre Claude para Excel para conocer los requisitos y la disponibilidad actualizados del complemento, ya que pueden cambiar mientras la funcionalidad evoluciona.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-07-13 18:12:09 +0200
+Last updated 2026-07-13 18:09:22 +0200
 </div>
 </div>
 </body>

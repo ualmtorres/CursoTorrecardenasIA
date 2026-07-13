@@ -89,8 +89,14 @@ link:Tutorial/migracion-access-con-claude-presentacion.html[Presentación Claude
 
 | Ecosistema Anthropic y Claude Code en el Entorno TIC Sanitario
 | Tutorial y presentación
-| Introducción al ecosistema de Antrhropic y creación de un flujo de trabajo para mejorar la eficiencia y la productividad: narrativa paulatina, casos de uso, prompts, repositorio y práctica.
+| Introducción al ecosistema de Anthropic y creación de un flujo de trabajo para mejorar la eficiencia y la productividad: narrativa paulatina, casos de uso, prompts, repositorio y práctica.
 | link:Tutorial/introduccion-ecosistema-claude.html[Tutorial, window=_blank] - link:Tutorial/introduccion-ecosistema-claude-presentacion.html[Presentación Claude, window=_blank]
+
+| Claude para Excel
+| Tutorial y presentación
+| Tutorial sobre el uso de Claude para Excel, con ejemplos prácticos de limpieza y análisis de datos
+| link:Tutorial/excel-claude.html[Tutorial, window=_blank] - link:Tutorial/excel-claude-presentacion.html[Presentación, window=_blank]
+
 |===
 
 

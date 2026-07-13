@@ -1,0 +1,1176 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Claude en Excel</title>
+    <style>
+      :root {
+        --blue-dark: #0d2c4e;
+        --blue-mid: #1a5276;
+        --blue-light: #2e86c1;
+        --teal: #1a9e8f;
+        --green: #27ae60;
+        --excel-green: #1a7f4b;
+        --amber: #e67e22;
+        --red: #c0392b;
+        --grey-light: #ecf0f1;
+        --grey-mid: #bdc3c7;
+        --white: #ffffff;
+        --text-dark: #1a1a2e;
+        --font-main: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background: #0a1628;
+        color: var(--white);
+        height: 100vh;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      .deck {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 6rem;
+        opacity: 0;
+        transform: translateX(60px);
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
+        pointer-events: none;
+        text-align: center;
+        overflow-y: auto;
+      }
+      .slide.active {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: all;
+      }
+      .slide.exit {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+
+      /* ── Backgrounds ── */
+      .bg-hero {
+        background: linear-gradient(
+          135deg,
+          #0d2c4e 0%,
+          #1a5276 50%,
+          #1a7f4b 100%
+        );
+      }
+      .bg-dark {
+        background: linear-gradient(160deg, #0d1b2a 0%, #1a2744 100%);
+      }
+      .bg-warn {
+        background: linear-gradient(160deg, #2c1d0d 0%, #4a2f1a 100%);
+      }
+      .bg-process {
+        background: linear-gradient(160deg, #0d1f4a 0%, #1a3266 100%);
+      }
+      .bg-ai {
+        background: linear-gradient(160deg, #1a0d4a 0%, #2e1a66 100%);
+      }
+      .bg-excel {
+        background: linear-gradient(160deg, #0d2c1a 0%, #1a5c33 100%);
+      }
+      .bg-result {
+        background: linear-gradient(160deg, #0d2c1a 0%, #1a5c33 100%);
+      }
+      .bg-close {
+        background: linear-gradient(135deg, #0d2c4e 0%, #0d4e2c 100%);
+      }
+
+      /* ── Typography ── */
+      h1 {
+        font-size: clamp(2rem, 4.5vw, 3.6rem);
+        font-weight: 700;
+        line-height: 1.15;
+        margin-bottom: 0.6rem;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2.4rem);
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+      }
+      h3 {
+        font-size: clamp(1.1rem, 2vw, 1.6rem);
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+        color: var(--teal);
+      }
+      p,
+      li {
+        font-size: clamp(0.9rem, 1.5vw, 1.15rem);
+        line-height: 1.65;
+      }
+      .subtitle {
+        font-size: clamp(1rem, 2vw, 1.4rem);
+        opacity: 0.85;
+        margin-top: 0.4rem;
+      }
+      .eyebrow {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        opacity: 0.6;
+        margin-bottom: 0.8rem;
+      }
+      .accent {
+        color: var(--teal);
+      }
+      .accent-green {
+        color: #4fd18b;
+      }
+      .amber {
+        color: var(--amber);
+      }
+      .green {
+        color: #2ecc71;
+      }
+      .red {
+        color: #e74c3c;
+      }
+
+      /* ── Card grid ── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.6rem;
+        width: 100%;
+        max-width: 1100px;
+        text-align: left;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+        width: 100%;
+        max-width: 1100px;
+        text-align: left;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 1.4rem;
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(26, 158, 143, 0.5);
+      }
+      .card .icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .card h3 {
+        font-size: 1rem;
+        color: var(--white);
+        margin-bottom: 0.4rem;
+      }
+      .card p {
+        font-size: 0.88rem;
+        opacity: 0.8;
+        line-height: 1.5;
+      }
+
+      .card-danger {
+        border-left: 4px solid var(--red);
+      }
+      .card-warn {
+        border-left: 4px solid var(--amber);
+      }
+      .card-ok {
+        border-left: 4px solid var(--green);
+      }
+      .card-teal {
+        border-left: 4px solid var(--teal);
+      }
+      .card-excel {
+        border-left: 4px solid var(--excel-green);
+      }
+
+      /* ── Step list ── */
+      .steps {
+        list-style: none;
+        width: 100%;
+        max-width: 900px;
+        text-align: left;
+      }
+      .steps li {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.2rem;
+        padding: 1rem 1.2rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        margin-bottom: 0.7rem;
+        border-left: 4px solid var(--teal);
+        font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      }
+      .step-num {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--teal);
+        color: var(--white);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+      .steps li strong {
+        color: #7ee8e0;
+      }
+
+      /* ── Code block ── */
+      .code-block {
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 1.2rem 1.6rem;
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: clamp(0.78rem, 1.2vw, 0.98rem);
+        line-height: 1.75;
+        width: 100%;
+        max-width: 880px;
+        overflow-x: auto;
+      }
+      .code-block .prompt {
+        color: #7ee8e0;
+      }
+      .code-block .comment {
+        color: #8b949e;
+        font-style: italic;
+      }
+
+      /* ── Tag pills ── */
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+      .tag {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .tag-teal {
+        background: rgba(26, 158, 143, 0.25);
+        border-color: var(--teal);
+        color: #7ee8e0;
+      }
+      .tag-amber {
+        background: rgba(230, 126, 34, 0.2);
+        border-color: var(--amber);
+        color: #f0a761;
+      }
+      .tag-green {
+        background: rgba(26, 127, 75, 0.3);
+        border-color: var(--excel-green);
+        color: #6fe0a8;
+      }
+
+      /* ── Divider ── */
+      .divider {
+        width: 60px;
+        height: 4px;
+        background: var(--teal);
+        border-radius: 2px;
+        margin: 0.8rem auto 1.4rem;
+      }
+
+      /* ── Quote / callout ── */
+      .quote {
+        border-left: 4px solid var(--teal);
+        padding: 1rem 1.5rem;
+        background: rgba(26, 158, 143, 0.1);
+        border-radius: 0 10px 10px 0;
+        font-style: italic;
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        max-width: 820px;
+        text-align: left;
+        line-height: 1.7;
+      }
+      .callout-warn {
+        border-left: 4px solid var(--amber);
+        background: rgba(230, 126, 34, 0.12);
+        padding: 1rem 1.5rem;
+        border-radius: 0 10px 10px 0;
+        max-width: 820px;
+        text-align: left;
+        font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+        line-height: 1.7;
+      }
+
+      /* ── Comparison table ── */
+      .compare {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 1000px;
+        text-align: left;
+      }
+      .compare-col {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .compare-col .col-head {
+        padding: 0.8rem 1.2rem;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .col-bad .col-head {
+        background: rgba(192, 57, 43, 0.4);
+      }
+      .col-good .col-head {
+        background: rgba(26, 127, 75, 0.45);
+      }
+      .compare-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 0.7rem 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+        line-height: 1.45;
+      }
+      .compare-item:last-child {
+        border-bottom: none;
+      }
+      .compare-item .ico {
+        flex-shrink: 0;
+      }
+
+      /* ── Progress bar ── */
+      #progress {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: var(--teal);
+        transition: width 0.4s ease;
+        z-index: 100;
+      }
+
+      /* ── Navigation ── */
+      #nav {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        border-radius: 30px;
+        padding: 0.5rem 1.2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .nav-btn {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 1.3rem;
+        cursor: pointer;
+        padding: 0.3rem 0.7rem;
+        border-radius: 6px;
+        transition:
+          background 0.2s,
+          opacity 0.2s;
+        opacity: 0.7;
+      }
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        opacity: 1;
+      }
+      .nav-btn:disabled {
+        opacity: 0.25;
+        cursor: default;
+      }
+      #slide-counter {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        min-width: 60px;
+        text-align: center;
+      }
+
+      /* ── Slide numbers (dots) ── */
+      #dots {
+        position: fixed;
+        top: 1.2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.4rem;
+        z-index: 100;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        transition:
+          background 0.3s,
+          transform 0.3s;
+        cursor: pointer;
+      }
+      .dot.active {
+        background: var(--teal);
+        transform: scale(1.4);
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 768px) {
+        .slide {
+          padding: 2rem 2rem 5rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck" id="deck">
+      <!-- ─────────────────────────────── SLIDE 1: PORTADA ─── -->
+      <section class="slide bg-hero active">
+        <div class="eyebrow">
+          Inteligencia artificial generativa aplicada a productividad IT
+          hospitalaria
+        </div>
+        <h1>Claude en <span class="accent">Excel</span></h1>
+        <div class="divider"></div>
+        <p class="subtitle">
+          Limpieza de datos, fórmulas auditables y análisis, trabajando
+          directamente sobre la hoja de cálculo
+        </p>
+        <div class="tags" style="margin-top: 2rem">
+          <span class="tag tag-teal">Clean Messy Data</span>
+          <span class="tag tag-teal">Fórmulas auditables</span>
+          <span class="tag tag-teal">Summarize Text Data</span>
+          <span class="tag tag-green">Tablas dinámicas</span>
+          <span class="tag tag-amber">Find outliers &amp; errors</span>
+        </div>
+        <p style="margin-top: 2.5rem; font-size: 0.85rem; opacity: 0.45">
+          Manuel Torres · Universidad de Almería
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 2: QUÉ ES ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">Qué es</div>
+        <h2>
+          Un complemento que trabaja<br /><span class="accent"
+            >sobre la hoja</span
+          >, no en un chat aparte
+        </h2>
+        <div class="divider"></div>
+        <p style="max-width: 800px; margin-bottom: 1.6rem; opacity: 0.9">
+          Claude para Excel es un <em>add-in</em> de Anthropic que integra
+          Claude en Excel a través de un panel de tareas. Puede leer el
+          contenido de las celdas, entender la estructura de la tabla y proponer
+          cambios que se aplican sobre el propio libro.
+        </p>
+        <div class="compare">
+          <div class="compare-col col-bad">
+            <div class="col-head">Chat aparte</div>
+            <div class="compare-item">
+              Exportar o copiar los datos fuera de Excel
+            </div>
+            <div class="compare-item">
+              Describir el problema en una conversación
+            </div>
+            <div class="compare-item">Copiar la respuesta de vuelta a mano</div>
+            <div class="compare-item">
+              Fácil perder el contexto de la hoja original
+            </div>
+          </div>
+          <div class="compare-col col-good">
+            <div class="col-head">Claude para Excel</div>
+            <div class="compare-item">
+              Lee directamente las celdas y su estructura
+            </div>
+            <div class="compare-item">
+              Peticiones en lenguaje natural sobre hoja/rango
+            </div>
+            <div class="compare-item">
+              Aplica los cambios sobre el propio libro
+            </div>
+            <div class="compare-item">
+              Favorece fórmulas auditables, no valores fijos
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 3: POR QUÉ ES ÚTIL ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">Por qué es útil en TI hospitalario</div>
+        <h2>Tareas repetitivas y <span class="red">propensas a error</span></h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-teal">
+            <h3>Categorías inconsistentes</h3>
+            <p>
+              Normalizar valores escritos de forma distinta ("UCI" / " uci" / "
+              UCI ").
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Números y fechas como texto</h3>
+            <p>
+              Convertir valores guardados como texto a tipos numéricos o de
+              fecha reales.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Duplicados</h3>
+            <p>
+              Detectar y eliminar filas repetidas antes de cualquier análisis.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Fórmulas auditables</h3>
+            <p>
+              Columnas calculadas y verificables, en lugar de valores fijos
+              pegados.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Texto libre</h3>
+            <p>
+              Resumir y agrupar observaciones por temas, en vez de leerlas una a
+              una.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Valores atípicos</h3>
+            <p>
+              Detectar anomalías antes de tomar decisiones basadas en esos
+              datos.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 4: AVISO IMPORTANTE ─── -->
+      <section class="slide bg-warn">
+        <div class="eyebrow">Antes de empezar</div>
+        <h2>Datos ficticios, <span class="amber">no reales</span></h2>
+        <div class="divider"></div>
+        <div class="callout-warn">
+          Este tutorial no propone cargar datos reales de pacientes ni
+          información sensible sin autorización institucional. La hoja de
+          cálculo de ejemplo (<code>claude-farmacia.xlsx</code>) contiene datos
+          ficticios creados para la formación. Antes de usar Claude para Excel
+          con documentación interna real, revisa las políticas del centro y las
+          indicaciones del responsable de protección de datos.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 5: OBJETIVOS ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">Objetivos</div>
+        <h2>Al finalizar este tutorial<br />deberías ser capaz de</h2>
+        <div class="divider"></div>
+        <ul class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <div>
+              Explicar qué es Claude para Excel y en qué se diferencia de usar
+              Claude como chat aparte.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div>Instalar y configurar el complemento en Excel.</div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div>
+              Detectar y corregir datos inconsistentes: categorías, espacios,
+              fechas/números como texto, duplicados.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <div>
+              Pedir columnas calculadas con fórmulas auditables en lugar de
+              valores fijos.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">5</span>
+            <div>Resumir y agrupar un campo de texto libre por temas.</div>
+          </li>
+          <li>
+            <span class="step-num">6</span>
+            <div>
+              Crear tablas dinámicas para analizar coste y consumo por distintas
+              dimensiones.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">7</span>
+            <div>
+              Detectar errores lógicos y valores atípicos antes de usar los
+              datos para una decisión.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 6: FUNCIONES PRINCIPALES ─── -->
+      <section class="slide bg-ai">
+        <div class="eyebrow">El complemento</div>
+        <h2>
+          Cinco funciones para<br />el caso de
+          <span class="accent">Farmacia</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-teal">
+            <h3>Clean Messy Data</h3>
+            <p>
+              Detecta y corrige categorías, espacios, mayúsculas, números/fechas
+              como texto y duplicados.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Generación de fórmulas</h3>
+            <p>
+              Crea columnas calculadas con fórmulas auditables, no valores
+              fijos.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Summarize Text Data</h3>
+            <p>
+              Agrupa y resume un campo de texto libre por temas, con el recuento
+              de cada uno.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Tablas dinámicas</h3>
+            <p>
+              Agrega datos limpios para analizar coste y consumo por servicio,
+              medicamento, etc.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Find outliers and errors</h3>
+            <p>
+              Localiza cantidades negativas, precios anómalos, totales que no
+              cuadran, fechas imposibles.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 7: NOTA REVISIÓN ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">Una advertencia constante</div>
+        <h2>
+          Revisar siempre <span class="accent">antes de dar por bueno</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="quote">
+          Como con cualquier resultado generado por IA, las fórmulas,
+          correcciones y resúmenes que propone Claude deben revisarse antes de
+          darlos por buenos, sobre todo si van a usarse para tomar decisiones
+          clínicas, de compras o de coste. Claude para Excel favorece fórmulas
+          auditables (visibles y verificables en la celda) frente a valores
+          fijos precisamente para facilitar esa revisión.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 8: REQUISITOS ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">Instalación y configuración</div>
+        <h2>Requisitos <span class="accent">habituales</span></h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-teal">
+            <h3>Microsoft 365</h3>
+            <p>Suscripción con Excel, de escritorio o en el navegador.</p>
+          </div>
+          <div class="card card-teal">
+            <h3>Cuenta de Claude</h3>
+            <p>
+              Con un plan que incluya el complemento. Comprueba la
+              disponibilidad actual en la documentación oficial.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Permisos de instalación</h3>
+            <p>
+              En entornos corporativos puede requerir autorización previa del
+              departamento de sistemas.
+            </p>
+          </div>
+        </div>
+        <p
+          style="
+            margin-top: 1.4rem;
+            font-size: 0.85rem;
+            opacity: 0.6;
+            max-width: 750px;
+          "
+        >
+          Al estar en fase de disponibilidad limitada o beta, los requisitos
+          exactos (planes, plataformas) pueden cambiar.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 9: PASOS DE INSTALACIÓN ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">Instalación y configuración</div>
+        <h2>Pasos de <span class="accent">instalación</span></h2>
+        <div class="divider"></div>
+        <ul class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <div>Abre Excel (escritorio o web) con un libro cualquiera.</div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div>
+              Ve a la pestaña <strong>Inicio</strong> y selecciona
+              <strong>Complementos</strong> (Add-ins).
+            </div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div>Busca "Claude" de Anthropic e instálalo.</div>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <div>
+              Ábrelo desde la cinta de opciones para mostrar el panel de tareas
+              junto a la hoja.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">5</span>
+            <div>
+              Inicia sesión con tu cuenta de Claude y concede permiso para leer
+              y modificar el libro.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">6</span>
+            <div>
+              Escribe peticiones en el panel indicando hoja, columna o rango (p.
+              ej. "Limpia los datos de la Hoja1").
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 10: CASO DE USO ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">Caso de uso</div>
+        <h2>
+          Registro de dispensaciones<br />de
+          <span class="accent">Farmacia</span>
+        </h2>
+        <div class="divider"></div>
+        <p style="max-width: 800px; margin-bottom: 1.4rem; opacity: 0.9">
+          <code>claude-farmacia.xlsx</code>: un registro ficticio con columnas
+          Servicio, Medicamento, Cantidad, Precio unitario, Fecha de
+          dispensación, Fecha de caducidad y Observaciones. Incluye
+          deliberadamente los problemas habituales de datos reales.
+        </p>
+        <div class="grid-3">
+          <div class="card card-danger">
+            <h3>Categorías inconsistentes</h3>
+            <p>
+              'CARDIOLOGIA' / ' cardiología', 'urgencias' / ' Urgencias', 'uci'
+              / ' UCI'.
+            </p>
+          </div>
+          <div class="card card-danger">
+            <h3>Texto en vez de número/fecha</h3>
+            <p>Valores de las columnas B y F guardados como texto.</p>
+          </div>
+          <div class="card card-danger">
+            <h3>Filas duplicadas</h3>
+            <p>Por ejemplo, la fila 8 y la fila 9 son idénticas.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 11: EJEMPLO 1 ─── -->
+      <section class="slide bg-ai">
+        <div class="eyebrow">Ejemplo 1 · Clean Messy Data</div>
+        <h2>Limpiar y <span class="accent">normalizar</span> los datos</h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment">// Panel de tareas de Claude en Excel</span>
+
+          <span class="prompt"
+            >Limpia los datos de la Hoja1: unifica los nombres del Servicio,
+            elimina espacios sobrantes, convierte a número/fecha los valores
+            guardados como texto y elimina las filas duplicadas.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.2rem;
+            max-width: 750px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          "
+        >
+          Un único prompt resuelve a la vez cuatro problemas distintos:
+          mayúsculas/espacios, tipos de dato incorrectos y duplicados.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 12: EJEMPLO 2 ─── -->
+      <section class="slide bg-ai">
+        <div class="eyebrow">Ejemplo 2 · Generación de fórmulas</div>
+        <h2>Columnas calculadas<br /><span class="accent">auditables</span></h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment">// Sobre los datos ya limpios</span>
+
+          <span class="prompt"
+            >Añade una columna 'Coste calculado' = Cantidad × Precio unitario y
+            otra 'Días hasta caducidad' = Fecha caducidad − Fecha
+            dispensación.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.2rem;
+            max-width: 750px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          "
+        >
+          Claude genera fórmulas visibles y verificables en la celda, no valores
+          fijos: si cambian los datos de origen, el resultado se actualiza.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 13: EJEMPLO 3 ─── -->
+      <section class="slide bg-ai">
+        <div class="eyebrow">Ejemplo 3 · Summarize Text Data</div>
+        <h2>
+          Resumir un campo de<br /><span class="accent">texto libre</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment">// Columna N: Observaciones</span>
+
+          <span class="prompt"
+            >Resume las Observaciones (col N): agrupa los temas principales
+            (reacciones adversas, alergias, stock, estupefacientes) e indica
+            cuántos casos hay de cada uno.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.2rem;
+            max-width: 750px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          "
+        >
+          En vez de leer fila por fila, Claude clasifica y cuenta los casos por
+          tema, dejando el detalle listo para revisar.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 14: EJEMPLO 4 ─── -->
+      <section class="slide bg-ai">
+        <div class="eyebrow">Ejemplo 4 · Tablas dinámicas</div>
+        <h2>
+          Coste y consumo<br />por
+          <span class="accent">distintas dimensiones</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment">// A partir de los datos limpios</span>
+
+          <span class="prompt"
+            >Crea una tabla dinámica con el coste total por Servicio y por
+            Medicamento.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.2rem;
+            max-width: 750px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          "
+        >
+          La tabla dinámica agrega los datos ya limpios y sirve, además, como
+          primera vía para detectar anomalías.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 15: EJEMPLO 5 ─── -->
+      <section class="slide bg-ai">
+        <div class="eyebrow">Ejemplo 5 · Find outliers and errors</div>
+        <h2>
+          Errores lógicos y<br /><span class="accent">valores atípicos</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment"
+            >// Revisión antes de dar los datos por buenos</span
+          >
+
+          <span class="prompt"
+            >Revisa los datos y detecta errores y valores atípicos: cantidades
+            negativas, precios anómalos, costes que no cuadran con Cantidad ×
+            Precio, caducidades anteriores a la dispensación y celdas
+            vacías.</span
+          >
+        </div>
+        <div class="grid-3" style="margin-top: 1.4rem">
+          <div class="card card-warn">
+            <h3>Cantidades negativas</h3>
+            <p>Y precios anómalos frente al resto del catálogo.</p>
+          </div>
+          <div class="card card-warn">
+            <h3>Totales que no cuadran</h3>
+            <p>Coste distinto de Cantidad × Precio unitario.</p>
+          </div>
+          <div class="card card-warn">
+            <h3>Fechas imposibles</h3>
+            <p>Caducidad anterior a la dispensación, celdas vacías.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 16: CONCLUSIONES ─── -->
+      <section class="slide bg-result">
+        <div class="eyebrow">Conclusiones</div>
+        <h2>
+          De datos con problemas a<br /><span class="accent"
+            >datos analizables</span
+          >
+        </h2>
+        <div class="divider"></div>
+        <p
+          style="
+            max-width: 780px;
+            font-size: clamp(1rem, 1.6vw, 1.2rem);
+            line-height: 1.75;
+            margin-bottom: 1.6rem;
+            opacity: 0.95;
+          "
+        >
+          Claude para Excel acorta el camino entre "tengo unos datos con
+          problemas" y "tengo unos datos limpios y analizables", trabajando
+          directamente sobre la hoja en lugar de exportar, describir el problema
+          en un chat aparte y copiar la respuesta de vuelta.
+        </p>
+        <div class="quote">
+          El valor no está solo en la limpieza inicial: fórmulas auditables,
+          resúmenes de texto libre, tablas dinámicas y detección de errores
+          lógicos se benefician de un asistente que entiende el contenido de la
+          hoja y razona sobre él.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 17: IMPORTANTE FINAL ─── -->
+      <section class="slide bg-warn">
+        <div class="eyebrow">No lo olvides</div>
+        <h2>
+          La responsabilidad<br />sigue siendo <span class="amber">humana</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="callout-warn">
+          Claude para Excel puede acelerar la limpieza y el análisis de datos,
+          pero la responsabilidad de revisar los resultados, verificar las
+          fórmulas propuestas y tomar decisiones a partir de ellos sigue siendo
+          humana — especialmente cuando los datos afectan a coste, stock o
+          decisiones clínicas.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 18: RECURSOS Y CIERRE ─── -->
+      <section class="slide bg-close">
+        <div class="eyebrow">Recursos y siguientes pasos</div>
+        <h2>Para <span class="accent">practicar</span></h2>
+        <div class="divider"></div>
+        <ul class="steps">
+          <li>
+            <span class="step-num">✓</span>
+            <div>
+              Reproduce los cinco ejemplos con
+              <code>claude-farmacia.xlsx</code> y, después, prueba tus propios
+              prompts sobre los mismos datos.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">✓</span>
+            <div>
+              Repite el ejercicio con una hoja propia del servicio (siempre con
+              datos ficticios o anonimizados).
+            </div>
+          </li>
+          <li>
+            <span class="step-num">✓</span>
+            <div>
+              Consulta la documentación oficial de Anthropic para conocer
+              requisitos y disponibilidad actualizados.
+            </div>
+          </li>
+        </ul>
+        <div class="tags" style="margin-top: 1.6rem">
+          <span class="tag tag-teal">Datos limpios</span>
+          <span class="tag tag-teal">Fórmulas auditables</span>
+          <span class="tag tag-green">Análisis más rápido</span>
+          <span class="tag tag-amber">Revisión humana siempre</span>
+        </div>
+      </section>
+    </div>
+    <!-- /deck -->
+
+    <!-- Progress bar -->
+    <div id="progress"></div>
+
+    <!-- Navigation -->
+    <div id="nav">
+      <button class="nav-btn" id="btn-prev" title="Anterior (←)">
+        &#8592;
+      </button>
+      <span id="slide-counter">1 / 18</span>
+      <button class="nav-btn" id="btn-next" title="Siguiente (→)">
+        &#8594;
+      </button>
+    </div>
+
+    <!-- Dots -->
+    <div id="dots"></div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const total = slides.length;
+      let current = 0;
+
+      const btnPrev = document.getElementById("btn-prev");
+      const btnNext = document.getElementById("btn-next");
+      const counter = document.getElementById("slide-counter");
+      const progressEl = document.getElementById("progress");
+      const dotsEl = document.getElementById("dots");
+
+      // Build dots
+      slides.forEach((_, i) => {
+        const d = document.createElement("div");
+        d.className = "dot" + (i === 0 ? " active" : "");
+        d.addEventListener("click", () => goTo(i));
+        dotsEl.appendChild(d);
+      });
+
+      function goTo(n) {
+        if (n < 0 || n >= total) return;
+        slides[current].classList.remove("active");
+        slides[current].classList.add("exit");
+        setTimeout(() => slides[current].classList.remove("exit"), 450);
+
+        current = n;
+        slides[current].classList.add("active");
+
+        // Dots
+        dotsEl
+          .querySelectorAll(".dot")
+          .forEach((d, i) => d.classList.toggle("active", i === current));
+
+        // Counter
+        counter.textContent = `${current + 1} / ${total}`;
+
+        // Progress bar
+        progressEl.style.width = `${((current + 1) / total) * 100}%`;
+
+        // Buttons
+        btnPrev.disabled = current === 0;
+        btnNext.disabled = current === total - 1;
+      }
+
+      btnPrev.addEventListener("click", () => goTo(current - 1));
+      btnNext.addEventListener("click", () => goTo(current + 1));
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " ") {
+          e.preventDefault();
+          goTo(current + 1);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault();
+          goTo(current - 1);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          goTo(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          goTo(total - 1);
+        }
+      });
+
+      // Touch / swipe
+      let touchStartX = 0;
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.touches[0].clientX;
+        },
+        { passive: true },
+      );
+      document.addEventListener("touchend", (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+      });
+
+      // Init
+      goTo(0);
+    </script>
+  </body>
+</html>
