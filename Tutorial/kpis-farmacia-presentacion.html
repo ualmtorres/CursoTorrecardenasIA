@@ -1,0 +1,1236 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KPIs de Farmacia Hospitalaria — Uso Responsable del Medicamento</title>
+    <style>
+      :root {
+        --blue-dark: #0d2c4e;
+        --blue-mid: #1a5276;
+        --blue-light: #2e86c1;
+        --teal: #1a9e8f;
+        --green: #27ae60;
+        --excel-green: #1a7f4b;
+        --amber: #e67e22;
+        --red: #c0392b;
+        --grey-light: #ecf0f1;
+        --grey-mid: #bdc3c7;
+        --white: #ffffff;
+        --text-dark: #1a1a2e;
+        --font-main: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background: #0a1628;
+        color: var(--white);
+        height: 100vh;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      .deck {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 6rem;
+        opacity: 0;
+        transform: translateX(60px);
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
+        pointer-events: none;
+        text-align: center;
+        overflow-y: auto;
+      }
+      .slide.active {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: all;
+      }
+      .slide.exit {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+
+      /* ── Backgrounds ── */
+      .bg-hero {
+        background: linear-gradient(
+          135deg,
+          #0d2c4e 0%,
+          #1a5276 50%,
+          #1a7f4b 100%
+        );
+      }
+      .bg-dark {
+        background: linear-gradient(160deg, #0d1b2a 0%, #1a2744 100%);
+      }
+      .bg-warn {
+        background: linear-gradient(160deg, #2c1d0d 0%, #4a2f1a 100%);
+      }
+      .bg-danger {
+        background: linear-gradient(160deg, #2c0d0f 0%, #4a151a 100%);
+      }
+      .bg-process {
+        background: linear-gradient(160deg, #0d1f4a 0%, #1a3266 100%);
+      }
+      .bg-ai {
+        background: linear-gradient(160deg, #1a0d4a 0%, #2e1a66 100%);
+      }
+      .bg-excel {
+        background: linear-gradient(160deg, #0d2c1a 0%, #1a5c33 100%);
+      }
+      .bg-result {
+        background: linear-gradient(160deg, #0d2c1a 0%, #1a5c33 100%);
+      }
+      .bg-close {
+        background: linear-gradient(135deg, #0d2c4e 0%, #0d4e2c 100%);
+      }
+
+      /* ── Typography ── */
+      h1 {
+        font-size: clamp(2rem, 4.5vw, 3.6rem);
+        font-weight: 700;
+        line-height: 1.15;
+        margin-bottom: 0.6rem;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2.4rem);
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+      }
+      h3 {
+        font-size: clamp(1.1rem, 2vw, 1.6rem);
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+        color: var(--teal);
+      }
+      p,
+      li {
+        font-size: clamp(0.9rem, 1.5vw, 1.15rem);
+        line-height: 1.65;
+      }
+      .subtitle {
+        font-size: clamp(1rem, 2vw, 1.4rem);
+        opacity: 0.85;
+        margin-top: 0.4rem;
+      }
+      .eyebrow {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        opacity: 0.6;
+        margin-bottom: 0.8rem;
+      }
+      .accent {
+        color: var(--teal);
+      }
+      .accent-green {
+        color: #4fd18b;
+      }
+      .amber {
+        color: var(--amber);
+      }
+      .green {
+        color: #2ecc71;
+      }
+      .red {
+        color: #e74c3c;
+      }
+
+      /* ── Card grid ── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.6rem;
+        width: 100%;
+        max-width: 1100px;
+        text-align: left;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+        width: 100%;
+        max-width: 1100px;
+        text-align: left;
+      }
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        width: 100%;
+        max-width: 1150px;
+        text-align: left;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 1.4rem;
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(26, 158, 143, 0.5);
+      }
+      .card .icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .card h3 {
+        font-size: 1rem;
+        color: var(--white);
+        margin-bottom: 0.4rem;
+      }
+      .card p {
+        font-size: 0.88rem;
+        opacity: 0.8;
+        line-height: 1.5;
+      }
+
+      .card-danger {
+        border-left: 4px solid var(--red);
+      }
+      .card-warn {
+        border-left: 4px solid var(--amber);
+      }
+      .card-ok {
+        border-left: 4px solid var(--green);
+      }
+      .card-teal {
+        border-left: 4px solid var(--teal);
+      }
+      .card-excel {
+        border-left: 4px solid var(--excel-green);
+      }
+
+      /* ── Stat grid (KPIs) ── */
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        width: 100%;
+        max-width: 1150px;
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 1.1rem 0.8rem;
+        text-align: center;
+      }
+      .stat-num {
+        font-size: clamp(1.3rem, 2.4vw, 1.9rem);
+        font-weight: 700;
+        color: #7ee8e0;
+        line-height: 1.1;
+        margin-bottom: 0.3rem;
+      }
+      .stat-label {
+        font-size: 0.75rem;
+        opacity: 0.75;
+        line-height: 1.35;
+      }
+
+      /* ── Step list ── */
+      .steps {
+        list-style: none;
+        width: 100%;
+        max-width: 900px;
+        text-align: left;
+      }
+      .steps li {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.2rem;
+        padding: 1rem 1.2rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        margin-bottom: 0.7rem;
+        border-left: 4px solid var(--teal);
+        font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      }
+      .step-num {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--teal);
+        color: var(--white);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+      .steps li strong {
+        color: #7ee8e0;
+      }
+
+      /* ── Chart tokens ── */
+      :root {
+        --chart-series: #199e70; /* aqua, dark-mode categorical slot 2 — echoes --teal */
+        --chart-critical: #d03b3b; /* reserved status color, error/flag rows only */
+        --chart-track: rgba(255, 255, 255, 0.07);
+      }
+
+      .chart-panel {
+        width: 100%;
+        max-width: 980px;
+      }
+      .chart-panel h3 {
+        text-align: left;
+        font-size: 0.95rem;
+        margin-bottom: 0.7rem;
+      }
+      .chart-note {
+        max-width: 820px;
+        margin-top: 1.1rem;
+        font-size: 0.85rem;
+        opacity: 0.75;
+        line-height: 1.6;
+      }
+
+      /* ── Horizontal bar chart ── */
+      .hbar-chart {
+        width: 100%;
+        max-width: 980px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .hbar-row {
+        display: grid;
+        grid-template-columns: 150px 1fr 150px;
+        align-items: center;
+        gap: 0.9rem;
+        cursor: default;
+      }
+      .hbar-row--sm {
+        grid-template-columns: 120px 1fr 120px;
+      }
+      .hbar-label {
+        font-size: 0.82rem;
+        text-align: right;
+        opacity: 0.85;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .hbar-track {
+        height: 20px;
+        border-radius: 4px;
+        background: var(--chart-track);
+        overflow: hidden;
+      }
+      .hbar-fill {
+        height: 100%;
+        min-width: 4px;
+        border-radius: 0 4px 4px 0;
+        background: var(--chart-series);
+        transition: filter 0.15s;
+      }
+      .hbar-fill.critical {
+        background: var(--chart-critical);
+      }
+      .hbar-row:hover .hbar-fill {
+        filter: brightness(1.18);
+      }
+      .hbar-value {
+        font-size: 0.82rem;
+        text-align: left;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      .hbar-sub {
+        opacity: 0.6;
+        font-size: 0.75rem;
+        margin-left: 0.3rem;
+      }
+
+      /* ── Vertical column chart ── */
+      .vbar-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 3rem;
+        width: 100%;
+        max-width: 620px;
+        margin: 0 auto;
+      }
+      .vbar-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: default;
+      }
+      .vbar-value {
+        font-size: 0.88rem;
+        margin-bottom: 0.5rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+      .vbar-bararea {
+        height: 160px;
+        display: flex;
+        align-items: flex-end;
+      }
+      .vbar-fill {
+        width: 26px;
+        min-height: 3px;
+        border-radius: 4px 4px 0 0;
+        background: var(--chart-series);
+        transition: filter 0.15s;
+      }
+      .vbar-col:hover .vbar-fill {
+        filter: brightness(1.18);
+      }
+      .vbar-label {
+        margin-top: 0.6rem;
+        font-size: 0.82rem;
+        opacity: 0.85;
+        text-align: center;
+      }
+      .vbar-sub {
+        display: block;
+        font-size: 0.72rem;
+        opacity: 0.55;
+        margin-top: 0.15rem;
+      }
+
+      /* ── Meter ── */
+      .meter-block {
+        width: 100%;
+        max-width: 680px;
+        margin-top: 1.4rem;
+        text-align: left;
+      }
+      .meter-label {
+        font-size: 0.85rem;
+        opacity: 0.85;
+        margin-bottom: 0.45rem;
+      }
+      .meter-track {
+        height: 14px;
+        border-radius: 7px;
+        background: rgba(230, 126, 34, 0.15);
+        overflow: hidden;
+      }
+      .meter-fill {
+        height: 100%;
+        border-radius: 7px;
+        background: var(--amber);
+      }
+
+      /* ── Code block ── */
+      .code-block {
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 1.2rem 1.6rem;
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: clamp(0.78rem, 1.2vw, 0.98rem);
+        line-height: 1.75;
+        width: 100%;
+        max-width: 880px;
+        overflow-x: auto;
+      }
+
+      /* ── Tag pills ── */
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+      .tag {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .tag-teal {
+        background: rgba(26, 158, 143, 0.25);
+        border-color: var(--teal);
+        color: #7ee8e0;
+      }
+      .tag-amber {
+        background: rgba(230, 126, 34, 0.2);
+        border-color: var(--amber);
+        color: #f0a761;
+      }
+      .tag-red {
+        background: rgba(192, 57, 43, 0.25);
+        border-color: var(--red);
+        color: #f19c92;
+      }
+      .tag-green {
+        background: rgba(26, 127, 75, 0.3);
+        border-color: var(--excel-green);
+        color: #6fe0a8;
+      }
+
+      /* ── Divider ── */
+      .divider {
+        width: 60px;
+        height: 4px;
+        background: var(--teal);
+        border-radius: 2px;
+        margin: 0.8rem auto 1.4rem;
+      }
+
+      /* ── Quote / callout ── */
+      .quote {
+        border-left: 4px solid var(--teal);
+        padding: 1rem 1.5rem;
+        background: rgba(26, 158, 143, 0.1);
+        border-radius: 0 10px 10px 0;
+        font-style: italic;
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        max-width: 820px;
+        text-align: left;
+        line-height: 1.7;
+      }
+      .callout-warn {
+        border-left: 4px solid var(--amber);
+        background: rgba(230, 126, 34, 0.12);
+        padding: 1rem 1.5rem;
+        border-radius: 0 10px 10px 0;
+        max-width: 820px;
+        text-align: left;
+        font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+        line-height: 1.7;
+      }
+      .callout-danger {
+        border-left: 4px solid var(--red);
+        background: rgba(192, 57, 43, 0.14);
+        padding: 1rem 1.5rem;
+        border-radius: 0 10px 10px 0;
+        max-width: 820px;
+        text-align: left;
+        font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+        line-height: 1.7;
+      }
+
+      /* ── Progress bar ── */
+      #progress {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: var(--teal);
+        transition: width 0.4s ease;
+        z-index: 100;
+      }
+
+      /* ── Navigation ── */
+      #nav {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        border-radius: 30px;
+        padding: 0.5rem 1.2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .nav-btn {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 1.3rem;
+        cursor: pointer;
+        padding: 0.3rem 0.7rem;
+        border-radius: 6px;
+        transition:
+          background 0.2s,
+          opacity 0.2s;
+        opacity: 0.7;
+      }
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        opacity: 1;
+      }
+      .nav-btn:disabled {
+        opacity: 0.25;
+        cursor: default;
+      }
+      #slide-counter {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        min-width: 60px;
+        text-align: center;
+      }
+
+      /* ── Slide numbers (dots) ── */
+      #dots {
+        position: fixed;
+        top: 1.2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.4rem;
+        z-index: 100;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        transition:
+          background 0.3s,
+          transform 0.3s;
+        cursor: pointer;
+      }
+      .dot.active {
+        background: var(--teal);
+        transform: scale(1.4);
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 768px) {
+        .slide {
+          padding: 2rem 2rem 5rem;
+        }
+        .grid-2,
+        .grid-3,
+        .grid-4,
+        .stat-grid {
+          grid-template-columns: 1fr;
+        }
+        .hbar-row {
+          grid-template-columns: 90px 1fr 100px;
+        }
+        .hbar-label {
+          font-size: 0.72rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck" id="deck">
+      <!-- ─── SLIDE 1: PORTADA ─── -->
+      <section class="slide bg-hero active">
+        <div class="eyebrow">Informe ejecutivo · Farmacia Hospitalaria</div>
+        <h1>
+          Uso responsable del<br /><span class="accent">medicamento</span>
+        </h1>
+        <div class="divider"></div>
+        <p class="subtitle">
+          De la prescripción a la dispensación: por qué los datos importan
+          frente a la resistencia a los antimicrobianos
+        </p>
+        <div class="tags" style="margin-top: 2rem">
+          <span class="tag tag-teal">Prescripción</span>
+          <span class="tag tag-red">Superbacterias</span>
+          <span class="tag tag-green">Trazabilidad</span>
+          <span class="tag tag-amber">KPIs de dispensación</span>
+        </div>
+        <p style="margin-top: 2.5rem; font-size: 0.85rem; opacity: 0.45">
+          Fuente: claude-farmacia.xlsx — hoja "KPIs" · Manuel Torres ·
+          Universidad de Almería
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 2: USO RESPONSABLE DEL MEDICAMENTO ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">Uso responsable del medicamento</div>
+        <h2>
+          Una cadena con <span class="accent">varios eslabones</span>, no un
+          único acto
+        </h2>
+        <div class="divider"></div>
+        <p style="max-width: 820px; margin-bottom: 1.6rem; opacity: 0.9">
+          El uso responsable del medicamento no depende de un único
+          profesional: es una cadena que va de la prescripción a la
+          dispensación, la administración y el seguimiento clínico. Un fallo
+          en cualquier eslabón —una dosis mal indicada, un lote caducado, una
+          alergia no registrada— puede anular la eficacia del resto.
+        </p>
+        <ul class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <div><strong>Prescripción:</strong> el médico indica fármaco, dosis, vía y duración adecuadas al paciente.</div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div><strong>Validación farmacéutica:</strong> el farmacéutico revisa interacciones, alergias y adecuación antes de dispensar.</div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div><strong>Dispensación:</strong> se entrega la cantidad correcta, del lote correcto, en el momento correcto.</div>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <div><strong>Administración y seguimiento:</strong> enfermería y el equipo clínico vigilan efecto y reacciones adversas.</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─── SLIDE 3: LA PRESCRIPCIÓN COMO PUNTO DE CONTROL ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">La prescripción como punto de control</div>
+        <h2>Los <span class="accent">cinco correctos</span> de la prescripción</h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-teal">
+            <h3>Paciente correcto</h3>
+            <p>Verificar identidad antes de prescribir o dispensar, evitando confusiones entre pacientes similares.</p>
+          </div>
+          <div class="card card-teal">
+            <h3>Medicamento correcto</h3>
+            <p>Confirmar principio activo y presentación frente a nombres comerciales parecidos.</p>
+          </div>
+          <div class="card card-teal">
+            <h3>Dosis correcta</h3>
+            <p>Ajustar a peso, función renal/hepática y edad; especialmente crítico en antimicrobianos.</p>
+          </div>
+          <div class="card card-teal">
+            <h3>Vía correcta</h3>
+            <p>Oral, intravenosa, intramuscular… cada vía cambia biodisponibilidad y riesgo.</p>
+          </div>
+          <div class="card card-teal">
+            <h3>Momento correcto</h3>
+            <p>Duración e intervalo de dosis; interrumpir un tratamiento antes de tiempo favorece resistencias.</p>
+          </div>
+          <div class="card card-warn">
+            <h3>Y un sexto, en la práctica</h3>
+            <p>Registro correcto: sin trazabilidad (lote, proveedor, fecha) no hay forma de auditar ni de reaccionar ante una alerta.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SLIDE 4: SUPERBACTERIAS ─── -->
+      <section class="slide bg-danger">
+        <div class="eyebrow">Una amenaza creciente</div>
+        <h2>
+          Resistencia a antimicrobianos:<br />el auge de las
+          <span class="red">"superbacterias"</span>
+        </h2>
+        <div class="divider"></div>
+        <p style="max-width: 820px; margin-bottom: 1.4rem; opacity: 0.9">
+          El uso inadecuado o excesivo de antibióticos —dosis incompletas,
+          prescripción sin indicación clara, automedicación— acelera la
+          selección de bacterias resistentes. Estudios de referencia como el
+          análisis global GRAM (<em>The Lancet</em>, 2022) atribuyen
+          directamente a la resistencia antimicrobiana en torno a 1,27
+          millones de muertes en 2019, con un papel asociado en cerca de 5
+          millones más. La revisión O'Neill ya advertía de hasta 10 millones
+          de muertes anuales para 2050 si la tendencia no se revierte.
+        </p>
+        <div class="grid-3">
+          <div class="card card-danger">
+            <h3>ESKAPE y patógenos prioritarios</h3>
+            <p>La OMS mantiene una lista de bacterias prioritarias (SARM, enterobacterias resistentes a carbapenémicos…) por su resistencia y letalidad.</p>
+          </div>
+          <div class="card card-danger">
+            <h3>Uso hospitalario, impacto global</h3>
+            <p>Cada dispensación de antimicrobiano en un hospital contribuye a la presión selectiva que genera resistencias, dentro y fuera del centro.</p>
+          </div>
+          <div class="card card-danger">
+            <h3>Vigilancia epidemiológica</h3>
+            <p>Programas como GLASS (OMS) y las redes europeas de vigilancia dependen de datos de consumo hospitalario fiables y trazables.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── SLIDE 5: QUÉ SE HACE ─── -->
+      <section class="slide bg-warn">
+        <div class="eyebrow">La respuesta desde el hospital</div>
+        <h2>Programas de <span class="amber">optimización de antimicrobianos</span> (PROA)</h2>
+        <div class="divider"></div>
+        <div class="callout-warn">
+          Los equipos PROA (Programas de Optimización de uso de
+          Antimicrobianos) combinan a farmacia, microbiología, medicina
+          preventiva e infecciosas para revisar indicación, dosis y duración
+          de los tratamientos antimicrobianos. Su eficacia depende de poder
+          <strong>medir el consumo real</strong>: qué se dispensa, a qué
+          servicio, con qué coste y con qué frecuencia se marcan incidencias
+          que requieren revisión.
+        </div>
+        <p style="max-width: 780px; margin-top: 1.4rem; font-size: 0.9rem; opacity: 0.75;">
+          Ahí es donde entran los indicadores de dispensación: no sustituyen
+          el criterio clínico, pero permiten detectar concentraciones de
+          coste, líneas pendientes de revisión y anomalías antes de que se
+          conviertan en un problema mayor.
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 6: TRANSICIÓN A LOS DATOS ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">De la teoría a los datos</div>
+        <h2>Los indicadores de<br /><span class="accent">nuestro registro de dispensación</span></h2>
+        <div class="divider"></div>
+        <p style="max-width: 800px; opacity: 0.9;">
+          A continuación se presentan los KPIs calculados de forma dinámica
+          sobre el registro de dispensaciones de farmacia (hoja "Hoja1",
+          45 líneas), agrupados en la hoja <code>KPIs</code> del libro
+          <code>claude-farmacia.xlsx</code>. Los datos son ficticios y de uso
+          formativo, pero reproducen los patrones —y los problemas de calidad
+          de datos— que aparecen en un registro hospitalario real.
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 7: RESUMEN GENERAL ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">1 · Resumen general</div>
+        <h2>La foto <span class="accent">completa</span> del periodo</h2>
+        <div class="divider"></div>
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-num">45</div><div class="stat-label">Dispensaciones totales</div></div>
+          <div class="stat-card"><div class="stat-num">5.027,55 €</div><div class="stat-label">Coste total dispensado</div></div>
+          <div class="stat-card"><div class="stat-num">114,26 €</div><div class="stat-label">Coste medio por dispensación</div></div>
+          <div class="stat-card"><div class="stat-num">1.388</div><div class="stat-label">Unidades totales dispensadas</div></div>
+          <div class="stat-card"><div class="stat-num">8</div><div class="stat-label">Servicios distintos</div></div>
+          <div class="stat-card"><div class="stat-num">30</div><div class="stat-label">Medicamentos distintos</div></div>
+          <div class="stat-card"><div class="stat-num">29</div><div class="stat-label">Principios activos distintos</div></div>
+          <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Proveedores distintos</div></div>
+        </div>
+        <div class="stat-grid" style="margin-top: 1rem">
+          <div class="stat-card" style="border-left: 3px solid var(--red);"><div class="stat-num red">1</div><div class="stat-label">Lote ya caducado al dispensarse</div></div>
+          <div class="stat-card"><div class="stat-num">580,9</div><div class="stat-label">Días de vida útil media al dispensar</div></div>
+          <div class="stat-card" style="border-left: 3px solid var(--red);"><div class="stat-num red">-9,75 €</div><div class="stat-label">Dispensación de menor coste</div></div>
+          <div class="stat-card" style="border-left: 3px solid var(--red);"><div class="stat-num red">960 €</div><div class="stat-label">Dispensación de mayor coste</div></div>
+        </div>
+        <div class="meter-block">
+          <div class="meter-label">17,8 % de líneas dispensadas marcadas "Revisar" <span class="meter-sub">(8 de 45)</span></div>
+          <div class="meter-track"><div class="meter-fill" style="width: 17.8%"></div></div>
+        </div>
+      </section>
+
+      <!-- ─── SLIDE 8: KPIs POR SERVICIO ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">2 · KPIs por servicio</div>
+        <h2>El coste se <span class="amber">concentra</span> en Oncología</h2>
+        <div class="divider"></div>
+        <div class="hbar-chart">
+          <div class="hbar-row" title="Oncología: 2.241,50 € · 6 dispensaciones · 44,6% del coste total">
+            <div class="hbar-label">Oncología</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 100%"></div></div>
+            <div class="hbar-value">2.241,50 € <span class="hbar-sub">44,6%</span></div>
+          </div>
+          <div class="hbar-row" title="Medicina Interna: 594,00 € · 5 dispensaciones · 11,8% del coste total">
+            <div class="hbar-label">Medicina Interna</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 26.5%"></div></div>
+            <div class="hbar-value">594,00 € <span class="hbar-sub">11,8%</span></div>
+          </div>
+          <div class="hbar-row" title="UCI: 504,40 € · 6 dispensaciones · 10,0% del coste total">
+            <div class="hbar-label">UCI</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 22.5%"></div></div>
+            <div class="hbar-value">504,40 € <span class="hbar-sub">10,0%</span></div>
+          </div>
+          <div class="hbar-row" title="Traumatología: 478,50 € · 5 dispensaciones · 9,5% del coste total">
+            <div class="hbar-label">Traumatología</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 21.3%"></div></div>
+            <div class="hbar-value">478,50 € <span class="hbar-sub">9,5%</span></div>
+          </div>
+          <div class="hbar-row" title="Cardiología: 410,00 € · 8 dispensaciones · 8,2% del coste total">
+            <div class="hbar-label">Cardiología</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 18.3%"></div></div>
+            <div class="hbar-value">410,00 € <span class="hbar-sub">8,2%</span></div>
+          </div>
+          <div class="hbar-row" title="Pediatría: 303,60 € · 5 dispensaciones · 6,0% del coste total">
+            <div class="hbar-label">Pediatría</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 13.5%"></div></div>
+            <div class="hbar-value">303,60 € <span class="hbar-sub">6,0%</span></div>
+          </div>
+          <div class="hbar-row" title="Urgencias: 257,95 € · 6 dispensaciones · 5,1% del coste total">
+            <div class="hbar-label">Urgencias</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 11.5%"></div></div>
+            <div class="hbar-value">257,95 € <span class="hbar-sub">5,1%</span></div>
+          </div>
+          <div class="hbar-row" title="Neumología: 237,60 € · 4 dispensaciones · 4,7% del coste total">
+            <div class="hbar-label">Neumología</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 10.6%"></div></div>
+            <div class="hbar-value">237,60 € <span class="hbar-sub">4,7%</span></div>
+          </div>
+        </div>
+        <p class="chart-note">
+          Coste total dispensado por servicio (barra = € totales, escala relativa al máximo). Oncología concentra el 44,6 % del coste con solo el 13 % de las
+          dispensaciones: una única línea de alto coste puede desplazar por
+          completo el peso relativo de un servicio.
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 9: FARMACÉUTICO Y PROVEEDOR ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">3 y 4 · Farmacéutico y proveedor</div>
+        <h2>Quién <span class="accent">dispensa</span> y quién <span class="accent">suministra</span></h2>
+        <div class="divider"></div>
+        <div class="grid-2">
+          <div class="chart-panel">
+            <h3>Por farmacéutico · coste total</h3>
+            <div class="hbar-chart">
+              <div class="hbar-row hbar-row--sm" title="Pedro Díaz: 1.846,70 € · 11 dispensaciones">
+                <div class="hbar-label">Pedro Díaz</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 100%"></div></div>
+                <div class="hbar-value">1.846,70 €</div>
+              </div>
+              <div class="hbar-row hbar-row--sm" title="Marta Sánchez: 1.689,50 € · 11 dispensaciones">
+                <div class="hbar-label">Marta Sánchez</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 91.5%"></div></div>
+                <div class="hbar-value">1.689,50 €</div>
+              </div>
+              <div class="hbar-row hbar-row--sm" title="Luis Gómez: 765,95 € · 11 dispensaciones">
+                <div class="hbar-label">Luis Gómez</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 41.5%"></div></div>
+                <div class="hbar-value">765,95 €</div>
+              </div>
+              <div class="hbar-row hbar-row--sm" title="Ana Ruiz: 725,40 € · 12 dispensaciones">
+                <div class="hbar-label">Ana Ruiz</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 39.3%"></div></div>
+                <div class="hbar-value">725,40 €</div>
+              </div>
+            </div>
+          </div>
+          <div class="chart-panel">
+            <h3>Por proveedor · coste total</h3>
+            <div class="hbar-chart">
+              <div class="hbar-row hbar-row--sm" title="Pfizer: 2.379,40 € · 7 dispensaciones">
+                <div class="hbar-label">Pfizer</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 100%"></div></div>
+                <div class="hbar-value">2.379,40 €</div>
+              </div>
+              <div class="hbar-row hbar-row--sm" title="Sanofi: 1.001,25 € · 9 dispensaciones">
+                <div class="hbar-label">Sanofi</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 42.1%"></div></div>
+                <div class="hbar-value">1.001,25 €</div>
+              </div>
+              <div class="hbar-row hbar-row--sm" title="Normon: 822,80 € · 15 dispensaciones">
+                <div class="hbar-label">Normon</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 34.6%"></div></div>
+                <div class="hbar-value">822,80 €</div>
+              </div>
+              <div class="hbar-row hbar-row--sm" title="Kern Pharma: 774,60 € · 13 dispensaciones">
+                <div class="hbar-label">Kern Pharma</div>
+                <div class="hbar-track"><div class="hbar-fill" style="width: 32.6%"></div></div>
+                <div class="hbar-value">774,60 €</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="chart-note">
+          El total por proveedor suma 44 dispensaciones, no 45: hay una línea
+          sin proveedor registrado (ver alertas de trazabilidad). Pedro Díaz
+          y Pfizer concentran, cada uno en su dimensión, el mayor coste medio
+          por dispensación.
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 10: MEDICAMENTOS DE MAYOR COSTE ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">5 · KPIs por medicamento</div>
+        <h2>Un solo fármaco <span class="red">dispara</span> el coste</h2>
+        <div class="divider"></div>
+        <div class="hbar-chart">
+          <div class="hbar-row" title="Filgrastim 30MU: 1.920,00 € · 2 dispensaciones · 960 €/dispensación">
+            <div class="hbar-label">Filgrastim 30MU</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 100%"></div></div>
+            <div class="hbar-value">1.920,00 € <span class="hbar-sub">2 disp.</span></div>
+          </div>
+          <div class="hbar-row" title="Insulina glargina: 420,00 € · 1 dispensación">
+            <div class="hbar-label">Insulina glargina</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 21.9%"></div></div>
+            <div class="hbar-value">420,00 € <span class="hbar-sub">1 disp.</span></div>
+          </div>
+          <div class="hbar-row" title="Enoxaparina 40mg: 315,00 € · 2 dispensaciones">
+            <div class="hbar-label">Enoxaparina 40mg</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 16.4%"></div></div>
+            <div class="hbar-value">315,00 € <span class="hbar-sub">2 disp.</span></div>
+          </div>
+          <div class="hbar-row" title="Propofol 200mg: 312,00 € · 2 dispensaciones">
+            <div class="hbar-label">Propofol 200mg</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 16.3%"></div></div>
+            <div class="hbar-value">312,00 € <span class="hbar-sub">2 disp.</span></div>
+          </div>
+          <div class="hbar-row" title="Dexametasona 4mg: 290,00 € · 2 dispensaciones">
+            <div class="hbar-label">Dexametasona 4mg</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 15.1%"></div></div>
+            <div class="hbar-value">290,00 € <span class="hbar-sub">2 disp.</span></div>
+          </div>
+          <div class="hbar-row" title="Amoxicilina 250mg: 252,00 € · 3 dispensaciones">
+            <div class="hbar-label">Amoxicilina 250mg</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 13.1%"></div></div>
+            <div class="hbar-value">252,00 € <span class="hbar-sub">3 disp.</span></div>
+          </div>
+        </div>
+        <div class="callout-danger" style="margin-top: 1.2rem;">
+          ⚠ <strong>Adrenalina 1mg/ml</strong> registra cantidad y coste
+          negativos (-9,75 €, 1 dispensación) — es un error de registro, no
+          un valor real. No se incluye en la escala anterior; se retoma en
+          la sección de alertas de calidad.
+        </div>
+        <p class="chart-note">
+          Filgrastim (factor estimulante de colonias, uso oncológico) explica
+          por sí solo la concentración de coste observada en Oncología.
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 11: CATEGORÍAS DE OBSERVACIÓN ─── -->
+      <section class="slide bg-warn">
+        <div class="eyebrow">6 · Farmacovigilancia</div>
+        <h2>Qué dicen las <span class="amber">observaciones</span> registradas</h2>
+        <div class="divider"></div>
+        <div class="hbar-chart" style="max-width: 780px;">
+          <div class="hbar-row" title="Seguimiento clínico: 35 casos · 77,8% del total">
+            <div class="hbar-label">Seguimiento clínico</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 77.8%"></div></div>
+            <div class="hbar-value">35 <span class="hbar-sub">77,8%</span></div>
+          </div>
+          <div class="hbar-row" title="Stock / Incidencia: 6 casos · 13,3% del total">
+            <div class="hbar-label">Stock / Incidencia</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 13.3%"></div></div>
+            <div class="hbar-value">6 <span class="hbar-sub">13,3%</span></div>
+          </div>
+          <div class="hbar-row" title="Reacción adversa: 2 casos · 4,4% del total">
+            <div class="hbar-label">Reacción adversa</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 4.4%"></div></div>
+            <div class="hbar-value">2 <span class="hbar-sub">4,4%</span></div>
+          </div>
+          <div class="hbar-row" title="Alergia: 1 caso · 2,2% del total">
+            <div class="hbar-label">Alergia</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 2.2%"></div></div>
+            <div class="hbar-value">1 <span class="hbar-sub">2,2%</span></div>
+          </div>
+          <div class="hbar-row" title="Estupefacientes: 1 caso · 2,2% del total">
+            <div class="hbar-label">Estupefacientes</div>
+            <div class="hbar-track"><div class="hbar-fill" style="width: 2.2%"></div></div>
+            <div class="hbar-value">1 <span class="hbar-sub">2,2%</span></div>
+          </div>
+        </div>
+        <p style="max-width: 800px; margin-top: 1.2rem; font-size: 0.9rem; opacity: 0.8;">
+          Reacciones adversas, alergias y estupefacientes son pocas líneas,
+          pero son precisamente las que alimentan la farmacovigilancia y el
+          control de sustancias fiscalizadas: conviene que ninguna se pierda
+          entre el 77,8 % de seguimiento clínico rutinario.
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 12: EVOLUCIÓN MENSUAL ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">7 · Evolución mensual del coste</div>
+        <h2>Un periodo <span class="accent">corto y desigual</span></h2>
+        <div class="divider"></div>
+        <div class="vbar-chart">
+          <div class="vbar-col" title="Enero 2025: 22,50 € · 1 dispensación">
+            <div class="vbar-value">22,50 €</div>
+            <div class="vbar-bararea"><div class="vbar-fill" style="height: 0.7%"></div></div>
+            <div class="vbar-label">Enero<span class="vbar-sub">1 disp.</span></div>
+          </div>
+          <div class="vbar-col" title="Febrero 2025: 3.091,55 € · 27 dispensaciones">
+            <div class="vbar-value">3.091,55 €</div>
+            <div class="vbar-bararea"><div class="vbar-fill" style="height: 100%"></div></div>
+            <div class="vbar-label">Febrero<span class="vbar-sub">27 disp.</span></div>
+          </div>
+          <div class="vbar-col" title="Marzo 2025: 1.913,50 € · 17 dispensaciones">
+            <div class="vbar-value">1.913,50 €</div>
+            <div class="vbar-bararea"><div class="vbar-fill" style="height: 61.9%"></div></div>
+            <div class="vbar-label">Marzo<span class="vbar-sub">17 disp.</span></div>
+          </div>
+        </div>
+        <p style="max-width: 800px; margin-top: 1.4rem; font-size: 0.9rem; opacity: 0.8;">
+          El periodo cubierto va del 3 de enero al 16 de marzo de 2025 (72
+          días; 45 dispensaciones, 5.027,55 € en total). Enero apenas tiene
+          una línea registrada: antes de comparar meses conviene confirmar
+          si falta carga de datos o si realmente hubo una actividad mínima.
+        </p>
+      </section>
+
+      <!-- ─── SLIDE 13: ALERTAS DE CALIDAD ─── -->
+      <section class="slide bg-danger">
+        <div class="eyebrow">8 · Alertas de calidad y trazabilidad</div>
+        <h2>Sin <span class="red">trazabilidad</span> no hay uso responsable</h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-danger">
+            <h3>Cantidad negativa</h3>
+            <p>1 dispensación con cantidad y coste negativos (Adrenalina) — error de registro a corregir.</p>
+          </div>
+          <div class="card card-danger">
+            <h3>Sin proveedor registrado</h3>
+            <p>1 dispensación sin proveedor identificado: rompe la cadena de trazabilidad ante una alerta sanitaria.</p>
+          </div>
+          <div class="card card-danger">
+            <h3>Sin cantidad/coste</h3>
+            <p>1 línea con datos incompletos que impide auditar correctamente esa dispensación.</p>
+          </div>
+        </div>
+        <div class="callout-danger" style="margin-top: 1.4rem;">
+          Además, 1 lote se dispensó ya caducado y el 17,8 % de las líneas
+          (8 de 45) están marcadas para revisión manual. En un contexto de
+          resistencia a antimicrobianos y control de estupefacientes, estos
+          huecos de trazabilidad no son solo un problema contable: son un
+          problema de seguridad del paciente y de salud pública.
+        </div>
+      </section>
+
+      <!-- ─── SLIDE 14: CONCLUSIONES EJECUTIVAS ─── -->
+      <section class="slide bg-result">
+        <div class="eyebrow">Conclusiones ejecutivas</div>
+        <h2>De los <span class="accent">indicadores</span> a la acción</h2>
+        <div class="divider"></div>
+        <ul class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <div>Priorizar la revisión de las 8 líneas marcadas y cerrar los 3 huecos de trazabilidad (proveedor, cantidad/coste, cantidad negativa).</div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div>Investigar la concentración de coste en Oncología / Filgrastim y en el proveedor Pfizer: no es necesariamente un error, pero debe ser un dato conocido y explicado.</div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div>Vigilar el lote dispensado ya caducado como incidente de seguridad, no solo como anomalía estadística.</div>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <div>Sostener el vínculo entre farmacia, PROA y microbiología: los KPIs de dispensación son la base de datos con la que se ejerce el uso responsable del medicamento y la lucha contra las superbacterias.</div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─── SLIDE 15: CIERRE ─── -->
+      <section class="slide bg-close">
+        <div class="eyebrow">Fuente y alcance</div>
+        <h2>Sobre estos <span class="accent">datos</span></h2>
+        <div class="divider"></div>
+        <div class="quote">
+          Todos los indicadores proceden de fórmulas dinámicas sobre el
+          registro de dispensación (Hoja1, A2:R46) del libro
+          <code>claude-farmacia.xlsx</code>. Los datos son ficticios y de uso
+          exclusivamente formativo; cualquier aplicación sobre información
+          real de pacientes requiere autorización institucional y revisión
+          por el responsable de protección de datos.
+        </div>
+        <div class="tags" style="margin-top: 1.6rem">
+          <span class="tag tag-teal">Uso responsable del medicamento</span>
+          <span class="tag tag-red">Resistencia antimicrobiana</span>
+          <span class="tag tag-green">Trazabilidad</span>
+          <span class="tag tag-amber">Revisión humana siempre</span>
+        </div>
+      </section>
+    </div>
+    <!-- /deck -->
+
+    <!-- Progress bar -->
+    <div id="progress"></div>
+
+    <!-- Navigation -->
+    <div id="nav">
+      <button class="nav-btn" id="btn-prev" title="Anterior (←)">
+        &#8592;
+      </button>
+      <span id="slide-counter">1 / 15</span>
+      <button class="nav-btn" id="btn-next" title="Siguiente (→)">
+        &#8594;
+      </button>
+    </div>
+
+    <!-- Dots -->
+    <div id="dots"></div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const total = slides.length;
+      let current = 0;
+
+      const btnPrev = document.getElementById("btn-prev");
+      const btnNext = document.getElementById("btn-next");
+      const counter = document.getElementById("slide-counter");
+      const progressEl = document.getElementById("progress");
+      const dotsEl = document.getElementById("dots");
+
+      slides.forEach((_, i) => {
+        const d = document.createElement("div");
+        d.className = "dot" + (i === 0 ? " active" : "");
+        d.addEventListener("click", () => goTo(i));
+        dotsEl.appendChild(d);
+      });
+
+      function goTo(n) {
+        if (n < 0 || n >= total) return;
+        slides[current].classList.remove("active");
+        slides[current].classList.add("exit");
+        setTimeout(() => slides[current].classList.remove("exit"), 450);
+
+        current = n;
+        slides[current].classList.add("active");
+
+        dotsEl
+          .querySelectorAll(".dot")
+          .forEach((d, i) => d.classList.toggle("active", i === current));
+
+        counter.textContent = `${current + 1} / ${total}`;
+        progressEl.style.width = `${((current + 1) / total) * 100}%`;
+
+        btnPrev.disabled = current === 0;
+        btnNext.disabled = current === total - 1;
+      }
+
+      btnPrev.addEventListener("click", () => goTo(current - 1));
+      btnNext.addEventListener("click", () => goTo(current + 1));
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " ") {
+          e.preventDefault();
+          goTo(current + 1);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault();
+          goTo(current - 1);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          goTo(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          goTo(total - 1);
+        }
+      });
+
+      let touchStartX = 0;
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.touches[0].clientX;
+        },
+        { passive: true },
+      );
+      document.addEventListener("touchend", (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+      });
+
+      goTo(0);
+    </script>
+  </body>
+</html>

@@ -147,6 +147,32 @@ Crear una tabla dinámica con el coste y el número de dispensaciones por Servic
 Revisa los datos y detecta errores y valores atípicos: cantidades negativas, precios anómalos, costes que no cuadran con Cantidad × Precio, caducidades anteriores a la dispensación y celdas vacías.
 ----
 
+== Yendo un paso más allá
+
+A partir de los ejemplos anteriores, se pueden plantear peticiones más complejas y variadas, como crear una hoja de indicadores. La clave es que Claude para Excel entiende el contenido de la hoja y puede razonar sobre él, por lo que se pueden plantear problemas más complejos que impliquen varias columnas, condiciones o cálculos.
+
+.Prompt sugerido
+[source, text]
+----
+Crea una hoja nueva denominada KPIs con los KPIs más relevantes que se pueden calcular a partir de los datos de la Hoja1.
+----
+
+Es verdad que es un prompt demasiado abierto, pero se trata de un ejemplo de cómo se puede plantear un problema más complejo y dejar que Claude para Excel proponga una solución. Esa solución puede usarse como punto de partida para refinar la petición y obtener un resultado más ajustado a lo que se necesita. Esta técnica se suele usar para plantear propuestas a modo de inicio y luego ir refinando la petición hasta obtener un resultado satisfactorio.
+
+Finalmente, la hoja de cálculo procesada podría quedar así: link:files/claude-farmacia-procesado.xlsx[claude-farmacia-procesado.xlsx].
+
+Una vez que se ha generado la hoja de KPIs, se puede descargar esa hoja, y pedir a Claude en sus versiones de chat, o Claude Code, que generen una presentación ejecutiva en HTML a partir de esos indicadores, con gráficos y resúmenes de los KPIs más relevantes. Esto podría servir para generar un informe de resultados de forma rápida y visual, aunque conviene revisar los resultados antes de darlos por buenos. Incluso podríamos pedir que añada unas páginas introductorias para contextualizar el informe.
+
+.Prompt sugerido
+[source, text]
+----
+Abre el archivo `@xxxxxxxx.xlsx` y realiza una presentación ejecutiva en HTML sobre el contenido de los indicadores que aparencen en la hoja KPIs. Debe haber más presencia de gráficos en lugar de tablas.
+
+Comienza una introducción sobre el uso responsable de los medicamentos, sus prescripciones y los recientes estudios sobre las suberbacterias
+----
+
+Este link:kpis-farmacia-presentacion.html[enlace] muestra cómo podría quedar la presentación ejecutiva generada a partir de los KPIs de la hoja de ejemplo. El contenido es ficticio y se ha generado con fines formativos, pero sirve para ilustrar cómo se puede usar Claude para Excel y sus versiones de chat para generar informes visuales a partir de datos limpios y analizados.
+
 == Conclusiones
 
 Claude para Excel resulta útil porque acorta el camino entre "tengo unos datos con problemas" y "tengo unos datos limpios y analizables", trabajando directamente sobre la hoja de cálculo en lugar de obligar a exportar, describir el problema en un chat aparte y copiar la respuesta de vuelta. En un servicio de TI hospitalario, donde los registros de dispensación, inventario o seguimiento suelen llegar con inconsistencias de formato, categorías mal escritas o valores atípicos, esto puede ahorrar tiempo en tareas que de otro modo se hacen a mano y de forma repetitiva.

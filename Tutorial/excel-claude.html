@@ -453,9 +453,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_detección_y_corrección_de_datos_inconsistentes">3.1. Detección y corrección de datos inconsistentes</a></li>
 </ul>
 </li>
-<li><a href="#_conclusiones">4. Conclusiones</a>
+<li><a href="#_yendo_un_paso_más_allá">4. Yendo un paso más allá</a></li>
+<li><a href="#_conclusiones">5. Conclusiones</a>
 <ul class="sectlevel2">
-<li><a href="#_recursos_y_siguientes_pasos">4.1. Recursos y siguientes pasos</a></li>
+<li><a href="#_recursos_y_siguientes_pasos">5.1. Recursos y siguientes pasos</a></li>
 </ul>
 </li>
 </ul>
@@ -724,7 +725,41 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_conclusiones">4. Conclusiones</h2>
+<h2 id="_yendo_un_paso_más_allá">4. Yendo un paso más allá</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A partir de los ejemplos anteriores, se pueden plantear peticiones más complejas y variadas, como crear una hoja de indicadores. La clave es que Claude para Excel entiende el contenido de la hoja y puede razonar sobre él, por lo que se pueden plantear problemas más complejos que impliquen varias columnas, condiciones o cálculos.</p>
+</div>
+<div class="listingblock">
+<div class="title">Prompt sugerido</div>
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Crea una hoja nueva denominada KPIs con los KPIs más relevantes que se pueden calcular a partir de los datos de la Hoja1.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Es verdad que es un prompt demasiado abierto, pero se trata de un ejemplo de cómo se puede plantear un problema más complejo y dejar que Claude para Excel proponga una solución. Esa solución puede usarse como punto de partida para refinar la petición y obtener un resultado más ajustado a lo que se necesita. Esta técnica se suele usar para plantear propuestas a modo de inicio y luego ir refinando la petición hasta obtener un resultado satisfactorio.</p>
+</div>
+<div class="paragraph">
+<p>Finalmente, la hoja de cálculo procesada podría quedar así: <a href="files/claude-farmacia-procesado.xlsx">claude-farmacia-procesado.xlsx</a>.</p>
+</div>
+<div class="paragraph">
+<p>Una vez que se ha generado la hoja de KPIs, se puede descargar esa hoja, y pedir a Claude en sus versiones de chat, o Claude Code, que generen una presentación ejecutiva en HTML a partir de esos indicadores, con gráficos y resúmenes de los KPIs más relevantes. Esto podría servir para generar un informe de resultados de forma rápida y visual, aunque conviene revisar los resultados antes de darlos por buenos. Incluso podríamos pedir que añada unas páginas introductorias para contextualizar el informe.</p>
+</div>
+<div class="listingblock">
+<div class="title">Prompt sugerido</div>
+<div class="content">
+<pre class="highlight"><code class="language-text" data-lang="text">Abre el archivo `@xxxxxxxx.xlsx` y realiza una presentación ejecutiva en HTML sobre el contenido de los indicadores que aparencen en la hoja KPIs. Debe haber más presencia de gráficos en lugar de tablas.
+
+Comienza una introducción sobre el uso responsable de los medicamentos, sus prescripciones y los recientes estudios sobre las suberbacterias</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Este <a href="kpis-farmacia-presentacion.html">enlace</a> muestra cómo podría quedar la presentación ejecutiva generada a partir de los KPIs de la hoja de ejemplo. El contenido es ficticio y se ha generado con fines formativos, pero sirve para ilustrar cómo se puede usar Claude para Excel y sus versiones de chat para generar informes visuales a partir de datos limpios y analizados.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusiones">5. Conclusiones</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Claude para Excel resulta útil porque acorta el camino entre "tengo unos datos con problemas" y "tengo unos datos limpios y analizables", trabajando directamente sobre la hoja de cálculo en lugar de obligar a exportar, describir el problema en un chat aparte y copiar la respuesta de vuelta. En un servicio de TI hospitalario, donde los registros de dispensación, inventario o seguimiento suelen llegar con inconsistencias de formato, categorías mal escritas o valores atípicos, esto puede ahorrar tiempo en tareas que de otro modo se hacen a mano y de forma repetitiva.</p>
@@ -747,7 +782,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </table>
 </div>
 <div class="sect2">
-<h3 id="_recursos_y_siguientes_pasos">4.1. Recursos y siguientes pasos</h3>
+<h3 id="_recursos_y_siguientes_pasos">5.1. Recursos y siguientes pasos</h3>
 <div class="paragraph">
 <p>Para profundizar en lo aprendido:</p>
 </div>
@@ -770,7 +805,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2026-07-13 18:09:22 +0200
+Last updated 2026-07-14 20:34:30 +0200
 </div>
 </div>
 </body>
