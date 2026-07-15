@@ -40,6 +40,11 @@ Al finalizar el curso, las personas participantes deberían ser capaces de:
 * Distinguir entre demo, prototipo, piloto controlado y aplicación preparada para producción.
 * Usar IA como apoyo para análisis, documentación, prototipado, generación de código y revisión crítica.
 * Mantener trazabilidad de fuentes, decisiones, supuestos y validaciones humanas.
+* Integrar la IA generativa en el proceso de desarrollo, migración y mantenimiento de aplicaciones.
+* Conocer la importancia de la generación de archivos de memoria, comandos y skills para mantener la continuidad de los proyectos.
+* Crear plantillas de proyectos preconfigurados con archivos de memoria, prompts y skills para facilitar el desarrollo y migración de aplicaciones con IA generativa.
+* Conocer el ecosistema de Anthropic y Claude Code, y cómo puede mejorar la eficiencia y la productividad en un entorno TIC sanitario.
+* Usar Claude para Excel y Claude Cowork para delegar tareas de organización de archivos y correo, con ejemplos prácticos de diagnóstico, reorganización y automatización de tareas.
 
 // NO CAMBIAR!! (Entrar en modo numerado de apartados)
 :numbered: 
@@ -97,6 +102,11 @@ link:Tutorial/migracion-access-con-claude-presentacion.html[Presentación Claude
 | Tutorial sobre el uso de Claude para Excel, con ejemplos prácticos de limpieza y análisis de datos
 | link:Tutorial/excel-claude.html[Tutorial, window=_blank] - link:Tutorial/excel-claude-presentacion.html[Presentación, window=_blank]
 
+| Claude Cowork
+| Tutorial y presentación
+| Tutorial sobre el uso de Claude Cowork para delegar tareas de organización de archivos y correo, con ejemplos prácticos de diagnóstico, reorganización y automatización de tareas.
+| link:Tutorial/claude-cowork.html[Tutorial, window=_blank] - link:Tutorial/claude-cowork-presentacion.html[Presentación, window=_blank]
+
 |===
 
 
@@ -110,3 +120,6 @@ link:Tutorial/migracion-access-con-claude-presentacion.html[Presentación Claude
 * **Gestión de documentación con NotebookLM**: guiones para usar NotebookLM en dos escenarios típicos de informática hospitalaria: preparación de reuniones ejecutivas y seguimiento de ciberseguridad. En ambos casos se busca mostrar cómo la IA puede ayudar a organizar información compleja, generar artefactos visuales y mejorar la calidad de las preguntas que se hacen a los documentos.
 * **Primeros pasos en la migración de aplicaciones con IA generativa**: tutorial sobre cómo la IA puede acelerar y mejorar el proceso de migración de aplicaciones hacia servicios modernos, con casos de uso, prompts y caso práctico.
 * **Adentrándonos en el proceso de desarrollo con IA generativa con Claude Code**: tutorial sobre protocolos de trabajo con GenIA para proyectos de desarrollo, con narrativa paulatina, casos de uso, prompts y práctica.
+* **Ecosistema Anthropic y Claude Code en el Entorno TIC Sanitario**: tutorial sobre el ecosistema de Anthropic y creación de un flujo de trabajo para mejorar la eficiencia y la productividad, con narrativa paulatina, casos de uso, prompts, repositorio y práctica.
+* **Claude para Excel**: tutorial sobre el uso de Claude para Excel, con ejemplos prácticos de limpieza y análisis de datos.
+* **Claude Cowork**: tutorial sobre el uso de Claude Cowork para delegar tareas de organización de archivos y correo, con ejemplos prácticos de diagnóstico, reorganización y automatización de tareas.
