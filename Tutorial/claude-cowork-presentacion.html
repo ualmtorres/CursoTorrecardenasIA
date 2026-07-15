@@ -1,0 +1,1657 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Claude Cowork</title>
+    <style>
+      :root {
+        --blue-dark: #0d2c4e;
+        --blue-mid: #1a5276;
+        --blue-light: #2e86c1;
+        --teal: #1a9e8f;
+        --green: #27ae60;
+        --claude: #d97757;
+        --amber: #e67e22;
+        --red: #c0392b;
+        --grey-light: #ecf0f1;
+        --grey-mid: #bdc3c7;
+        --white: #ffffff;
+        --text-dark: #1a1a2e;
+        --font-main: "Segoe UI", system-ui, -apple-system, sans-serif;
+        --font-mono: "Cascadia Code", "Fira Code", "Consolas", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background: #0a1628;
+        color: var(--white);
+        height: 100vh;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      .deck {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 6rem;
+        opacity: 0;
+        transform: translateX(60px);
+        transition:
+          opacity 0.45s ease,
+          transform 0.45s ease;
+        pointer-events: none;
+        text-align: center;
+        overflow-y: auto;
+      }
+      .slide.active {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: all;
+      }
+      .slide.exit {
+        opacity: 0;
+        transform: translateX(-60px);
+      }
+
+      /* ── Backgrounds ── */
+      .bg-hero {
+        background: linear-gradient(
+          135deg,
+          #0d2c4e 0%,
+          #1a5276 45%,
+          #8a3b25 100%
+        );
+      }
+      .bg-dark {
+        background: linear-gradient(160deg, #0d1b2a 0%, #1a2744 100%);
+      }
+      .bg-warn {
+        background: linear-gradient(160deg, #2c1d0d 0%, #4a2f1a 100%);
+      }
+      .bg-process {
+        background: linear-gradient(160deg, #0d1f4a 0%, #1a3266 100%);
+      }
+      .bg-ai {
+        background: linear-gradient(160deg, #1a0d4a 0%, #2e1a66 100%);
+      }
+      .bg-claude {
+        background: linear-gradient(160deg, #2c150d 0%, #5c2c1a 100%);
+      }
+      .bg-result {
+        background: linear-gradient(160deg, #0d2c1a 0%, #1a5c33 100%);
+      }
+      .bg-close {
+        background: linear-gradient(135deg, #0d2c4e 0%, #0d4e2c 100%);
+      }
+
+      /* ── Typography ── */
+      h1 {
+        font-size: clamp(2rem, 4.5vw, 3.6rem);
+        font-weight: 700;
+        line-height: 1.15;
+        margin-bottom: 0.6rem;
+      }
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2.4rem);
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+      }
+      h3 {
+        font-size: clamp(1.1rem, 2vw, 1.6rem);
+        font-weight: 600;
+        margin-bottom: 0.6rem;
+        color: var(--teal);
+      }
+      p,
+      li {
+        font-size: clamp(0.9rem, 1.5vw, 1.15rem);
+        line-height: 1.65;
+      }
+      .subtitle {
+        font-size: clamp(1rem, 2vw, 1.4rem);
+        opacity: 0.85;
+        margin-top: 0.4rem;
+        max-width: 860px;
+      }
+      .eyebrow {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        opacity: 0.6;
+        margin-bottom: 0.8rem;
+      }
+      .accent {
+        color: var(--teal);
+      }
+      .accent-claude {
+        color: #f0a184;
+      }
+      .accent-green {
+        color: #4fd18b;
+      }
+      .amber {
+        color: var(--amber);
+      }
+      .green {
+        color: #2ecc71;
+      }
+      .red {
+        color: #e74c3c;
+      }
+
+      /* ── Card grid ── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.6rem;
+        width: 100%;
+        max-width: 1100px;
+        text-align: left;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
+        width: 100%;
+        max-width: 1100px;
+        text-align: left;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        padding: 1.4rem;
+        transition:
+          transform 0.2s,
+          border-color 0.2s;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(26, 158, 143, 0.5);
+      }
+      .card .icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      .card h3 {
+        font-size: 1rem;
+        color: var(--white);
+        margin-bottom: 0.4rem;
+      }
+      .card p {
+        font-size: 0.88rem;
+        opacity: 0.8;
+        line-height: 1.5;
+      }
+
+      .card-danger {
+        border-left: 4px solid var(--red);
+      }
+      .card-warn {
+        border-left: 4px solid var(--amber);
+      }
+      .card-ok {
+        border-left: 4px solid var(--green);
+      }
+      .card-teal {
+        border-left: 4px solid var(--teal);
+      }
+      .card-claude {
+        border-left: 4px solid var(--claude);
+      }
+
+      /* ── Step list ── */
+      .steps {
+        list-style: none;
+        width: 100%;
+        max-width: 900px;
+        text-align: left;
+      }
+      .steps.tight li {
+        padding: 0.7rem 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+      .steps li {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.2rem;
+        padding: 1rem 1.2rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        margin-bottom: 0.7rem;
+        border-left: 4px solid var(--teal);
+        font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      }
+      .step-num {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--teal);
+        color: var(--white);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+      .steps li strong {
+        color: #7ee8e0;
+      }
+
+      /* ── Code block ── */
+      .code-block {
+        background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 1.2rem 1.6rem;
+        text-align: left;
+        font-family: var(--font-mono);
+        font-size: clamp(0.78rem, 1.2vw, 0.98rem);
+        line-height: 1.75;
+        width: 100%;
+        max-width: 900px;
+        overflow-x: auto;
+      }
+      .code-block .prompt {
+        color: #7ee8e0;
+      }
+      .code-block .comment {
+        color: #8b949e;
+        font-style: italic;
+      }
+      .code-block .out {
+        color: #cdd6e4;
+      }
+      .code-block .warnline {
+        color: #f0a761;
+      }
+      .code-block .okline {
+        color: #6fe0a8;
+      }
+
+      /* ── Tag pills ── */
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+      .tag {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .tag-teal {
+        background: rgba(26, 158, 143, 0.25);
+        border-color: var(--teal);
+        color: #7ee8e0;
+      }
+      .tag-amber {
+        background: rgba(230, 126, 34, 0.2);
+        border-color: var(--amber);
+        color: #f0a761;
+      }
+      .tag-claude {
+        background: rgba(217, 119, 87, 0.25);
+        border-color: var(--claude);
+        color: #f0a184;
+      }
+      .tag-green {
+        background: rgba(39, 174, 96, 0.3);
+        border-color: var(--green);
+        color: #6fe0a8;
+      }
+
+      /* ── Divider ── */
+      .divider {
+        width: 60px;
+        height: 4px;
+        background: var(--teal);
+        border-radius: 2px;
+        margin: 0.8rem auto 1.4rem;
+      }
+
+      /* ── Quote / callout ── */
+      .quote {
+        border-left: 4px solid var(--teal);
+        padding: 1rem 1.5rem;
+        background: rgba(26, 158, 143, 0.1);
+        border-radius: 0 10px 10px 0;
+        font-style: italic;
+        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+        max-width: 820px;
+        text-align: left;
+        line-height: 1.7;
+      }
+      .callout-warn {
+        border-left: 4px solid var(--amber);
+        background: rgba(230, 126, 34, 0.12);
+        padding: 1rem 1.5rem;
+        border-radius: 0 10px 10px 0;
+        max-width: 820px;
+        text-align: left;
+        font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+        line-height: 1.7;
+      }
+
+      /* ── Comparison table ── */
+      .compare {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 1000px;
+        text-align: left;
+      }
+      .compare-col {
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .compare-col .col-head {
+        padding: 0.8rem 1.2rem;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+      .col-bad .col-head {
+        background: rgba(192, 57, 43, 0.4);
+      }
+      .col-good .col-head {
+        background: rgba(26, 158, 143, 0.45);
+      }
+      .compare-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.7rem;
+        padding: 0.7rem 1.2rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: clamp(0.8rem, 1.3vw, 0.95rem);
+        line-height: 1.45;
+      }
+      .compare-item:last-child {
+        border-bottom: none;
+      }
+      .compare-item .ico {
+        flex-shrink: 0;
+      }
+
+      /* ── Data table (correos) ── */
+      .table-wrap {
+        width: 100%;
+        max-width: 1040px;
+        overflow-x: auto;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: clamp(0.72rem, 1.15vw, 0.92rem);
+        text-align: left;
+      }
+      .data-table th,
+      .data-table td {
+        padding: 0.42rem 0.7rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        line-height: 1.35;
+      }
+      .data-table th {
+        color: var(--teal);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.7rem;
+      }
+      .data-table td.num {
+        text-align: center;
+        opacity: 0.6;
+        width: 2rem;
+      }
+      .data-table tr.crit td {
+        color: #f5b6ac;
+      }
+      .data-table .badge {
+        display: inline-block;
+        padding: 0.12rem 0.55rem;
+        border-radius: 12px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      .b-crit {
+        background: rgba(192, 57, 43, 0.3);
+        border-color: var(--red);
+        color: #f5b6ac;
+      }
+      .b-sec {
+        background: rgba(230, 126, 34, 0.2);
+        border-color: var(--amber);
+        color: #f0a761;
+      }
+      .b-info {
+        background: rgba(26, 158, 143, 0.22);
+        border-color: var(--teal);
+        color: #7ee8e0;
+      }
+      .b-mute {
+        opacity: 0.55;
+      }
+
+      /* ── Progress bar ── */
+      #progress {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: var(--teal);
+        transition: width 0.4s ease;
+        z-index: 100;
+      }
+
+      /* ── Navigation ── */
+      #nav {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        border-radius: 30px;
+        padding: 0.5rem 1.2rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .nav-btn {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 1.3rem;
+        cursor: pointer;
+        padding: 0.3rem 0.7rem;
+        border-radius: 6px;
+        transition:
+          background 0.2s,
+          opacity 0.2s;
+        opacity: 0.7;
+      }
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        opacity: 1;
+      }
+      .nav-btn:disabled {
+        opacity: 0.25;
+        cursor: default;
+      }
+      #slide-counter {
+        font-size: 0.85rem;
+        opacity: 0.7;
+        min-width: 60px;
+        text-align: center;
+      }
+
+      /* ── Slide numbers (dots) ── */
+      #dots {
+        position: fixed;
+        top: 1.2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.4rem;
+        z-index: 100;
+        max-width: 90vw;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        transition:
+          background 0.3s,
+          transform 0.3s;
+        cursor: pointer;
+      }
+      .dot.active {
+        background: var(--teal);
+        transform: scale(1.4);
+      }
+
+      /* Section label (esquina) */
+      .scenario-tag {
+        position: absolute;
+        top: 1.4rem;
+        left: 2rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        opacity: 0.4;
+        font-weight: 600;
+      }
+
+      /* Responsive tweaks */
+      @media (max-width: 768px) {
+        .slide {
+          padding: 2rem 1.5rem 5rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare {
+          grid-template-columns: 1fr;
+        }
+        .scenario-tag {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck" id="deck">
+      <!-- ─────────────────────────────── SLIDE 1: PORTADA ─── -->
+      <section class="slide bg-hero active">
+        <div class="eyebrow">
+          Inteligencia artificial generativa aplicada a productividad IT
+          hospitalaria
+        </div>
+        <h1>Claude <span class="accent-claude">Cowork</span></h1>
+        <div class="divider"></div>
+        <p class="subtitle">
+          Claude como compañero de equipo que trabaja directamente sobre tus
+          carpetas, tu correo y tu calendario — leyendo su contenido real y
+          ejecutando acciones, siempre bajo tu supervisión.
+        </p>
+        <div class="tags" style="margin-top: 2rem">
+          <span class="tag tag-teal">Organizar carpetas</span>
+          <span class="tag tag-teal">Diagnosticar proyectos</span>
+          <span class="tag tag-claude">Skills</span>
+          <span class="tag tag-claude">Tareas programadas</span>
+          <span class="tag tag-amber">Gmail</span>
+        </div>
+        <p style="margin-top: 2.5rem; font-size: 0.85rem; opacity: 0.45">
+          Manuel Torres · Universidad de Almería
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 2: QUÉ ES ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">Qué es</div>
+        <h2>
+          Deja de ser un chat aislado<br />y se convierte en un
+          <span class="accent">colaborador</span>
+        </h2>
+        <div class="divider"></div>
+        <p style="max-width: 820px; margin-bottom: 1.6rem; opacity: 0.9">
+          En lugar de razonar solo con el texto que le pegas, Claude Cowork
+          opera sobre <em>tu propio entorno</em>: la diferencia es la misma que
+          hay entre pedir consejo a un compañero y pedirle que se encargue de la
+          tarea.
+        </p>
+        <div class="compare">
+          <div class="compare-col col-bad">
+            <div class="col-head">Chat convencional</div>
+            <div class="compare-item">«Resúmeme este correo que te pego»</div>
+            <div class="compare-item">
+              «¿Cómo debería organizar mis archivos?»
+            </div>
+            <div class="compare-item">Te explica cómo lo haría</div>
+            <div class="compare-item">Sin acceso a tus documentos ni buzón</div>
+          </div>
+          <div class="compare-col col-good">
+            <div class="col-head">Claude Cowork</div>
+            <div class="compare-item">
+              «Repasa mi bandeja y dime qué atender ya»
+            </div>
+            <div class="compare-item">
+              «Explora esta carpeta y reorganízala»
+            </div>
+            <div class="compare-item">
+              Lo hace de verdad, sobre datos reales
+            </div>
+            <div class="compare-item">Lee el contenido y ejecuta acciones</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 3: CINCO CAPACIDADES ─── -->
+      <section class="slide bg-ai">
+        <div class="eyebrow">Qué puede hacer</div>
+        <h2>Cinco capacidades que <span class="accent">se encadenan</span></h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-teal">
+            <h3>Carpetas locales</h3>
+            <p>
+              Listar archivos, leer su contenido, crear subcarpetas, mover y
+              renombrar documentos.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Conectores</h3>
+            <p>
+              Correo (Gmail), almacenamiento (Drive, OneDrive), calendario… para
+              buscar, leer, etiquetar o redactar.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Ejecutar acciones</h3>
+            <p>
+              No solo las describe: la reorganización o una etiqueta en Gmail
+              ocurren de verdad.
+            </p>
+          </div>
+          <div class="card card-claude">
+            <h3>Skills reutilizables</h3>
+            <p>
+              Encapsulan un procedimiento para repetirlo igual de bien cada vez.
+            </p>
+          </div>
+          <div class="card card-claude">
+            <h3>Tareas programadas</h3>
+            <p>
+              Se ejecutan solas, de forma desatendida, con una periodicidad
+              definida.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Bajo tu supervisión</h3>
+            <p>
+              Propone antes de tocar; tú apruebas. El criterio profesional sigue
+              siendo tuyo.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 4: AVISO DATOS ─── -->
+      <section class="slide bg-warn">
+        <div class="eyebrow">Antes de empezar</div>
+        <h2>
+          Trabaja sobre archivos y buzones <span class="amber">reales</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="callout-warn">
+          En un entorno hospitalario eso puede implicar datos personales o
+          información sensible. Todos los materiales de este tutorial son
+          <strong>ficticios</strong> y están creados para la formación. Antes de
+          dar a Claude acceso a carpetas o cuentas reales, revisa las políticas
+          del centro y las indicaciones del responsable de protección de datos,
+          y concede el <strong>acceso mínimo imprescindible</strong>.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 5: OBJETIVOS ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">Objetivos</div>
+        <h2>Al finalizar deberías<br />ser capaz de</h2>
+        <div class="divider"></div>
+        <ul class="steps tight">
+          <li>
+            <span class="step-num">1</span>
+            <div>
+              Explicar qué es Claude Cowork y en qué se diferencia de un chat
+              convencional.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div>
+              Conceder acceso a carpetas y conectores (Gmail, Drive) con
+              criterio de seguridad.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div>
+              Organizar una carpeta desordenada: leer el contenido real,
+              agrupar, detectar duplicados y reorganizar de forma reversible.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <div>
+              Reconciliar versiones en conflicto y generar diagnósticos e
+              informes de los cambios.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">5</span>
+            <div>
+              Encapsular un flujo repetible en una <em>skill</em> reutilizable.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">6</span>
+            <div>
+              Programar tareas desatendidas: organización periódica y vigilancia
+              del correo.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">7</span>
+            <div>
+              Gestionar el correo con Gmail: priorizar, etiquetar, resumir y
+              redactar borradores.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 6: PRINCIPIO ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">El principio de trabajo</div>
+        <h2>Proponer <span class="accent">antes de tocar</span></h2>
+        <div class="divider"></div>
+        <ul class="steps">
+          <li>
+            <span class="step-num">1</span>
+            <div>
+              <strong>Explorar y entender primero.</strong> Los nombres no dicen
+              la verdad: «documento1», «FINAL» o «Copia de X» no significan
+              nada. Primero, leer lo que hay dentro.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">2</span>
+            <div>
+              <strong>Proponer un plan y esperar confirmación.</strong> Antes de
+              mover, renombrar o borrar, Claude presenta qué hará y por qué.
+              Nosotros aprobamos.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">3</span>
+            <div>
+              <strong>Ejecutar de forma reversible.</strong> Nada se borra a la
+              ligera: los descartes se aparcan en una carpeta de pendientes.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">4</span>
+            <div>
+              <strong>Dejar traza.</strong> Al terminar, un registro o informe
+              de lo hecho, para que sea auditable.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 7: SUPERVISIÓN HUMANA ─── -->
+      <section class="slide bg-warn">
+        <div class="eyebrow">Insistir en esto</div>
+        <h2>La supervisión humana <span class="amber">no es opcional</span></h2>
+        <div class="divider"></div>
+        <div class="callout-warn">
+          Claude Cowork acelera el trabajo, pero la decisión de aprobar una
+          reorganización, enviar un correo o borrar un archivo sigue siendo
+          nuestra. Este patrón de
+          <strong>«propón, que yo confirmo, y deja constancia»</strong> es
+          precisamente lo que permite delegar con tranquilidad.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 8: PREPARACIÓN ─── -->
+      <section class="slide bg-process">
+        <div class="eyebrow">Preparación del entorno</div>
+        <h2>Cómo se le da <span class="accent">acceso</span></h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-teal">
+            <h3>Carpetas locales</h3>
+            <p>
+              Desde la app de escritorio, indicando la carpeta concreta del
+              ejercicio — no todo el disco. Usa siempre una copia.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Conectores</h3>
+            <p>
+              Gmail, Drive, calendario… se activan en configuración, autorizando
+              permisos concretos. Usa una cuenta de pruebas.
+            </p>
+          </div>
+          <div class="card card-claude">
+            <h3>Skills y tareas</h3>
+            <p>
+              Las skills quedan en <em>Configuración → Skills</em>; las tareas,
+              en el menú <em>Programado</em>, donde se pausan o editan.
+            </p>
+          </div>
+        </div>
+        <div class="callout-warn" style="margin-top: 1.4rem; max-width: 900px">
+          Para que las tareas programadas se ejecuten, la app de escritorio de
+          Claude debe estar <strong>abierta</strong>. Si no lo está, se ejecutan
+          en cuanto la abras.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 9: ESC.1 SITUACIÓN ─── -->
+      <section class="slide bg-dark">
+        <div class="scenario-tag">Escenario 1</div>
+        <div class="eyebrow">
+          Escenario 1 · Organizar una carpeta desordenada
+        </div>
+        <h2>
+          Una carpeta que ha crecido<br /><span class="accent"
+            >de forma orgánica</span
+          >
+        </h2>
+        <div class="divider"></div>
+        <p style="max-width: 820px; margin-bottom: 1.4rem; opacity: 0.9">
+          <code>demo-organizacion</code>: ~35 archivos casi todos en el mismo
+          nivel, con dos «Nueva carpeta» a medias. El desorden de nomenclatura
+          reproduce el de carpetas reales:
+        </p>
+        <div class="grid-3">
+          <div class="card card-danger">
+            <h3>Nombres genéricos</h3>
+            <p>
+              <code>documento1.txt</code>, <code>Sin título.txt</code>,
+              <code>asd.txt</code>, <code>prueba.txt</code>.
+            </p>
+          </div>
+          <div class="card card-danger">
+            <h3>Copias y duplicados</h3>
+            <p>
+              <code>Copia de documento1</code>, <code>documento (2)</code>,
+              <code>Informe...(1)</code>.
+            </p>
+          </div>
+          <div class="card card-danger">
+            <h3>Versiones del mismo doc</h3>
+            <p>
+              <code>presupuesto HIS</code>, <code>PRESUPUESTO_HIS_2</code>,
+              <code>..._FINAL</code>, <code>...definitivoOK</code>.
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1.2rem; opacity: 0.65; font-size: 0.9rem">
+          Objetivo: subcarpetas temáticas (Migración HIS, PACS, WiFi UCI,
+          Incidencias…) y nombres consistentes.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 10: ESC.1 PASO 1 ─── -->
+      <section class="slide bg-ai">
+        <div class="scenario-tag">Escenario 1</div>
+        <div class="eyebrow">Paso 1 · Explorar y proponer (sin tocar nada)</div>
+        <h2>Leer el contenido <span class="accent">antes de proponer</span></h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="prompt"
+            >La carpeta demo-organizacion es un caos: todo en el mismo nivel,
+            con nombres como "documento1" o "Copia de documento1" que no dicen
+            nada. Hay duplicados y versiones de presupuestos con sufijos "FINAL"
+            o "definitivoOK". <b>Antes de tocar nada</b>, explora todos los
+            archivos, léelos si hace falta, y propón: 1) una estructura de
+            carpetas por temática, y 2) una convención de nombres clara.
+            Enséñame la propuesta antes de mover nada.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.2rem;
+            max-width: 780px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          "
+        >
+          La clave del primer prompt: pedir explícitamente que
+          <strong>no cambie nada todavía</strong> y que analice el contenido
+          real, no los nombres.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 11: ESC.1 TRES CASOS ─── -->
+      <section class="slide bg-process">
+        <div class="scenario-tag">Escenario 1</div>
+        <div class="eyebrow">La distinción clave</div>
+        <h2>Tres situaciones, <span class="accent">tres tratamientos</span></h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-ok">
+            <div class="icon">🟢</div>
+            <h3>Duplicados exactos</h3>
+            <p>
+              Mismo contenido, dos nombres (<code>documento1</code> =
+              <code>Copia de documento1</code>). Seguro descartar el sobrante.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <div class="icon">🟡</div>
+            <h3>Versiones que se superan</h3>
+            <p>
+              Oferta 310.000 € → 288.000 € revisada; manual v1 → v2. Conservar
+              la más completa.
+            </p>
+          </div>
+          <div class="card card-danger">
+            <div class="icon">🔴</div>
+            <h3>Conflictos genuinos</h3>
+            <p>
+              Dos «FINAL» con cifras distintas (199.500 vs 195.000). Claude
+              <strong>no adivina</strong>: lo marca como pendiente.
+            </p>
+          </div>
+        </div>
+        <div class="quote" style="margin-top: 1.4rem">
+          Distinguir estos tres casos es lo que hace fiable la reorganización:
+          ante un conflicto real, el criterio profesional es insustituible.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 12: ESC.1 PASO 2 ─── -->
+      <section class="slide bg-ai">
+        <div class="scenario-tag">Escenario 1</div>
+        <div class="eyebrow">Paso 2 · Aplicar el plan de forma reversible</div>
+        <h2>Ejecutar sin <span class="accent">pérdidas</span></h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment">// Prompt de ejecución</span>
+          <span class="prompt"
+            >Aplícalo: crea las carpetas, mueve y renombra cada archivo. Donde
+            haya duplicados o versiones, conserva solo la más reciente/completa
+            y dime cuál has descartado y por qué antes de eliminarla.</span
+          >
+
+          <span class="comment">// Informe de actividad de Claude</span>
+          <span class="okline"
+            >Hecho. 35 archivos, sin pérdidas. Descartados (movidos, NO
+            borrados, a .../descartados_pendiente_confirmar/): · Copia de
+            documento1, Informe...(1) → duplicados exactos byte a byte · manual
+            v1 → superado por firma_manual-usuario_v2</span
+          >
+          <span class="warnline"
+            >Sin resolver — NECESITO TU DECISIÓN: · _FINAL.csv y
+            definitivoOK.csv difieren en Licencias (195.000 vs 199.500 €). Los
+            dejé marcados "pendiente-confirmar". Dime cuál es el correcto.</span
+          >
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 13: ESC.1 PASO 3 ─── -->
+      <section class="slide bg-dark">
+        <div class="scenario-tag">Escenario 1</div>
+        <div class="eyebrow">
+          Paso 3 (opcional) · Dejar un README para el futuro
+        </div>
+        <h2>
+          Que la carpeta<br /><span class="accent">no vuelva a degradarse</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="code-block" style="max-width: 760px">
+          <span class="prompt"
+            >Añade un README.md en la raíz con la convención de nombres
+            acordada, para que el equipo la siga usando en adelante.</span
+          >
+        </div>
+        <div class="tags" style="margin-top: 1.6rem">
+          <span class="tag tag-teal"
+            >AAAA-MM-DD_proyecto_tipo_descripcion[_vN].ext</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1rem;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            max-width: 720px;
+          "
+        >
+          Nada de «FINAL», «definitivoOK», «(2)» ni «Copia de». La convención
+          queda documentada para todo el equipo.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 14: ESC.2 SITUACIÓN ─── -->
+      <section class="slide bg-dark">
+        <div class="scenario-tag">Escenario 2</div>
+        <div class="eyebrow">
+          Escenario 2 · Diagnosticar y reorganizar proyectos
+        </div>
+        <h2>
+          Aparenta estar ordenada<br /><span class="red">pero no lo está</span>
+        </h2>
+        <div class="divider"></div>
+        <p style="max-width: 840px; margin-bottom: 1.3rem; opacity: 0.9">
+          <code>demo-departamento_tic_hospital</code>: ~49 archivos en 16
+          carpetas con numeración clara… que esconde problemas de fondo.
+        </p>
+        <div class="grid-2">
+          <div class="card card-warn">
+            <h3>Versiones y duplicados dispersos</h3>
+            <p>
+              <code>_v1/_v2/_v2_FINAL/_v2_FINAL_definitivo</code>; el mismo
+              presupuesto en 3-4 carpetas con nombres distintos.
+            </p>
+          </div>
+          <div class="card card-warn">
+            <h3>Contradicciones de estado</h3>
+            <p>
+              «Migración HIS» está en <em>Activos</em> y también hay una «copia»
+              en <em>Finalizados</em>.
+            </p>
+          </div>
+          <div class="card card-warn">
+            <h3>Naming inconsistente</h3>
+            <p>
+              El mismo proyecto es <code>Migracion_HIS_2024</code> en un sitio y
+              <code>SIH_HistoriaClinica</code> en otro.
+            </p>
+          </div>
+          <div class="card card-warn">
+            <h3>Carpeta intocable</h3>
+            <p>
+              <code>_ARCHIVO_NO_BORRAR</code> que hay que respetar sin saber a
+              priori qué contiene.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 15: ESC.2 PASO 1 ─── -->
+      <section class="slide bg-ai">
+        <div class="scenario-tag">Escenario 2</div>
+        <div class="eyebrow">Paso 1 · Pedir un diagnóstico, sin cambios</div>
+        <h2>Separar el <span class="accent">diagnóstico</span> de la acción</h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment"
+            >// Prompt de diagnóstico — "no cambies nada todavía, solo el
+            informe"</span
+          >
+          <span class="out">Lo más relevante que encontré:</span>
+          <span class="out"
+            >· 5 duplicados exactos confirmados por checksum.</span
+          >
+          <span class="warnline"
+            >· El archivo llamado "DEFINITIVO" tiene cifras antiguas (288.000
+            €): es una <b>trampa de nombre</b>. La versión vigente es
+            v2_FINAL_definitivo (292.500 €).</span
+          >
+          <span class="out"
+            >· WiFi UCI: la vigente (16 APs) la confirma una nota de pizarra
+            suelta.</span
+          >
+          <span class="out"
+            >· SIH_HistoriaClinica = Migracion_HIS_2024, duplicado en dos
+            carpetas.</span
+          >
+          <span class="okline"
+            >· _ARCHIVO_NO_BORRAR es histórico legítimo: no requiere
+            tocarlo.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.1rem;
+            max-width: 800px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          "
+        >
+          El valor está en los detalles que un vistazo por encima no captaría —
+          y puede generar un informe completo en un <code>.docx</code>.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 16: ESC.2 PASO 2 ─── -->
+      <section class="slide bg-ai">
+        <div class="scenario-tag">Escenario 2</div>
+        <div class="eyebrow">Paso 2 · Reorganizar siguiendo el diagnóstico</div>
+        <h2>Más una <span class="accent">auditoría</span> que un «ordenar»</h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment">// REGISTRO DE REORGANIZACION (abreviado)</span>
+          <span class="out"
+            >MOVIDOS · Migracion_HIS_2024: Activos → Finalizados (go-live
+            09/2024 sin cierre). · IMG_notas_pizarra.txt → Proyecto_WiFi_UCI/
+            (la nota de los 16 APs).</span
+          >
+          <span class="out"
+            >ELIMINADOS (con permiso) · Migracion_HIS_2024_copia/ (copia
+            accidental, no un proyecto real). · ..._DEFINITIVO(1).csv (cifras
+            desactualizadas pese al nombre).</span
+          >
+          <span class="warnline"
+            >NO TOCADOS — puntos abiertos: · _ARCHIVO_NO_BORRAR intacto. ·
+            Contrato PACS vencido desde 31/12/2023 sin sustitución. · Política
+            ENS v2 y Plan DRP: pendientes de terminar.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.1rem;
+            max-width: 820px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+          "
+        >
+          La reorganización deja explícitos los <strong>puntos abiertos</strong>
+          que la mera limpieza no resuelve.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 17: ESC.3 SKILL ─── -->
+      <section class="slide bg-claude">
+        <div class="scenario-tag">Escenario 3</div>
+        <div class="eyebrow">
+          Escenario 3 · Convertirlo en una skill reutilizable
+        </div>
+        <h2>
+          Encapsular el <span class="accent-claude">criterio</span>, no solo la
+          tarea
+        </h2>
+        <div class="divider"></div>
+        <div class="code-block">
+          <span class="comment"
+            >// Prompt: "La organización ha quedado estupenda. Crea una skill //
+            para poder hacerlo igual cada vez."</span
+          >
+          <span class="out"
+            >Skill "organize-files-by-project" (flujo abreviado): 1. Explorar y
+            leer TODO (contenido, no solo el nombre). 2. Agrupar por proyecto
+            real, dejando que la estructura emerja. 3. Separar tres casos:
+            duplicados / versiones / conflictos genuinos. 4. Proponer antes de
+            tocar y esperar confirmación explícita. 5. Ejecutar reversible:
+            descartes a _pendiente_confirmar/ (no borrar). 6. Convención
+            AAAA-MM-DD_proyecto_tipo_descripcion[_vN].ext 7. Resumen final: qué
+            se organizó, qué se aparcó y qué queda pendiente.</span
+          >
+        </div>
+        <p
+          style="
+            margin-top: 1.1rem;
+            max-width: 820px;
+            font-size: 0.9rem;
+            opacity: 0.85;
+          "
+        >
+          Claude puede
+          <strong>probar la skill con ejemplos simulados</strong> antes de
+          guardarla. Una buena skill explica <em>por qué el orden importa</em> —
+          ese conocimiento es lo que hace que la próxima ejecución sea tan buena
+          como la primera.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 18: ESC.4 TAREA ─── -->
+      <section class="slide bg-process">
+        <div class="scenario-tag">Escenario 4</div>
+        <div class="eyebrow">Escenario 4 · Programar una tarea desatendida</div>
+        <h2>Sin nadie delante, <span class="amber">nunca borrar</span></h2>
+        <div class="divider"></div>
+        <p style="max-width: 840px; margin-bottom: 1.2rem; opacity: 0.9">
+          La skill puede ejecutarse sola y de forma periódica. Al pasar de un
+          flujo <strong>supervisado</strong> a uno <strong>desatendido</strong>,
+          las reglas se endurecen:
+        </p>
+        <ul class="steps tight" style="max-width: 860px">
+          <li>
+            <span class="step-num">!</span>
+            <div>
+              <strong>Nunca borrar definitivamente</strong>, por obvio que
+              parezca. Los descartes siempre a la subcarpeta de pendientes.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">↻</span>
+            <div>
+              No reorganizar desde cero lo ya clasificado: centrarse en los
+              archivos <strong>nuevos</strong> sueltos o con nombres genéricos.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">⚠</span>
+            <div>
+              Ante conflictos genuinos, <strong>no tocarlos</strong>: dejarlos
+              marcados como pendientes de que Manuel decida.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">✓</span>
+            <div>
+              Verificar que el número total de archivos no ha disminuido y
+              cerrar con un resumen breve.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 19: ESC.5 CORREOS ─── -->
+      <section class="slide bg-dark">
+        <div class="scenario-tag">Escenario 5</div>
+        <div class="eyebrow">Escenario 5 · Gestionar el correo con Gmail</div>
+        <h2>
+          12 correos ficticios de un <span class="accent">servicio de TI</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="num">#</th>
+                <th>Asunto (resumido)</th>
+                <th>Tipo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="crit">
+                <td class="num">1</td>
+                <td>
+                  CRÍTICO: caída del servidor HIS — Urgencias sin historia
+                  (INC-2026-4471, P1)
+                </td>
+                <td><span class="badge b-crit">Incidencia crítica</span></td>
+              </tr>
+              <tr>
+                <td class="num">2</td>
+                <td>Ordenador muy lento en el mostrador de Admisión</td>
+                <td><span class="badge b-mute">Ticket rutinario</span></td>
+              </tr>
+              <tr>
+                <td class="num">3</td>
+                <td>Reunión semanal de seguimiento TIC (jueves 17:00)</td>
+                <td><span class="badge b-info">Reunión</span></td>
+              </tr>
+              <tr>
+                <td class="num">4</td>
+                <td>Alerta: intento de phishing suplantando a RRHH</td>
+                <td><span class="badge b-sec">Seguridad</span></td>
+              </tr>
+              <tr>
+                <td class="num">5</td>
+                <td>Renovación de licencias (NextSoft, antes del 31)</td>
+                <td><span class="badge b-info">Proveedor</span></td>
+              </tr>
+              <tr>
+                <td class="num">6</td>
+                <td>Sustitución de 8 monitores en UCI (para el día 24)</td>
+                <td><span class="badge b-info">Compras</span></td>
+              </tr>
+              <tr>
+                <td class="num">7</td>
+                <td>Documentación para la auditoría anual RGPD (día 30)</td>
+                <td><span class="badge b-info">Cumplimiento</span></td>
+              </tr>
+              <tr>
+                <td class="num">8</td>
+                <td>Alta de nuevo empleado: Dr. Carlos Pineda (20/07)</td>
+                <td><span class="badge b-info">RRHH</span></td>
+              </tr>
+              <tr>
+                <td class="num">9</td>
+                <td>Parada programada del sistema HIS (noche del sábado 18)</td>
+                <td><span class="badge b-info">Mantenimiento</span></td>
+              </tr>
+              <tr>
+                <td class="num">10</td>
+                <td>
+                  ¡Últimas 24h! 40% de descuento en equipamiento (TechMed)
+                </td>
+                <td><span class="badge b-mute">Spam</span></td>
+              </tr>
+              <tr class="crit">
+                <td class="num">11</td>
+                <td>
+                  9 días esperando reparación del PACS en Sala 2 (Dr. Castro,
+                  TCK-8832)
+                </td>
+                <td><span class="badge b-sec">Escalado / queja</span></td>
+              </tr>
+              <tr>
+                <td class="num">12</td>
+                <td>Formación obligatoria en ciberseguridad (plazo 31/07)</td>
+                <td><span class="badge b-info">Formación</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 20: ESC.5 GUION ─── -->
+      <section class="slide bg-ai">
+        <div class="scenario-tag">Escenario 5</div>
+        <div class="eyebrow">Un guion de demostración completo</div>
+        <h2>
+          Siete prompts, <span class="accent">de más a menos urgente</span>
+        </h2>
+        <div class="divider"></div>
+        <div class="grid-2">
+          <div class="card card-teal">
+            <h3>1 · Triage general</h3>
+            <p>
+              «Dime qué correos necesito atender ya, por urgencia» → la caída
+              del HIS (P1) primero.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>2 · Etiquetado automático</h3>
+            <p>
+              Crea y aplica etiquetas reales en Gmail: Incidencias, Seguridad,
+              Proveedores…
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>3 · Incidente urgente</h3>
+            <p>
+              Extrae código <code>INC-2026-4471</code>, servicios afectados y
+              prioridad P1.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>4 · Phishing y spam</h3>
+            <p>
+              Distingue la <em>alerta legítima</em> de Seguridad del
+              <em>newsletter</em> comercial.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>5 · Respuesta a queja</h3>
+            <p>
+              Borrador para el Dr. Castro (TCK-8832): reconoce el retraso, da un
+              plazo.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>6 · Resumen de plazos</h3>
+            <p>
+              Una línea por correo de proveedores/compras/cumplimiento, con su
+              fecha límite.
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1rem; opacity: 0.7; font-size: 0.9rem">
+          <strong>7 · Preparar la reunión:</strong> une convocatoria y temas
+          abiertos en una sola lista accionable.
+        </p>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 21: ESC.5 BORRADORES ─── -->
+      <section class="slide bg-warn">
+        <div class="scenario-tag">Escenario 5</div>
+        <div class="eyebrow">El punto de seguridad más importante</div>
+        <h2>
+          Claude redacta <span class="amber">borradores</span>,<br />no envía
+          correos
+        </h2>
+        <div class="divider"></div>
+        <div class="callout-warn">
+          El borrador queda guardado en Gmail para que tú lo revises y envíes.
+          Claude <strong>no manda correos en tu nombre sin supervisión</strong>.
+          La revisión y el envío final son siempre una decisión humana.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 22: ESC.5 TAREAS CORREO ─── -->
+      <section class="slide bg-process">
+        <div class="scenario-tag">Escenario 5</div>
+        <div class="eyebrow">Automatizar el correo · tareas autocontenidas</div>
+        <h2>
+          Cuanto menos supervisada,<br /><span class="accent"
+            >más conservadora</span
+          >
+        </h2>
+        <div class="divider"></div>
+        <div class="grid-2">
+          <div class="card card-teal">
+            <h3>Resumen diario de la bandeja</h3>
+            <p>
+              Un briefing priorizado entre semana a las 18:00: clasifica por
+              urgencia y explica por qué. <strong>Solo lee.</strong>
+            </p>
+          </div>
+          <div class="card card-claude">
+            <h3>Vigilancia horaria de P1</h3>
+            <p>
+              Cada hora (07:00–21:00) busca incidencias críticas y avisa con
+              «ALERTA P1». <strong>Solo informa.</strong>
+            </p>
+          </div>
+        </div>
+        <div class="quote" style="margin-top: 1.5rem">
+          Ambas tareas son estrictamente de <strong>solo lectura</strong>:
+          resumen e informan, pero no etiquetan, archivan ni responden. Es la
+          misma prudencia del escenario 4 aplicada al correo.
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 23: BUENAS PRÁCTICAS ─── -->
+      <section class="slide bg-dark">
+        <div class="eyebrow">Buenas prácticas, seguridad y privacidad</div>
+        <h2>Pautas para <span class="accent">delegar con control</span></h2>
+        <div class="divider"></div>
+        <div class="grid-3">
+          <div class="card card-teal">
+            <h3>Empezar en modo lectura</h3>
+            <p>
+              Explorar, diagnosticar o resumir sin cambiar nada. Revisar el plan
+              antes de autorizar.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Nada de borrados irreversibles</h3>
+            <p>
+              Descartes a pendientes; el borrado lo confirmamos. En desatendido,
+              prohibido.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>No adivinar en conflicto</h3>
+            <p>
+              Dos «el bueno» con datos distintos → marcar pendiente y preguntar.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Acceso mínimo</h3>
+            <p>
+              La carpeta o cuenta concreta, no todo. Copias ficticias y cuenta
+              de pruebas.
+            </p>
+          </div>
+          <div class="card card-teal">
+            <h3>Dejar traza</h3>
+            <p>
+              Siempre un registro: qué se movió, qué se descartó y por qué, qué
+              queda pendiente.
+            </p>
+          </div>
+          <div class="card card-claude">
+            <h3>Responsabilidad humana</h3>
+            <p>
+              Aprobar, enviar o dar por buena una cifra son decisiones nuestras.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 24: CONCLUSIONES ─── -->
+      <section class="slide bg-result">
+        <div class="eyebrow">Conclusiones</div>
+        <h2>El mismo <span class="accent">patrón de confianza</span></h2>
+        <div class="divider"></div>
+        <p
+          style="
+            max-width: 800px;
+            font-size: clamp(1rem, 1.6vw, 1.2rem);
+            line-height: 1.7;
+            margin-bottom: 1.4rem;
+            opacity: 0.95;
+          "
+        >
+          Claude Cowork cambia el tipo de tareas que se pueden delegar: de
+          «ayúdame a pensar sobre este texto» a «encárgate de esta tarea sobre
+          mis archivos y mi correo, bajo mi supervisión».
+        </p>
+        <div class="tags">
+          <span class="tag tag-teal">Explorar y entender</span>
+          <span class="tag tag-teal">Proponer antes de tocar</span>
+          <span class="tag tag-green">Ejecutar de forma reversible</span>
+          <span class="tag tag-amber">Dejar traza</span>
+        </div>
+      </section>
+
+      <!-- ─────────────────────────────── SLIDE 25: CIERRE ─── -->
+      <section class="slide bg-close">
+        <div class="eyebrow">Recursos y siguientes pasos</div>
+        <h2>Para <span class="accent">practicar</span></h2>
+        <div class="divider"></div>
+        <ul class="steps tight">
+          <li>
+            <span class="step-num">✓</span>
+            <div>
+              Descomprime <code>archivos-claude-cowork.zip</code> y usa
+              <strong>copias</strong> de <code>demo-organizacion</code> y
+              <code>demo-departamento_tic_hospital</code>.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">✓</span>
+            <div>
+              Recorre los cinco escenarios en orden; copia los 12 correos de
+              <code>correo-ejemplo</code> a una cuenta de pruebas.
+            </div>
+          </li>
+          <li>
+            <span class="step-num">✓</span>
+            <div>
+              Consulta la documentación oficial de Anthropic para conectores,
+              planes y disponibilidad actualizados.
+            </div>
+          </li>
+        </ul>
+        <p style="margin-top: 2rem; font-size: 0.85rem; opacity: 0.5">
+          Claude Cowork · Manuel Torres · Universidad de Almería
+        </p>
+      </section>
+    </div>
+    <!-- /deck -->
+
+    <!-- Progress bar -->
+    <div id="progress"></div>
+
+    <!-- Navigation -->
+    <div id="nav">
+      <button class="nav-btn" id="btn-prev" title="Anterior (←)">
+        &#8592;
+      </button>
+      <span id="slide-counter">1 / 25</span>
+      <button class="nav-btn" id="btn-next" title="Siguiente (→)">
+        &#8594;
+      </button>
+    </div>
+
+    <!-- Dots -->
+    <div id="dots"></div>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const total = slides.length;
+      let current = 0;
+
+      const btnPrev = document.getElementById("btn-prev");
+      const btnNext = document.getElementById("btn-next");
+      const counter = document.getElementById("slide-counter");
+      const progressEl = document.getElementById("progress");
+      const dotsEl = document.getElementById("dots");
+
+      // Build dots
+      slides.forEach((_, i) => {
+        const d = document.createElement("div");
+        d.className = "dot" + (i === 0 ? " active" : "");
+        d.addEventListener("click", () => goTo(i));
+        dotsEl.appendChild(d);
+      });
+
+      function goTo(n) {
+        if (n < 0 || n >= total) return;
+        slides[current].classList.remove("active");
+        slides[current].classList.add("exit");
+        setTimeout(() => slides[current].classList.remove("exit"), 450);
+
+        current = n;
+        slides[current].classList.add("active");
+        slides[current].scrollTop = 0;
+
+        // Dots
+        dotsEl
+          .querySelectorAll(".dot")
+          .forEach((d, i) => d.classList.toggle("active", i === current));
+
+        // Counter
+        counter.textContent = `${current + 1} / ${total}`;
+
+        // Progress bar
+        progressEl.style.width = `${((current + 1) / total) * 100}%`;
+
+        // Buttons
+        btnPrev.disabled = current === 0;
+        btnNext.disabled = current === total - 1;
+      }
+
+      btnPrev.addEventListener("click", () => goTo(current - 1));
+      btnNext.addEventListener("click", () => goTo(current + 1));
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === " ") {
+          e.preventDefault();
+          goTo(current + 1);
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          e.preventDefault();
+          goTo(current - 1);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          goTo(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          goTo(total - 1);
+        }
+      });
+
+      // Touch / swipe
+      let touchStartX = 0;
+      document.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.touches[0].clientX;
+        },
+        { passive: true },
+      );
+      document.addEventListener("touchend", (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) > 50) goTo(current + (dx < 0 ? 1 : -1));
+      });
+
+      // Init
+      goTo(0);
+    </script>
+  </body>
+</html>

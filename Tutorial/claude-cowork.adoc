@@ -1,0 +1,623 @@
+////
+NO CAMBIAR!!
+Codificación, idioma, tabla de contenidos, tipo de documento
+////
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:linkattrs:
+:icons: font
+
+= Claude Cowork
+Inteligencia artificial generativa aplicada a productividad IT hospitalaria - Manuel Torres - Universidad de Almería
+
+:numbered!:
+
+[abstract]
+== Resumen
+
+
+Hasta ahora hemos usado Claude en modo chat o con Claude Code. En modo chat, Claude es un asistente que razona sobre el texto que le pegamos y nos devuelve una respuesta. En modo Code, Claude puede generar código que nos asiste en el desarrollo y mantenimimento de nuestras aplicaciones. El modo chat no tiene acceso a nuestros documentos ni a nuestros buzones de correo. Claude Code sí, pero está pensado principalmente para generar código y no para organizar información. *Claude Cowork* propone otra forma de trabajar: Claude actúa como un compañero de equipo (un _cowork_) que opera directamente sobre tus propios materiales —las carpetas de tu ordenador, tu correo, tu calendario— leyendo su contenido real y ejecutando acciones sobre ellos, siempre bajo tu supervisión.
+
+Esto cambia el tipo de tareas que se pueden delegar. En lugar de "resúmeme este correo que te pego", se convierte en "repasa mi bandeja de entrada y dime qué tengo que atender ya". En lugar de "¿cómo debería organizar mis archivos?", se convierte en "explora esta carpeta, entiende qué hay realmente detrás de cada nombre y reorganízala". Y, cuando un flujo funciona bien, puede encapsularse en una _skill_ reutilizable o dejarse programado para que se ejecute solo de forma periódica.
+
+Este tutorial recorre esas capacidades con casos prácticos ficticios de un Departamento de TIC hospitalario: organizar una carpeta desordenada, diagnosticar y reorganizar los documentos de varios proyectos, convertir ese trabajo en una skill, programarlo como tarea desatendida y, por último, gestionar el correo electrónico conectando Claude a Gmail.
+
+[IMPORTANT]
+====
+Claude Cowork trabaja sobre archivos y buzones reales. En un entorno hospitalario eso puede implicar datos personales o información sensible. Todos los materiales de este tutorial son *ficticios* y están creados para la formación. Antes de dar a Claude acceso a carpetas o cuentas de correo reales, revisa las políticas del centro, las indicaciones del responsable de protección de datos y concede el acceso mínimo imprescindible.
+====
+
+.Objetivos
+Al finalizar este tutorial, deberías ser capaz de:
+
+* Explicar qué es Claude Cowork y en qué se diferencia de usar Claude como un chat convencional.
+* Preparar el entorno y conceder a Claude acceso a carpetas y conectores (Gmail, Drive) con criterio de seguridad.
+* Organizar una carpeta desordenada: explorar y leer el contenido real, agrupar por proyecto, detectar duplicados y versiones, y reorganizar de forma reversible.
+* Reconciliar versiones en conflicto y generar diagnósticos e informes de los cambios realizados.
+* Redactar un README/protocolo para mantener el orden en el tiempo.
+* Encapsular un flujo de trabajo repetible en una _skill_ reutilizable.
+* Programar tareas desatendidas: organización periódica de una carpeta, resumen diario del correo y vigilancia de incidencias críticas.
+* Gestionar el correo con el conector de Gmail: priorizar, etiquetar, resumir y redactar borradores.
+
+[TIP]
+====
+* Material de ejemplo para seguir los ejercicios: En el link:files/archivos-claude-cowork.zip[archivo comprimido del tutorial], las carpetas `demo-organizacion` y `demo-departamento_tic_hospital` contienen los archivos de ejemplo para los escenarios 1 y 2. La carpeta `correo-ejemplo` contiene los 12 correos ficticios para el escenario 5. Descomprime el archivo en un lugar seguro y usa copias de esas carpetas para practicar.
+====
+
+:numbered:
+
+== Introducción
+
+=== Qué es Claude Cowork
+
+**Claude Cowork** describe una forma de usar Claude en la que deja de ser un chat aislado y pasa a comportarse como un colaborador que trabaja *sobre tu propio entorno*. En lugar de razonar solo con el texto que le pegas en la conversación, Claude puede:
+
+* *Acceder a carpetas locales* de tu ordenador: listar archivos, leer su contenido, crear subcarpetas, mover y renombrar documentos.
+* *Conectarse a servicios externos* mediante conectores —correo (Gmail), almacenamiento (Google Drive, OneDrive), calendario, etc.— para buscar, leer, etiquetar o redactar sobre ellos.
+* *Ejecutar acciones*, no solo describirlas: la reorganización de una carpeta o la creación de una etiqueta en Gmail ocurren de verdad, sobre los datos reales.
+* *Reutilizar flujos de trabajo* en forma de _skills_ (habilidades) que encapsulan un procedimiento para poder repetirlo igual cada vez.
+* *Trabajar de forma desatendida* mediante _tareas programadas_ que se ejecutan solas con una periodicidad definida.
+
+La diferencia con el chat convencional es la misma que hay entre pedir consejo a un compañero y pedirle que se encargue de una tarea: el compañero no te explica cómo ordenarías la carpeta, la ordena; no te dice cómo priorizarías el correo, te da la lista priorizada mirando tu bandeja real.
+
+[NOTE]
+====
+Las capacidades concretas disponibles (qué conectores existen, en qué plan, sobre qué plataformas y con qué permisos) evolucionan con rapidez y dependen de tu configuración. Este tutorial se centra en la *forma de trabajar* y en los _prompts_, que son estables; para los detalles exactos de disponibilidad, consulta la documentación oficial de Anthropic y la configuración de tu cuenta.
+====
+
+=== El principio de trabajo: proponer antes de tocar
+
+Todos los escenarios de este tutorial comparten un mismo patrón, que conviene interiorizar porque es lo que hace fiable a Claude Cowork:
+
+. *Explorar y entender primero.* Los nombres de archivo (y los asuntos de correo) no siempre se corresponden con su contenido: "documento1", "FINAL" o "Copia de X" no dicen nada fiable de su contenido. El primer paso siempre es pedirle a Claude que lea lo que hay realmente dentro.
+. *Proponer un plan y esperar confirmación.* Antes de mover, renombrar o borrar nada, se le pide a Claude que presente qué piensa hacer y por qué. Nosotros aprobamos las propuestas antes de que actúe.
+. *Ejecutar de forma reversible.* Nada se borra a la ligera: los descartes se aparcan en una carpeta de pendientes, y solo se elimina de forma definitiva cuando se confirma explícitamente.
+. *Dejar traza.* Al terminar, le pedimos a Claude que genere un registro o informe de lo que ha hecho, para que sea auditable.
+
+[IMPORTANT]
+====
+La supervisión humana no es opcional. Claude Cowork acelera el trabajo, pero la decisión de aprobar una reorganización, enviar un correo o borrar un archivo sigue siendo nuestra. Este patrón de "propón, que yo confirmo, y deja constancia" es precisamente lo que permite delegar con tranquilidad.
+====
+
+== Preparación del entorno
+
+Antes de los escenarios, conviene tener claro cómo se le da acceso a Claude y con qué precauciones.
+
+.Acceso a carpetas locales
+* Se trabaja desde la aplicación de escritorio de Claude, indicándole la carpeta sobre la que quieres operar (por ruta o seleccionándola).
+* Concede acceso a la carpeta concreta del ejercicio, no a todo el disco. Para practicar, usa una copia de las carpetas de ejemplo, nunca documentación real del servicio.
+
+.Conexión de servicios (conectores)
+* Los conectores (Gmail, Drive, calendario…) se activan desde la configuración de conectores de Claude, autorizando la cuenta correspondiente.
+* Al conectar, se conceden permisos concretos (leer correo, crear etiquetas, crear borradores…). Revisa qué estás autorizando y usa, si puedes, una cuenta de pruebas para la formación.
+
+.Skills y tareas programadas
+* Las _skills_ que vayas creando quedan disponibles en el apartado de *Configuración → Skills*.
+* Las _tareas programadas_ se gestionan desde el menú *Programado*, donde puedes ver sus ejecuciones, pausarlas, editarlas o eliminarlas.
+
+[WARNING]
+====
+Para que las tareas programadas se ejecuten, la aplicación de escritorio de Claude debe estar abierta. Si no lo está, las tareas pendientes se ejecutarán una vez que la abras.
+====
+
+== Escenario 1 · Organizar una carpeta desordenada
+
+El primer escenario es el más habitual: una carpeta que ha crecido de forma orgánica y se ha convertido en una retahíla de archivos con nombres que no dicen nada.
+
+=== Situación inicial
+
+La carpeta de ejemplo `demo-organizacion` contiene unos 35 archivos casi todos en el mismo nivel (con un par de "Nueva carpeta" abandonadas a medias, un detalle muy realista). El desorden de nomenclatura es intencionado y reproduce el que aparece en carpetas reales:
+
+* *Nombres genéricos* de Windows/Office: `documento1.txt`, `Sin título.txt`, `Nuevo documento de texto.txt`, `asd.txt`, `prueba.txt`.
+* *Copias y duplicados obvios*: `Copia de documento1.txt`, `documento (2).txt`, `InformeIncidenciasMayo(1).txt`, `OFERTA PROVEEDOR A (2).txt`.
+* *Mezcla de mayúsculas, espacios y guiones* para el mismo contenido: `presupuesto HIS.csv`, `PRESUPUESTO_HIS_2.csv`, `presupuesto_his_FINAL.csv`, `presupuestoHISdefinitivoOK.csv`.
+* *Fechas en formatos distintos* para la misma reunión: `reunion 10-3.txt` frente a `reunión_2024_03_10.txt` (contenido duplicado).
+* *Nombres tipo foto o chat* sin relación aparente con el contenido: `IMG_20240305_091422.txt`, `WhatsApp Chat con Javier.txt`.
+
+El objetivo es pasar de ese desorden a una carpeta con subcarpetas temáticas (Migración HIS, PACS, WiFi UCI, Incidencias, Proveedores, Backups…) y archivos renombrados de forma consistente.
+
+=== Paso 1: explorar y proponer (sin tocar nada)
+
+La clave del primer _prompt_ es pedir explícitamente que *no cambie nada todavía* y que lea el contenido antes de proponer.
+
+.Prompt inicial
+[source, text]
+----
+La carpeta demo-organizacion actualmente es un auténtico caos: todo está en el
+mismo nivel, sin subcarpetas, con nombres como "documento1", "Sin título", "asd"
+o "Copia de documento1" que no dicen nada de su contenido. Hay duplicados con
+distinto nombre y versiones de presupuestos con sufijos como "FINAL" o
+"definitivoOK" que no sé cuál es la buena. Antes de tocar nada, explora todos los
+archivos, léelos si hace falta para entender qué son realmente, y propón: 1) una
+estructura de carpetas por temática/proyecto, y 2) una convención de nombres clara
+y consistente que deberíamos aplicar a partir de ahora. Enséñame la propuesta antes
+de mover nada.
+----
+
+Claude genera un plan y lo va implementando paso a paso. A partir del análisis del contenido real (no de los nombres) produce un resumen como este —resumido aquí para no ocupar demasiado:
+
+[source, text]
+----
+He leído los 35 archivos (incluidas las dos "Nueva carpeta"). Esto es lo que hay
+realmente detrás de los nombres, y mi propuesta. No he movido ni renombrado nada.
+
+1) Estructura de carpetas propuesta
+   01_Migracion_HIS/ (presupuestos/ actas_reuniones/ incidencias/)
+   02_PACS/ (ofertas_proveedores/ contratos/ seguimiento/)
+   03_Firma_Electronica_Recetas/
+   04_Redes_WiFi_UCI/
+   05_Seguridad_ENS_y_Continuidad/
+   06_Backups/
+   07_Radiologia_y_Telemedicina/
+   99_Varios_y_Pendiente_Revisar/
+
+2) Convención de nombres propuesta
+   AAAA-MM-DD_proyecto_tipo_descripcion-breve[_vN].ext
+   - Fecha solo si el documento tiene una asociada (reunión, informe, oferta).
+   - Proyecto: his, pacs, firma, wifi-uci, seguridad, backup, radiologia...
+   - Tipo: acta, presupuesto, oferta, contrato, manual, informe, log...
+   - Nada de "FINAL", "definitivoOK", "(2)", "Copia de", "Sin título".
+
+3) Lo que encontré (duplicados, versiones y cosas que decidir)
+   - Duplicados exactos (mismo contenido, dos nombres): documento1 = Copia de
+     documento1; informe incidencias mayo = InformeIncidenciasMayo(1);
+     reunion 10-3 ≈ reunión_2024_03_10.
+   - Candidatos a borrar (sin contenido útil): prueba.txt, asd2.txt (vacío).
+   - NECESITAN TU DECISIÓN: 4 versiones del presupuesto HIS con cifras distintas
+     (una dice "este SI es el bueno" pero sus cifras no coinciden con "FINAL":
+     Licencias 199.500 vs 195.000). No asumo cuál es la vigente.
+   - Versiones reales que conviene conservar ambas: oferta Proveedor A (310.000€
+     → 288.000€ revisada); manual firma electrónica v1 → v2 (con app móvil).
+----
+
+A tener en cuenta el detalle importante: Claude *distingue tres situaciones distintas* y las trata de forma diferente —duplicados exactos (seguro descartar el sobrante), versiones que se superan (conservar la más completa) y conflictos genuinos donde dos archivos se autodeclaran "el bueno" con datos distintos (aquí *no adivina*: lo marca como pendiente de que tú decidas).
+
+=== Paso 2: aplicar el plan de forma reversible
+
+Una vez revisada la propuesta, se le pide que ejecute, insistiendo en que los descartes se muevan (no se borren) y se justifiquen.
+
+.Prompt de ejecución
+[source, text]
+----
+Aplícalo: crea las carpetas, mueve cada archivo a la que le corresponda y renómbralo
+siguiendo la convención que has propuesto. Donde haya duplicados o versiones distintas
+del mismo documento, conserva solo la versión más reciente/completa y dime cuál has
+descartado y por qué antes de eliminarla.
+----
+
+Claude ejecuta y devuelve un informe de actividad. Los descartes no se borran: se aparcan en una subcarpeta de pendientes con un nombre que explica el motivo, y los conflictos genuinos se dejan intactos a la espera de tu decisión.
+
+[source, text]
+----
+Hecho. Estructura y renombrado aplicados sobre los 35 archivos, sin pérdidas.
+
+Descartados (movidos, NO borrados, a 99_Varios/descartados_pendiente_confirmar/):
+- Copia de documento1.txt, InformeIncidenciasMayo(1).txt → duplicados exactos byte a byte.
+- reunion 10-3.txt → mismo contenido que 2024-03-10_his_acta_seguimiento.txt.
+- manual usuario firma electronica.txt → v1, superada por firma_manual-usuario_v2.txt.
+- presupuesto HIS.csv, PRESUPUESTO_HIS_2.csv → versiones antiguas (sin/menos contingencia).
+- prueba.txt, asd2.txt → sin contenido relevante.
+
+Sin resolver — NECESITO TU DECISIÓN, no descarté nada:
+- presupuesto_his_FINAL.csv y presupuestoHISdefinitivoOK.csv se autodeclaran ambos
+  "definitivos" pero difieren en Licencias (195.000€ vs 199.500€). Los dejé como
+  ..._opcionA-FINAL y ..._opcionB-definitivoOK, marcados "pendiente-confirmar".
+  Dime cuál es el correcto y elimino el otro.
+----
+
+[TIP]
+====
+Si Claude te pide una decisión (por ejemplo, cuál de los dos presupuestos es el vigente), se debe responder de forma coherente y dejar que continúe. En este tutorial las respuestas son ficticias y con fines didácticos; en un caso real, esa confirmación es justamente el punto donde el criterio profesional es insustituible.
+====
+
+=== Paso 3 (opcional): dejar un README para el futuro
+
+Para que la carpeta no vuelva a degradarse, se le pide que documente la convención acordada.
+
+.Prompt de cierre
+[source, text]
+----
+Añade un README.md en la raíz con la convención de nombres acordada, para que el
+equipo la siga usando en adelante.
+----
+
+== Escenario 2 · Diagnosticar y reorganizar los documentos de varios proyectos
+
+El segundo escenario sube un nivel de dificultad: una carpeta que *aparenta* estar ordenada (numeración `01`–`06`, categorías claras) pero que esconde duplicados dispersos, versiones en conflicto y proyectos mal clasificados. Aquí interesa especialmente separar el *diagnóstico* de la *acción*.
+
+=== Situación inicial
+
+La carpeta `demo-departamento_tic_hospital` contiene unos 49 archivos en 16 carpetas, con problemas como:
+
+* *Versiones sin control*: `Presupuesto_HIS_v1/v2/v2_FINAL/v2_FINAL_definitivo.csv`, ofertas con sufijo `_v2_buena`.
+* *Duplicados dispersos*: el mismo presupuesto o acta aparece en 3-4 carpetas con nombres ligeramente distintos.
+* *Contradicciones de estado*: el proyecto "Migración HIS" está en _Activos_ pero también hay una "copia" suya en _Finalizados_.
+* *Naming inconsistente*: el mismo proyecto se llama `Proyecto_Migracion_HIS_2024` en un sitio y `SIH_HistoriaClinica` en otro.
+* *Archivos mal ubicados*: un log de incidencia dentro de una carpeta de proyecto, un presupuesto de WiFi dentro de _Incidencias_.
+* *Una carpeta `_ARCHIVO_NO_BORRAR`* que hay que respetar sin saber a priori si contiene algo relevante.
+
+=== Paso 1: pedir un diagnóstico, sin cambios
+
+.Prompt de diagnóstico
+[source, text]
+----
+Tengo la carpeta demo-departamento_tic_hospital hecha un caos: hay proyectos duplicados,
+versiones de presupuestos con nombres como "final", "definitivo" o "v2" que no sé
+cuál es la buena, archivos metidos en la carpeta equivocada, y una carpeta
+"_ARCHIVO_NO_BORRAR" que no sé si puedo tocar. Antes de reorganizar nada, quiero
+que la explores a fondo y me hagas un diagnóstico: qué duplicados hay, qué archivos
+están mal ubicados, qué proyectos están mal clasificados (activo vs finalizado), y
+qué versión de cada documento parece ser la definitiva. No cambies nada todavía,
+solo dame el informe.
+----
+
+Claude devuelve un resumen de hallazgos y, además, puede generar un *informe completo en un documento* (por ejemplo `Diagnostico_demo-departamento_tic_hospital.docx`) que puedes guardar en local o en una unidad de Drive/OneDrive.
+
+[source, text]
+----
+Lo más relevante que encontré:
+- 5 duplicados exactos confirmados por checksum (acta kickoff HIS, oferta Proveedor A,
+  presupuesto WiFi UCI, etc.).
+- Presupuesto HIS: la versión vigente es Presupuesto_HIS_v2_FINAL_definitivo.csv
+  (292.500 €). El archivo llamado "DEFINITIVO" en SIH_HistoriaClinica tiene cifras
+  antiguas (288.000 €): es una trampa de nombre.
+- WiFi UCI: la vigente es _REVISADO.csv (16 puntos de acceso), confirmada por una nota
+  de pizarra suelta en Sin_clasificar.
+- PACS: Oferta_Proveedor_A_v2_buena.txt es la renegociada (288.000 € vs 310.000 €).
+- SIH_HistoriaClinica probablemente es el mismo proyecto que Proyecto_Migracion_HIS_2024,
+  duplicado en dos carpetas.
+- Proyecto_Migracion_HIS_2024_copia, en "Finalizados", no es un proyecto cerrado real,
+  sino una copia mal ubicada.
+- _ARCHIVO_NO_BORRAR es un archivo histórico legítimo: no encontré nada que requiera tocarlo.
+----
+
+El valor del diagnóstico está en los detalles que un vistazo por encima no captaría: que el archivo llamado "DEFINITIVO" es en realidad el desactualizado (un "nombre trampa"), o que una nota de pizarra suelta es la que confirma cuál es la versión buena del presupuesto de WiFi.
+
+=== Paso 2: reorganizar siguiendo el diagnóstico
+
+.Prompt de acción
+[source, text]
+----
+Perfecto. Ahora reorganiza la carpeta siguiendo esa lógica: consolida los duplicados
+dejando solo la versión definitiva de cada archivo, mueve lo que esté mal ubicado a su
+sitio correcto, y deja una estructura clara por estado del proyecto (Activos /
+Finalizados / Documentación / Incidencias / Proveedores / Backups). Antes de borrar
+cualquier duplicado, dime cuál vas a conservar y por qué.
+----
+
+Es probable que Claude te haga preguntas para obtener el contexto que le falta (por ejemplo, si un proyecto muy retrasado sigue vivo o ya se cerró) y que te pida autorización antes de eliminar. Al terminar, genera un registro de todos los cambios:
+
+[source, text]
+----
+REGISTRO DE REORGANIZACION - demo-departamento_tic_hospital
+
+CARPETAS NUEVAS
+- 00_Pendiente_Revisar: archivos sin proyecto identificable (antes en Sin_clasificar).
+- <cada proyecto>/versiones_anteriores: presupuestos/ofertas anteriores a la vigente,
+  conservados como historial (no se eliminaron).
+
+MOVIDOS
+- Proyecto_Migracion_HIS_2024 de 01_Proyectos_Activos a 02_Proyectos_Finalizados
+  (Go-live planificado 09/2024 sin documento de cierre; decisión del propietario).
+- SIH_HistoriaClinica fusionada dentro de Proyecto_Migracion_HIS_2024 (mismo proyecto).
+- Presupuestos/ofertas antiguos → versiones_anteriores/ (vigentes claramente marcadas).
+- IMG_notas_pizarra.txt → Proyecto_WiFi_UCI/ (contenido: nota sobre los 16 APs).
+
+ELIMINADOS (duplicados exactos o versiones ya superadas, con permiso)
+- Proyecto_Migracion_HIS_2024_copia/ (copia accidental, no un proyecto real).
+- Copias exactas fuera de lugar en Manual_PACS y en Incidencias.
+- SIH.../Presupuesto..._DEFINITIVO(1).csv (cifras desactualizadas pese al nombre).
+
+NO TOCADOS (quedan como puntos abiertos)
+- _ARCHIVO_NO_BORRAR: intacto.
+- Contrato PACS vencido desde 31/12/2023 sin sustitución documentada.
+- Política de Seguridad ENS v2: borrador pendiente de revisión legal.
+- Plan DRP: actualización iniciada en 2022 y sin terminar.
+----
+
+Observa que la reorganización no solo mueve archivos: deja explícitos los *puntos abiertos* que la mera limpieza de carpetas no resuelve (un contrato vencido, un borrador de política sin revisar, un plan de contingencia a medias). Eso convierte la tarea en algo más parecido a una auditoría útil que a un simple "ordenar".
+
+=== Paso 3: documentar el protocolo para el equipo
+
+Si la carpeta es compartida, conviene dejar un documento común que explique dónde va cada cosa y cómo evitar que vuelva a acumularse el desorden.
+
+.Prompt de protocolo
+[source, text]
+----
+Genera también un README.md en la raíz explicando la nueva estructura y un protocolo
+de funcionamiento, para que el resto del equipo sepa dónde guardar las cosas a partir
+de ahora.
+----
+
+Un buen README de este tipo cubre: la estructura de carpetas y qué va en cada una, la convención de nomenclatura (borrador → nombre limpio → mover la versión vieja a `versiones_anteriores/`), cuándo mover un proyecto de _Activos_ a _Finalizados_, qué hacer con un archivo si no está claro dónde va, y qué carpetas no se tocan nunca (`_ARCHIVO_NO_BORRAR`).
+
+== Escenario 3 · Convertir el trabajo en una _skill_ reutilizable
+
+Si el resultado del escenario anterior nos ha convencido, no tiene sentido volver a explicar todo el procedimiento cada vez. Se puede encapsular en una *skill*: una habilidad reutilizable que recoge el _cómo_ hacerlo bien, para invocarla cuando haga falta.
+
+Para crearla, basta pedírselo a Claude a partir del trabajo ya hecho:
+
+.Prompt de creación de skill
+[source, text]
+----
+La organización de la carpeta de proyectos ha quedado estupenda. Crea una skill para
+poder hacerlo igual cada vez.
+----
+
+Es muy probable que Claude te ofrezca *probar la skill primero con ejemplos simulados* y hacer una evaluación rápida antes de guardarla. Es una opción muy recomendable: validar la habilidad antes de darla por buena evita arrastrar errores a futuras ejecuciones. Tras esos pasos, la skill queda guardada y disponible en *Configuración → Skills*.
+
+Una skill bien redactada no es solo una lista de pasos: explica *por qué el orden importa* (leer el contenido antes de clasificar, porque los nombres no siempre dicen la verdad), cómo distinguir duplicados de versiones de conflictos genuinos, y qué convención de nombres aplicar. A continuación se muestra, de forma abreviada, el tipo de contenido que tendría la skill `organize-files-by-project`:
+
+[source, text]
+----
+Flujo de trabajo:
+1. Explorar y leer TODO (contenido, no solo el nombre).
+2. Agrupar por proyecto/temática real, dejando que la estructura emerja del contenido.
+3. Detectar y separar tres casos:
+   - Duplicados exactos → seguro descartar el sobrante.
+   - Versiones que se superan → conservar la más completa.
+   - Conflictos genuinos ("dos FINAL" con datos distintos) → NO adivinar, preguntar.
+4. Proponer antes de tocar nada y esperar confirmación explícita.
+5. Ejecutar de forma reversible: descartes a _pendiente_confirmar/ (no borrar),
+   conflictos in situ, verificar que no ha desaparecido ningún archivo.
+6. Convención de nombres: AAAA-MM-DD_proyecto_tipo_descripcion-breve[_vN].ext
+7. Resumen final breve: qué se organizó, qué se aparcó y por qué, qué queda pendiente.
+----
+
+[TIP]
+====
+Una skill captura el *criterio*, no solo la tarea. Por eso incluye reglas como "nunca dejes coexistir dos archivos 'FINAL' sin resolver cuál es el vigente" o "verifica al final que el número de archivos no ha disminuido". Ese conocimiento es lo que hace que la próxima ejecución sea tan buena como la primera.
+====
+
+== Escenario 4 · Programar una tarea desatendida
+
+Una vez que existe la skill, podemos pedir a Claude que la ejecute *sola y de forma periódica* creando una *tarea programada*. Al crearla, Claude te pide la carpeta sobre la que actuar, la periodicidad (diaria, semanal, mensual…) y la hora de ejecución. También puedes elegir el modelo de Claude que la ejecutará (por ejemplo, Sonnet u Opus).
+
+La tarea queda con un nombre (p. ej. `Organizar TIC hospital`), una descripción y unas instrucciones en formato Markdown. Un punto crítico al pasar de un flujo *supervisado* a uno *desatendido* es adaptar las reglas: si no hay nadie delante para confirmar, la tarea *nunca* debe borrar nada.
+
+.Contenido de una tarea programada de organización (abreviado)
+[source, text]
+----
+Objetivo: mantener organizada la carpeta "<ruta de la carpeta>" aplicando la skill
+"organize-files-by-project".
+
+Pasos:
+1. Invoca la skill "organize-files-by-project" y sigue su flujo sobre la carpeta indicada.
+2. La carpeta ya lleva una estructura de ejecuciones anteriores. NO reorganices desde
+   cero lo ya clasificado: céntrate en los archivos nuevos sueltos o con nombres
+   genéricos ("documento1", "Sin título", "asd", "Copia de...", "FINAL"...).
+3. Aplica la misma convención de nombres (AAAA-MM-DD_proyecto_tipo_descripcion[_vN].ext).
+4. Detecta duplicados/versiones comparando contenido, no solo nombre.
+5. IMPORTANTE — ejecución desatendida, no hay nadie para confirmar: NUNCA borres
+   archivos definitivamente, por obvio que parezca. Mueve siempre los descartes a la
+   subcarpeta de pendientes con un nombre que explique el motivo.
+6. Si hay conflictos genuinos entre versiones "finales" con datos distintos, no los
+   toques: déjalos con nombres que dejen claro que están pendientes de que Manuel decida.
+7. Verifica que el número total de archivos no ha disminuido (nada perdido, solo movido).
+8. Termina con un resumen breve: cuántos archivos nuevos se organizaron, cuántos se
+   aparcaron y por qué, y qué conflictos quedan pendientes. Si no había nada nuevo,
+   dilo en una sola frase.
+----
+
+Para *ver la tarea en acción* sin esperar a la siguiente ejecución programada, puedes pedirle a Claude que ensucie la carpeta a propósito:
+
+.Prompt para probar la tarea
+[source, text]
+----
+Genera unos archivos nuevos en la carpeta "demo-departamento_tic_hospital" mal organizados
+para ver en acción a la tarea programada.
+----
+
+Cada ejecución programada queda registrada en la sección *Programado*, con un cuadro de chat asociado desde el que puedes revisar su resultado e interactuar con Claude sobre esa ejecución concreta.
+
+[NOTE]
+====
+En este ejemplo la tarea programada *llama a una skill*, pero no tiene por qué ser así: una tarea programada puede ser autocontenida y describir directamente qué hacer, sin depender de ninguna skill. Lo verás en el siguiente escenario con las tareas de correo.
+====
+
+== Escenario 5 · Gestionar el correo con el conector de Gmail
+
+El último escenario conecta Claude a *Gmail* para gestionar la bandeja de entrada: priorizar, clasificar, resumir y redactar respuestas sobre correos reales. Como material de práctica se usan *12 correos ficticios* de la bandeja del Departamento de TIC del "Hospital Universitario Santa Marta" (nombre inventado), que cubren los escenarios habituales de un servicio de TI hospitalario.
+
+.Los 12 correos de ejemplo (para copiar a una cuenta de pruebas)
+[cols="1,3,2", options="header"]
+|===
+| # | Asunto (resumido) | Tipo
+| 1 | CRÍTICO: caída del servidor HIS — Urgencias sin historia clínica (INC-2026-4471, P1) | Incidencia crítica
+| 2 | Ordenador muy lento en el mostrador de Admisión | Ticket rutinario
+| 3 | Convocatoria: reunión semanal de seguimiento TIC (jueves 17:00) | Reunión / calendario
+| 4 | Alerta de seguridad: intento de phishing suplantando a RRHH | Seguridad (aviso interno)
+| 5 | Propuesta de renovación de licencias (NextSoft, confirmar antes del 31) | Proveedor / presupuesto
+| 6 | Solicitud de valoración: sustitución de 8 monitores en UCI (para el día 24) | Compras / presupuesto
+| 7 | Documentación para la auditoría anual RGPD (antes del día 30) | Cumplimiento normativo
+| 8 | Alta de nuevo empleado: Dr. Carlos Pineda (incorporación 20/07) | RRHH / alta de usuario
+| 9 | Parada programada del sistema HIS (noche del sábado 18) | Mantenimiento
+| 10 | ¡Últimas 24h! 40% de descuento en equipamiento (TechMed) | Spam / newsletter
+| 11 | 9 días esperando la reparación del PACS en Sala 2 (queja del Dr. Castro, TCK-8832) | Escalado / queja
+| 12 | Recordatorio: formación obligatoria en ciberseguridad (plazo 31/07) | Formación obligatoria
+|===
+
+Los siguientes pasos recorren, en orden, un guion de demostración completo. Cada uno es un _prompt_ que escribes directamente a Claude.
+
+=== Paso 1: triage general de la bandeja
+
+*Objetivo:* que Claude priorice sin que tengas que abrir cada correo uno a uno.
+
+.Prompt
+[source, text]
+----
+Repasa mi bandeja de entrada de las últimas 2 horas y dime qué correos necesito
+atender ya, ordenados por urgencia y por qué.
+----
+
+*Qué debería destacar:* situar la caída del sistema HIS (INC-2026-4471, P1) como máxima prioridad, y dejar en segundo plano el ticket rutinario de Admisión y la newsletter comercial.
+
+=== Paso 2: clasificación y etiquetado automático
+
+*Objetivo:* crear y aplicar etiquetas reales en Gmail.
+
+.Prompt
+[source, text]
+----
+Crea etiquetas para Incidencias, Seguridad, Proveedores, Compras, Cumplimiento, RRHH,
+Formación y Spam, y aplícalas a los correos correspondientes de mi bandeja de los
+últimos días.
+----
+
+*Qué debería destacar:* las etiquetas aparecen al instante en la interfaz de Gmail; es una acción real sobre el buzón, no una simulación.
+
+=== Paso 3: resolución de un incidente urgente
+
+*Objetivo:* extraer los datos clave de un correo crítico sin releerlo.
+
+.Prompt
+[source, text]
+----
+Resume el correo del incidente crítico del sistema HIS: qué ha pasado, servicios
+afectados, código de incidencia y qué pasos debería seguir ahora mismo.
+----
+
+*Qué debería destacar:* extrae el código `INC-2026-4471`, los servicios impactados (Urgencias, Hospitalización, Farmacia) y la prioridad P1.
+
+=== Paso 4: detección de phishing y spam
+
+*Objetivo:* mostrar criterio de seguridad, no una simple clasificación por palabras clave.
+
+.Prompt
+[source, text]
+----
+¿Alguno de los correos de mi bandeja parece phishing o spam? Explícame por qué y qué
+debería hacer con cada uno.
+----
+
+*Qué debería destacar:* distinguir la *alerta legítima* de Seguridad de la Información (un aviso interno sobre un phishing) del *newsletter comercial* de TechMed (spam), explicando la diferencia entre ambos.
+
+=== Paso 5: redacción de una respuesta a una queja escalada
+
+*Objetivo:* generar un borrador listo para revisar, no un envío automático.
+
+.Prompt
+[source, text]
+----
+Redacta un borrador de respuesta al Dr. Castro sobre el ticket PACS de Radiología
+(TCK-8832): tono profesional, reconoce el retraso y da un plazo concreto de resolución.
+----
+
+*Qué debería destacar:* el borrador queda guardado en Gmail para que tú lo revises y envíes. Claude no manda correos en tu nombre sin supervisión.
+
+[IMPORTANT]
+====
+Este es el punto de seguridad más importante del escenario: Claude *redacta borradores*, no envía correos automáticamente. La revisión y el envío final son siempre una decisión humana.
+====
+
+=== Paso 6: resumen ejecutivo de correos con plazos
+
+*Objetivo:* agregar información dispersa en distintos hilos.
+
+.Prompt
+[source, text]
+----
+Hazme un resumen de una línea de cada correo relacionado con proveedores, compras y
+cumplimiento normativo, indicando la fecha límite de cada uno.
+----
+
+*Qué debería destacar:* una lista con las fechas límite: licencias NextSoft (confirmar antes del 31), valoración de monitores UCI (para el 24) y documentación de la auditoría RGPD (antes del 30).
+
+=== Paso 7: preparación de la reunión semanal
+
+*Objetivo:* conectar el contenido del correo con la agenda de trabajo.
+
+.Prompt
+[source, text]
+----
+Antes de la reunión de TIC del jueves, dime qué temas pendientes de mis correos
+debería llevar al orden del día.
+----
+
+*Qué debería destacar:* une la convocatoria de la reunión con los temas abiertos en otros correos (licencias NextSoft, monitores UCI, formación pendiente de ciberseguridad) en una sola lista accionable.
+
+=== Automatizar el correo con tareas programadas
+
+El guion anterior es interactivo, pero dos de esas tareas se benefician enormemente de ejecutarse *solas*. Claude ofrece las tareas programadas como una forma de automatizar la supervisión de la bandeja de entrada y la vigilancia de incidencias críticas.
+
+Aquí las tareas programadas son *autocontenidas*: describen directamente qué hacer, sin depender de ninguna skill.
+
+*a) Resumen diario de la bandeja.* Un briefing priorizado cada tarde de lunes a viernes.
+
+[source, text]
+----
+Nombre: Daily inbox briefing
+Frecuencia: Entre semana, 18:00
+Instrucciones:
+
+Eres un asistente que revisa la bandeja de entrada de Gmail del usuario y produce un briefing diario priorizado. Sigue estos pasos:
+
+1. Usa las herramientas de Gmail disponibles (busca algo como "search_threads" o similar) para listar los correos recibidos en la bandeja de entrada en las últimas 24 horas (query aproximada: "in:inbox newer_than:1d"). Si necesitas más detalle de algún correo concreto, usa la herramienta de obtener mensaje/hilo completo.
+
+2. Clasifica cada correo por urgencia, de más a menos urgente, priorizando en este orden:
+
+   - Incidencias críticas u operativas (caídas de sistemas, tickets de soporte con escalada, fallos de equipos)
+
+   - Alertas de seguridad o phishing
+
+   - Solicitudes con plazo próximo (auditorías, altas de personal, compras/aprobaciones pendientes)
+
+   - Recordatorios y convocatorias con plazo lejano
+
+   - Correos informativos, promocionales o de bajo impacto (indica que pueden ignorarse o esperan)
+
+3. Para cada correo relevante indica: asunto, remitente (o departamento si se puede inferir) y una razón breve (1 línea) de por qué es urgente o no.
+
+4. No apliques etiquetas, no archives ni tomes ninguna acción sobre los correos — solo genera el resumen.
+
+Formato de salida: en español, como una lista breve y directa ordenada por urgencia (más urgente primero), sin explicaciones largas ni relleno. Usa un tono conciso y directo, similar a un resumen ejecutivo. Si no hay correos nuevos relevantes en las últimas 24 horas, dilo en una sola frase.
+----
+
+*b) Vigilancia horaria de incidencias críticas.* Un aviso inmediato si aparece un correo P1.
+
+[source, text]
+----
+Nombre: Hourly critical alert watch
+Frecuencia: Cada hora, de 07:00 a 21:00, todos los días
+Instrucciones:
+
+Eres un asistente de vigilancia de incidencias críticas en la bandeja de entrada de Gmail del usuario. En cada ejecución:
+
+1. Usa las herramientas de Gmail disponibles para buscar correos recibidos en la bandeja de entrada durante la última hora (query aproximada: "in:inbox newer_than:1h"). Si esa granularidad no está disponible, usa el filtro de tiempo más cercano posible.
+
+2. De esos correos, identifica los que parezcan una incidencia crítica: contienen en el asunto o cuerpo palabras como "CRÍTICO", "P1", "urgente", "urgencia", "incidencia grave", "caída", "sin servicio", o equivalentes, especialmente si mencionan sistemas hospitalarios (HIS, PACS, servidores, red) o piden confirmación/ETA inmediato.
+
+3a. Si encuentras uno o más correos que cumplan el criterio, responde empezando con "ALERTA P1" seguido de una lista breve. Para cada correo indica: asunto, remitente, código de incidencia si aparece (ej. INC-XXXX), y 1-2 líneas resumiendo qué pasa y qué se pide, en español.
+
+3b. Si no encuentras ninguno, responde con una sola frase breve confirmando que no hay incidencias críticas nuevas en la última hora. No añadas relleno ni detalle innecesario en este caso.
+
+No apliques etiquetas, no archives ni tomes ninguna acción sobre los correos — solo informa. Tono directo y conciso, sin explicaciones largas.
+----
+
+Veáse en que ambas tareas son *estrictamente de solo lectura*: resumen e informan, pero no etiquetan, archivan ni responden. Es la misma prudencia del escenario 4 (nunca borrar en desatendido) aplicada al correo: cuanto menos supervisada es una ejecución, más conservadora debe ser.
+
+== Buenas prácticas, seguridad y privacidad
+
+Recogiendo lo visto en todos los escenarios, estas son las pautas que conviene respetar al trabajar con Claude Cowork:
+
+* *Empezar en modo lectura.* En cada tarea nueva, pedir primero explorar, diagnosticar o resumir *sin cambiar nada*. Revisar el plan antes de autorizar la ejecución.
+* *Nada de borrados irreversibles sin confirmación.* Los descartes se aparcan en una carpeta de pendientes; el borrado definitivo lo confirmamos nosotros. En tareas desatendidas, el borrado se prohíbe por completo.
+* *No adivinar ante un conflicto genuino.* Si dos documentos se autodeclaran "el bueno" con datos distintos, Claude debe marcarlo como pendiente y preguntarte, no elegir por nosotros.
+* *Acceso mínimo.* Concedee acceso a la carpeta o la cuenta concreta del trabajo, no a todo. Para la formación, usar copias de datos ficticios y, si es posible, una cuenta de correo de pruebas.
+* *Dejar traza.* Pedir siempre un registro o informe de los cambios (qué se movió, qué se descartó y por qué, qué queda pendiente). Es lo que hace el trabajo auditable.
+* *Los conectores conllevan permisos reales.* Al conectar Gmail, Drive o el calendario, se están autorizando acciones sobre datos reales. Revisar qué permisos se conceden y respetar las políticas del centro y de protección de datos.
+* *La responsabilidad final es humana.* Aprobar una reorganización, enviar un correo o dar por buena una cifra de un presupuesto son decisiones nuestras. Claude acelera el camino; el criterio profesional sigue siendo insustituible.
+
+== Conclusiones
+
+Claude Cowork cambia el tipo de tareas que se pueden delegar a la IA: de "ayúdame a pensar sobre este texto" a "encárgate de esta tarea sobre mis archivos y mi correo, bajo mi supervisión". A lo largo del tutorial hemos visto ese salto en cuatro capacidades que se encadenan:
+
+* *Actuar sobre carpetas reales* para convertir un carpeta desordenada en una estructura ordenada, distinguiendo con criterio los duplicados de las versiones y de los conflictos genuinos.
+* *Diagnosticar antes de actuar*, separando el informe de la reorganización y dejando explícitos los puntos que la limpieza no resuelve.
+* *Encapsular el buen criterio en una skill* para repetir el trabajo igual de bien cada vez, y *programarlo* como tarea desatendida con reglas más prudentes.
+* *Conectar servicios como Gmail* para priorizar, clasificar, resumir y redactar sobre el correo real, siempre en forma de borrador y bajo revisión.
+
+El hilo conductor de todos los escenarios es el mismo patrón de confianza: *explorar y entender, proponer antes de tocar, ejecutar de forma reversible y dejar traza*. Ese patrón es lo que permite delegar tareas reales sin perder el control —especialmente en un entorno hospitalario, donde los archivos y los buzones contienen información que exige cuidado.
